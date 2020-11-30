@@ -12,6 +12,7 @@ import Header from './components/Header';
 import SideBar from './components/SideBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Container from '@material-ui/core/Container';
+import FileExplorer from './components/FileExplorer'
 
 // Temporatry style, put this style in the actual components!
 const useStyles = makeStyles(theme => ({
@@ -59,7 +60,7 @@ function App() {
         <main className={classes.content}>
           <Toolbar />
           <Container maxWidth="lg" className={classes.container}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo eum modi, placeat libero aliquam ipsum magni tempore iste ipsam! Labore exercitationem qui magnam illo numquam dolor tempore pariatur, nobis quibusdam?
+            <FileExplorer currentFolder=""/>
           </Container>
         </main>
       </div>
