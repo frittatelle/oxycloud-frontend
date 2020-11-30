@@ -13,6 +13,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid'
+import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 
 //icons
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -143,7 +144,7 @@ export default class FileTable extends React.Component{
     return (
       <TableRow key={row.Prefix}>
       <TableCell component="th" scope="row">
-        <Link onClick={()=>this.setState({currentFolder:row.Prefix})}>{row.Name}</Link>
+        <Link color="inherit" onClick={()=>this.setState({currentFolder:row.Prefix})}>{row.Name}</Link>
       </TableCell>
       <TableCell align="right">-</TableCell>
       <TableCell align="right">-</TableCell>
@@ -194,23 +195,25 @@ export default class FileTable extends React.Component{
     const f = this.state.currentFolder.split('/');
     var folders = [];
     
-    folders.push(<Link color='textPrimary' full_path="" 
-    onClick={(arg)=>this.setState({currentFolder:arg.target.attributes['full_path'].value})} >/</Link>);
+    folders.push(<Link color='inherit' full_path="" 
+    onClick={(arg)=>this.setState({currentFolder:arg.target.attributes['full_path'].value})} >
+      My folder
+    </Link>);
     for (var i = 0; i < f.length-1; i++){
       var tmp = f.slice(0,i+1).join("/") +"/";
       folders.push(
-        <Link color='textPrimary' full_path={tmp}
+        <Link color='inherit' full_path={tmp}
           onClick={(arg)=>this.setState({currentFolder:arg.target.attributes['full_path'].value})}>
-         {f[i]}/
+         {f[i]}
         </Link>
       )
     }
     return (
-      <Typography variant='h5'>
+      <Breadcrumbs aria-label="breadcrumb">
         {folders.map((v,i)=>{
         return v
         })}&nbsp;
-      </Typography>
+      </Breadcrumbs>
     )
   }
   render(){
