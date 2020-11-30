@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+//components
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -7,17 +7,18 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import ShareIcon from '@material-ui/icons/Share';
-import IconButton from '@material-ui/core/IconButton';
-import CircularProgress from '@material-ui/core/CircularProgress'
 import Link from '@material-ui/core/Link'
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid'
+
+//icons
+import GetAppIcon from '@material-ui/icons/GetApp';
+import ShareIcon from '@material-ui/icons/Share';
+import IconButton from '@material-ui/core/IconButton';
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 import AWS from 'aws-sdk'
 
@@ -155,21 +156,20 @@ export default class FileTable extends React.Component{
   }
 
   renderTable() {
-    const classes = makeStyles({
-      table: {
-        minWidth: 650,
-      },
-    });
     if(this.state.loading){
-      return (<CircularProgress align='center' />)
+      return (<Grid container justify="center"><CircularProgress align='center' /></Grid>)
     }
     if(this.state.error){
-      return (<Typography color="error">{this.state.error}</Typography>)
+      return (
+      <Grid containerjustify="center">
+        <Typography color="error" align="center">{this.state.error}</Typography>
+      </Grid>
+      )
     }
     return (
       <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
+        <Table aria-label="simple table">
+          <TableHead >
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell align="right">Size</TableCell>
@@ -214,21 +214,16 @@ export default class FileTable extends React.Component{
     )
   }
   render(){
+    //return (<Container>{this.renderToolbarBody()}{this.renderTable()} </Container>)
     return (
-      <React.Fragment>
-        <CssBaseline />
-          <AppBar>
-            <Toolbar>
-              {this.renderToolbarBody()}
-            </Toolbar>
-          </AppBar>
-        <Toolbar />
-        <Container>
-          <Box my={2}>
-            {this.renderTable()}
-          </Box>
-        </Container>
-      </React.Fragment>
+      <Container>
+        <AppBar position='sticky' color='inherit'>
+          <Toolbar>
+            {this.renderToolbarBody()}
+          </Toolbar>
+        </AppBar>
+        {this.renderTable()}
+      </Container>
     );
   }
 

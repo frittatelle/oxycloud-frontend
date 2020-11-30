@@ -10,8 +10,6 @@ import { useState } from 'react';
 //Components
 import Header from './components/Header';
 import SideBar from './components/SideBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Container from '@material-ui/core/Container';
 import FileExplorer from './components/FileExplorer'
 
 // Temporatry style, put this style in the actual components!
@@ -20,7 +18,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
   },
   content: {
-    flexGrow: 1,
+    paddingTop:theme.spacing(8),
+    flexGrow: 10,
     height: "100vh",
     overflow: "auto"
   },
@@ -57,11 +56,8 @@ function App() {
         <SideBar sidebarOpen={sidebarOpen}/>
 
         {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}
-        <main className={classes.content}>
-          <Toolbar />
-          <Container maxWidth="lg" className={classes.container}>
-            <FileExplorer currentFolder=""/>
-          </Container>
+        <main className={classes.content}>          
+          <FileExplorer maxWidth="lg" currentFolder=""/>
         </main>
       </div>
     </ThemeProvider>
