@@ -34,6 +34,13 @@ function getReadableFileSizeString(fileSizeInBytes) {
   return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
 };
 
+function saveByteArray(fileName, contentType, byte) {
+  var blob = new Blob([byte], {type: contentType});
+  var link = document.createElement('a');
+  link.href = window.URL.createObjectURL(blob);
+  link.download = fileName;
+  link.click();
+};
 
 function formatDate(date) {
   //https://stackoverflow.com/a/25275914
@@ -107,7 +114,14 @@ export default class FileTable extends React.Component{
     //, 3000);
   }
   startDownload(row){
-    console.log("Download:", row.Key)
+    console.log("Download:", row.Key);
+    this.api.getObject({
+      Key:row.Key,
+      Bucket: "test-bucket"},
+      (err,res)=>{
+        if(err) throw err;
+        saveByteArray(row.Name,res.contentType,res.Body)        
+      })
   }
   
   shareDialog(row){
