@@ -21,15 +21,6 @@ import ShareIcon from '@material-ui/icons/Share';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress'
 
-import AWS from 'aws-sdk'
-
-
-var config = {
-  s3ForcePathStyle: true,
-  accessKeyId: 'S3RVER',
-  secretAccessKey: 'S3RVER',
-  endpoint: new AWS.Endpoint('http://localhost:4568')
-}
 
 
 function getReadableFileSizeString(fileSizeInBytes) {
@@ -63,7 +54,7 @@ export default class FileTable extends React.Component{
 
   constructor(props){
     super(props);
-    this.api = props.api || new AWS.S3(config);
+    this.api = props.api;
     this.state = {
       currentFolder: props.currentFolder || "",
       loading: true,

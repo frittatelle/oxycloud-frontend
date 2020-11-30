@@ -12,6 +12,18 @@ import Header from './components/Header';
 import SideBar from './components/SideBar';
 import FileExplorer from './components/FileExplorer'
 
+//AWS API
+import AWS from 'aws-sdk'
+
+
+var s3_config = {
+  s3ForcePathStyle: true,
+  accessKeyId: 'S3RVER',
+  secretAccessKey: 'S3RVER',
+  endpoint: new AWS.Endpoint('http://localhost:4568')
+}
+
+
 // Temporatry style, put this style in the actual components!
 const useStyles = makeStyles(theme => ({
   root:{
@@ -37,7 +49,7 @@ const useStyles = makeStyles(theme => ({
 
 
 function App() {
-
+  const api = new AWS.S3(s3_config);
   //Temporary state management to open/close the drawer 
   // CHANGE IT TO A SMARTER SOLUTION!
   const [sidebarOpen,setSidebarOpen] = useState(false);
@@ -57,7 +69,7 @@ function App() {
 
         {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}
         <main className={classes.content}>          
-          <FileExplorer maxWidth="lg" currentFolder=""/>
+          <FileExplorer maxWidth="lg" currentFolder="" api={api}/>
         </main>
       </div>
     </ThemeProvider>
