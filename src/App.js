@@ -28,13 +28,16 @@ var s3_config = {
 const useStyles = makeStyles(theme => ({
   root:{
     display: 'flex',
+
   },
   content: {
     paddingTop:theme.spacing(8),
     flexGrow: 10,
     height: "100vh",
-    overflow: "auto"
+    overflow: "auto",
+    position:"relative"
   },
+  
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4)

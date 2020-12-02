@@ -12,7 +12,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Divider from '@material-ui/core/Divider';
 import Toolbar from '@material-ui/core/Toolbar';
-
 //Icons
 import FolderIcon from '@material-ui/icons/Folder';
 
@@ -25,7 +24,15 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: 'nowrap',
     },
     drawerOpen: {
-      width: drawerWidth,
+      [theme.breakpoints.down('sm')]: {
+        width: "180px",
+      },
+      [theme.breakpoints.up('md')]: {
+        width: "190px",
+      },
+      [theme.breakpoints.up('lg')]: {
+        width: "190px",
+      },
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.easeInOut,
         duration: theme.transitions.duration.standard,

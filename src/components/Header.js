@@ -18,15 +18,18 @@ import AddIcon from '@material-ui/icons/Add';
 import SettingsIcon from '@material-ui/icons/Settings';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 
+const logoSpace = 65;
+
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
+        display :"contents"
     },    
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
     },
     logo: {
-        marginRight: theme.spacing(3),
+        marginRight : logoSpace,
         fontWeight: 800,
         '&:hover':{
             cursor: 'pointer',
