@@ -1,6 +1,5 @@
 import React from 'react';
 //components
-import { makeStyles } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,7 +15,6 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
-import Delete from '@material-ui/icons/Delete';
 import ImageIcon from '@material-ui/icons/Image';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 //icons
@@ -25,7 +23,6 @@ import ShareIcon from '@material-ui/icons/Share';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress'
 
-const drawerWidth = 240;
 const useStyles = theme => ({
    allarga:{
        margin: 0,
@@ -58,12 +55,12 @@ function getIcon(ext) {
     for(var i=0; i<mapping.image.length; i++) {
        
        
-  if(mapping.image[i]==(ext))
-      if(ext=="png"||ext=="gif"||ext=="jpg"){
+  if(mapping.image[i]===(ext))
+      if(ext==="png"||ext==="gif"||ext==="jpg"){
         return( <ImageIcon />  
                )
       }
-               if(ext=="txt"|| ext=="pdf"||ext=="docx"){
+               if(ext==="txt"|| ext==="pdf"||ext==="docx"){
             return(
             <InsertDriveFileIcon />
             )
@@ -201,13 +198,11 @@ function formatDate(date) {
     
      
   
-    shareDialog(row){
+  shareDialog(row){
     console.log("Sharing:", row.Key)
   }
 
-  renderFileRow(row){
-      const { classes } = this.props;
-      
+  renderFileRow(row){      
     return (
       <TableRow key={row.Key} >
         <TableCell>
