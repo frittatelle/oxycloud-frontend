@@ -1,5 +1,7 @@
 import React from 'react';
 //components
+import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -14,13 +16,78 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
-
+import Delete from '@material-ui/icons/Delete';
+import ImageIcon from '@material-ui/icons/Image';
+import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 //icons
 import GetAppIcon from '@material-ui/icons/GetApp';
 import ShareIcon from '@material-ui/icons/Share';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress'
 
+const drawerWidth = 240;
+const useStyles = theme => ({
+   allarga:{
+       margin: 0,
+       maxWidth:"100%",
+    },
+    
+    cont:{
+        // width:`calc(100% - ${drawerWidth}px)`,
+         maxWidth:"100%",
+        marginLeft:0,
+        marginRight:0,
+        paddingLeft:0,
+        paddingRight:0,
+        
+},
+    move:{
+    marginRight:300,
+        
+    
+}
+});
+
+const mapping = {'image':['png', 'gif',"txt", 'jpg'], 
+                'document':['docx', 'txt']
+                 }
+//const Icons = {'image':['ImageIcon','InsertDriveFileIcon']} 
+
+function getIcon(ext) {
+    
+    for(var i=0; i<mapping.image.length; i++) {
+       
+       
+  if(mapping.image[i]==(ext))
+      if(ext=="png"||ext=="gif"||ext=="jpg"){
+        return( <ImageIcon />  
+               )
+      }
+               if(ext=="txt"|| ext=="pdf"||ext=="docx"){
+            return(
+            <InsertDriveFileIcon />
+            )
+        }
+     console.log("value",ext)
+        
+        //console.log("image",Icons.image[i])
+   // return Icons.image[j];
+        
+         /* if(ext=="png")
+               return (
+      <ImageIcon />
+                   )
+      if(ext=="txt")
+          return(
+          <InsertDriveFileIcon  />
+          )
+       */
+      
+      //Icons.image[0];
+        
+         
+}
+}
 
 
 function getReadableFileSizeString(fileSizeInBytes) {
@@ -34,6 +101,8 @@ function getReadableFileSizeString(fileSizeInBytes) {
   return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
 };
 
+
+
 function saveByteArray(fileName, contentType, byte) {
   var blob = new Blob([byte], {type: contentType});
   var link = document.createElement('a');
@@ -41,6 +110,8 @@ function saveByteArray(fileName, contentType, byte) {
   link.download = fileName;
   link.click();
 };
+
+
 
 function formatDate(date) {
   //https://stackoverflow.com/a/25275914
@@ -57,7 +128,7 @@ function formatDate(date) {
           minuteFormatted + morning;
 }
 
-export default class FileTable extends React.Component{
+ class FileTable extends React.Component{
 
   constructor(props){
     super(props);
@@ -72,6 +143,7 @@ export default class FileTable extends React.Component{
   componentDidMount(){
     this._getFilesList();
   }
+    
 
   componentDidUpdate(prevProp, prevState, snapshot){
     //super.componentDidUpdate(prevProp, prevState, snapshot);
@@ -80,6 +152,7 @@ export default class FileTable extends React.Component{
       this._getFilesList();
     }
   }
+    
 
   _getFilesList(){    
     this.api.listObjects({
@@ -91,6 +164,7 @@ export default class FileTable extends React.Component{
   _processApiResponse(err,data){
     //console.log(data);
     if(err) {
+        
       this.setState({loading:false, error:err.toString()});
       return;
     }
@@ -106,6 +180,7 @@ export default class FileTable extends React.Component{
       return f;
     });
     //setTimeout(()=> //to delay response
+      console.log(files,folders)
     this.setState({
       files: files,
       folders: folders,
@@ -123,23 +198,37 @@ export default class FileTable extends React.Component{
         saveByteArray(row.Name,res.contentType,res.Body)        
       })
   }
+    
+     
   
-  shareDialog(row){
+    shareDialog(row){
     console.log("Sharing:", row.Key)
   }
 
   renderFileRow(row){
+      const { classes } = this.props;
+      
     return (
-      <TableRow key={row.Key}>
-      <TableCell component="th" scope="row">
+      <TableRow key={row.Key} >
+        <TableCell>
+        <div > {getIcon(row.Name.split('.').pop())} </div>
+        </TableCell>
+      
+        <TableCell component="th">
         {row.Name}
       </TableCell>
-      <TableCell align="right">{getReadableFileSizeString(row.Size)}</TableCell>
-      <TableCell align="right">{row.Owner.DisplayName}</TableCell>
-      <TableCell align="right">{formatDate(new Date(row.LastModified))}</TableCell>
-      <TableCell align="right">
+         
+      
+      <TableCell  align="right">{getReadableFileSizeString(row.Size)}
+            
+            </TableCell>
+      <TableCell  align="right">{row.Owner.DisplayName}</TableCell>
+      <TableCell  align="right">{formatDate(new Date(row.LastModified))}</TableCell>
+           
+      <TableCell  align="right">
         <IconButton onClick={()=>this.startDownload(row)}><GetAppIcon fontSize='small'/></IconButton>
         <IconButton onClick={()=>this.shareDialog(row)}><ShareIcon fontSize='small' /></IconButton>
+            
       </TableCell>
     </TableRow>
     )
@@ -151,6 +240,7 @@ export default class FileTable extends React.Component{
       <TableCell component="th" scope="row">
         <Link color="inherit" onClick={()=>this.setState({currentFolder:row.Prefix})}>{row.Name}</Link>
       </TableCell>
+   
       <TableCell align="right">-</TableCell>
       <TableCell align="right">-</TableCell>
       <TableCell align="right">-</TableCell>
@@ -177,7 +267,9 @@ export default class FileTable extends React.Component{
         <Table aria-label="simple table">
           <TableHead >
             <TableRow>
-              <TableCell>Name</TableCell>
+              
+              <TableCell></TableCell>
+               <TableCell  >Name</TableCell>
               <TableCell align="right">Size</TableCell>
               <TableCell align="right">Owner</TableCell>
               <TableCell align="right">Last modified</TableCell>
@@ -213,6 +305,7 @@ export default class FileTable extends React.Component{
         </Link>
       )
     }
+    
     return (
       <Breadcrumbs aria-label="breadcrumb">
         {folders.map((v,i)=>{
@@ -221,11 +314,13 @@ export default class FileTable extends React.Component{
       </Breadcrumbs>
     )
   }
+  
   render(){
+      const { classes } = this.props;
     //return (<Container>{this.renderToolbarBody()}{this.renderTable()} </Container>)
     return (
-      <Container>
-        <AppBar position='sticky' color='inherit'>
+      <Container className={classes.cont} >
+        <AppBar position='sticky' color='inherit' className={classes.allarga}>
           <Toolbar>
             {this.renderToolbarBody()}
           </Toolbar>
@@ -236,3 +331,4 @@ export default class FileTable extends React.Component{
   }
 
 }
+export default withStyles(useStyles)(FileTable)

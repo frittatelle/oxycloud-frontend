@@ -1,4 +1,3 @@
-//Styles
 import { makeStyles } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -28,10 +27,11 @@ var s3_config = {
 const useStyles = makeStyles(theme => ({
   root:{
     display: 'flex',
+      
   },
   content: {
     paddingTop:theme.spacing(8),
-    flexGrow: 10,
+    flexGrow: 380,
     height: "100vh",
     overflow: "auto"
   },
