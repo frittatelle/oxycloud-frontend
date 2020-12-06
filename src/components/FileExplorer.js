@@ -51,21 +51,15 @@ const mapping = {'image':['png', 'gif',"txt", 'jpg'],
 //const Icons = {'image':['ImageIcon','InsertDriveFileIcon']}
 
 function getIcon(ext) {
-
-    for(var i=0; i<mapping.image.length; i++) {
-
-
-  if(mapping.image[i]===(ext))
+  for (var i = 0; i < mapping.image.length; i++) {
+    if(mapping.image[i]===(ext))
       if(ext==="png"||ext==="gif"||ext==="jpg"){
-        return( <ImageIcon />
-               )
+        return <ImageIcon />
       }
-               if(ext==="txt"|| ext==="pdf"||ext==="docx"){
-            return(
-            <InsertDriveFileIcon />
-            )
-               }
-}
+    if(ext==="txt"|| ext==="pdf"||ext==="docx"){
+      return <InsertDriveFileIcon />
+    }
+  }
 }
 
 
@@ -279,20 +273,20 @@ const FileExplorer = ({ api, classes, folder }) => {
           <FoldersBar currentFolder={currentFolder} setCurrentFolder={setCurrentFolder} />
           </Toolbar>
         </AppBar>
-      <Grid container justify="center">
-        {loading === true && (<CircularProgress align='center' />)}
-        {error !== "" &&
-          (<Typography color="error" align="center">{error}</Typography>)}
-        {(loading === false && error === "") &&
-          <FileTable
-            files={files}
-            folders={folders}
-            setCurrentFolder={setCurrentFolder}
-            onDownload={startDownload}
-            onSharing={shareDialog}
-          />
-        }
-      </Grid>
+        <Grid container justify="center">
+          {loading === true && (<CircularProgress align='center' />)}
+          {error !== "" &&
+            (<Typography color="error" align="center">{error}</Typography>)}
+          {(loading === false && error === "") &&
+            <FileTable
+              files={files}
+              folders={folders}
+              setCurrentFolder={setCurrentFolder}
+              onDownload={startDownload}
+              onSharing={shareDialog}
+            />
+          }
+        </Grid>
       </Container>
   );
 }
