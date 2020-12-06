@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 //components
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -180,7 +180,7 @@ const FoldersBar = ({ currentFolder, setCurrentFolder }) => {
     </Breadcrumbs>
   )
 }
-const FileTable = ({ loading, error, folders, files }) => {
+const FileTable = ({ folders, files }) => {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="simple table">
@@ -208,17 +208,14 @@ const FileExplorer = ({ api, classes, folder }) => {
   const [folders, setFolders] = useState([]);
   const [files, setFiles] = useState([]);
   const [error, setError] = useState("");
-  const [currentFolder, _setCurrentFolder] = useState(folder || "");
+  const [currentFolder, setCurrentFolder] = useState(folder || "");
 
-  const setCurrentFolder = (f) => {
-    //this is necessesary to avoid the following warning using useEffect(_getFilesList, [currentFolder])
-    //
-    //React Hook useEffect has missing dependencies: '_processApiResponse' and 'api'.
-    //Either include them or remove the dependency array  react-hooks/exhaustive-deps
-    //
-    _setCurrentFolder(f);
-    _getFilesList();
-  }
+
+  useEffect(_getFilesList, [currentFolder]);
+  // this result in the following warning:
+  //
+  //React Hook useEffect has missing dependencies: '_processApiResponse' and 'api'.
+  //Either include them or remove the dependency array  react-hooks/exhaustive-deps
 
 
   function startDownload({ Key, Name }) {
@@ -238,37 +235,38 @@ const FileExplorer = ({ api, classes, folder }) => {
   }
 
   function _getFilesList() {
+    setLoading(true);
     api.listObjects({
       Prefix: currentFolder,
       Delimiter: "/",
       Bucket: "test-bucket"
-    }, _processApiResponse);
+    }).promise()
+      .then(_processApiResponse)
+      .catch((err) => {
+        setError(err.toString());
+        setLoading(false);
+      });
   }
 
-  function _processApiResponse(err, data) {
-    //console.log(data);
-    if (err) {
-      setError(err.toString());
-      setLoading(false);
-      return;
-    }
-    var files = data.Contents.map((f) => {
+  function _processApiResponse(data) {
+
+    setFiles(data.Contents.map((f) => {
       f.Name = f.Key.split('/');
       f.Name = f.Name[f.Name.length - 1];
       f.startDownload = startDownload;
       return f;
-    });
-    var folders = data.CommonPrefixes.map((f) => {
+    }));
+
+    setFolders(data.CommonPrefixes.map((f) => {
       f.Name = f.Prefix.split('/');
       // it ends with / then the split contains a empty string as last element
       f.Name = f.Name[f.Name.length - 2] + "/";
       f.setCurrentFolder = setCurrentFolder;
       return f;
-    });
+    }));
+
     //setTimeout(()=> //to delay response
     //console.log(files, folders)
-    setFiles(files);
-    setFolders(folders);
     setError("");
     setLoading(false);
     //, 3000);
