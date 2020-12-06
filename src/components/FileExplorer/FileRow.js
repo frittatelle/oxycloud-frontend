@@ -11,13 +11,16 @@ import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 
 function getReadableFileSizeString(fileSizeInBytes) {
   var i = -1;
-  var byteUnits = [' kiB', ' MiB', ' GiB', ' TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+  var byteUnits = [' kB', ' MB', ' GB', ' TB', ' PB', ' EB', ' ZB', ' YB'];
   do {
     fileSizeInBytes = fileSizeInBytes / 1024;
     i++;
   } while (fileSizeInBytes > 1024);
-
-  return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
+  var val = Math.max(fileSizeInBytes, 0.1).toFixed(1)
+  if (val.toString().endsWith(".0")) {
+    val = val.replace(".0", "")
+  }
+  return val + byteUnits[i];
 };
 
 function formatDate(date) {
