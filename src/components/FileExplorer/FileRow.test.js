@@ -33,3 +33,38 @@ it("check text", () => {
     expect(container.querySelector("[title='file size']").textContent).toBe("1 kB")
   });
 })
+
+it("check size formatting", () => {
+  act(() => {
+    render(
+      <FileRow
+        Key="FAKE"
+        Name="file.txt"
+        Size={1024 ** 2}
+        Owner={{ DisplayName: "Giovanni Mucciaccia" }}
+      />, container)
+    expect(container.querySelector("[title='file size']").textContent).toBe("1 MB")
+  });
+
+  act(() => {
+    render(
+      <FileRow
+        Key="FAKE"
+        Name="file.txt"
+        Size={1024 ** 3}
+        Owner={{ DisplayName: "Giovanni Mucciaccia" }}
+      />, container)
+    expect(container.querySelector("[title='file size']").textContent).toBe("1 GB")
+  });
+
+  act(() => {
+    render(
+      <FileRow
+        Key="FAKE"
+        Name="file.txt"
+        Size={1024 ** 4}
+        Owner={{ DisplayName: "Giovanni Mucciaccia" }}
+      />, container)
+    expect(container.querySelector("[title='file size']").textContent).toBe("1 TB")
+  });
+})
