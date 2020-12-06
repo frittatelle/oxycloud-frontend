@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 //components
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -28,61 +28,43 @@ const useStyles = theme => ({
        margin: 0,
        maxWidth:"100%",
     },
-    
+
     cont:{
         // width:`calc(100% - ${drawerWidth}px)`,
-         maxWidth:"100%",
+        maxWidth:"100%",
         marginLeft:0,
         marginRight:0,
         paddingLeft:0,
         paddingRight:0,
-        
+
 },
     move:{
     marginRight:300,
-        
-    
+
+
 }
 });
 
-const mapping = {'image':['png', 'gif',"txt", 'jpg'], 
+const mapping = {'image':['png', 'gif',"txt", 'jpg'],
                 'document':['docx', 'txt']
                  }
-//const Icons = {'image':['ImageIcon','InsertDriveFileIcon']} 
+//const Icons = {'image':['ImageIcon','InsertDriveFileIcon']}
 
 function getIcon(ext) {
-    
+
     for(var i=0; i<mapping.image.length; i++) {
-       
-       
+
+
   if(mapping.image[i]===(ext))
       if(ext==="png"||ext==="gif"||ext==="jpg"){
-        return( <ImageIcon />  
+        return( <ImageIcon />
                )
       }
                if(ext==="txt"|| ext==="pdf"||ext==="docx"){
             return(
             <InsertDriveFileIcon />
             )
-        }
-     console.log("value",ext)
-        
-        //console.log("image",Icons.image[i])
-   // return Icons.image[j];
-        
-         /* if(ext=="png")
-               return (
-      <ImageIcon />
-                   )
-      if(ext=="txt")
-          return(
-          <InsertDriveFileIcon  />
-          )
-       */
-      
-      //Icons.image[0];
-        
-         
+               }
 }
 }
 
@@ -125,205 +107,195 @@ function formatDate(date) {
           minuteFormatted + morning;
 }
 
- class FileTable extends React.Component{
-
-  constructor(props){
-    super(props);
-    this.api = props.api;
-    this.state = {
-      currentFolder: props.currentFolder || "",
-      loading: true,
-      files: null,
-      folders: null
-    };
-  }
-  componentDidMount(){
-    this._getFilesList();
-  }
-    
-
-  componentDidUpdate(prevProp, prevState, snapshot){
-    //super.componentDidUpdate(prevProp, prevState, snapshot);
-    if(prevState.currentFolder !== this.state.currentFolder){
-      this.setState({loading:true});
-      this._getFilesList();
-    }
-  }
-    
-
-  _getFilesList(){    
-    this.api.listObjects({
-      Prefix: this.state.currentFolder,
-      Delimiter: "/",
-      Bucket: "test-bucket"
-    },this._processApiResponse.bind(this));
-  }
-  _processApiResponse(err,data){
-    //console.log(data);
-    if(err) {
-        
-      this.setState({loading:false, error:err.toString()});
-      return;
-    }
-    var files = data.Contents.map((f)=>{
-      f.Name = f.Key.split('/');
-      f.Name = f.Name[f.Name.length-1];
-      return f;
-    });
-    var folders = data.CommonPrefixes.map((f)=>{
-      f.Name = f.Prefix.split('/');
-      // it ends with / then the split contains a empty string as last element
-      f.Name = f.Name[f.Name.length-2] + "/";
-      return f;
-    });
-    //setTimeout(()=> //to delay response
-      console.log(files,folders)
-    this.setState({
-      files: files,
-      folders: folders,
-      loading: false
-    })
-    //, 3000);
-  }
-  startDownload(row){
-    console.log("Download:", row.Key);
-    this.api.getObject({
-      Key:row.Key,
-      Bucket: "test-bucket"},
-      (err,res)=>{
-        if(err) throw err;
-        saveByteArray(row.Name,res.contentType,res.Body)        
-      })
-  }
-    
-     
-  
-  shareDialog(row){
-    console.log("Sharing:", row.Key)
-  }
-
-  renderFileRow(row){      
-    return (
-      <TableRow key={row.Key} >
-        <TableCell>
-        <div > {getIcon(row.Name.split('.').pop())} </div>
-        </TableCell>
-      
-        <TableCell component="th">
-        {row.Name}
+const FileRow = ({ Key, Name, Size, Owner, LastModified, startDownload, startSharing }) => {
+  //console.log(startDownload)
+  return (
+    <TableRow key={Key} >
+      <TableCell>
+        <div > {getIcon(Name.split('.').pop())} </div>
       </TableCell>
-         
-      
-      <TableCell  align="right">{getReadableFileSizeString(row.Size)}
-            
-            </TableCell>
-      <TableCell  align="right">{row.Owner.DisplayName}</TableCell>
-      <TableCell  align="right">{formatDate(new Date(row.LastModified))}</TableCell>
-           
-      <TableCell  align="right">
-        <IconButton onClick={()=>this.startDownload(row)}><GetAppIcon fontSize='small'/></IconButton>
-        <IconButton onClick={()=>this.shareDialog(row)}><ShareIcon fontSize='small' /></IconButton>
-            
+
+      <TableCell component="th">
+        {Name}
+      </TableCell>
+
+
+      <TableCell align="right">{getReadableFileSizeString(Size)}
+
+      </TableCell>
+      <TableCell align="right">{Owner.DisplayName}</TableCell>
+      <TableCell align="right">{formatDate(new Date(LastModified))}</TableCell>
+
+      <TableCell align="right">
+        <IconButton onClick={() => startDownload({ Key, Name })}><GetAppIcon fontSize='small' /></IconButton>
+        <IconButton onClick={() => startSharing({ Key, Name })}><ShareIcon fontSize='small' /></IconButton>
+
       </TableCell>
     </TableRow>
-    )
-  }
+  )
+}
 
-  renderFolderRow(row){
-    return (
-      <TableRow key={row.Prefix}>
+const FolderRow = ({ Prefix, Name, startSharing, setCurrentFolder }) => {
+  return (
+    <TableRow key={Prefix}>
       <TableCell component="th" scope="row">
-        <Link color="inherit" onClick={()=>this.setState({currentFolder:row.Prefix})}>{row.Name}</Link>
+        <Link color="inherit" onClick={() => setCurrentFolder(Prefix)}>{Name}</Link>
       </TableCell>
-   
+
       <TableCell align="right">-</TableCell>
       <TableCell align="right">-</TableCell>
       <TableCell align="right">-</TableCell>
       <TableCell align="right">
-        <IconButton onClick={()=>this.shareDialog(row)}><ShareIcon fontSize='small' /></IconButton>
+        <IconButton onClick={() => startSharing(null)}><ShareIcon fontSize='small' /></IconButton>
       </TableCell>
     </TableRow>
+  )
+}
+
+const FoldersBar = ({ currentFolder, setCurrentFolder }) => {
+  const f = currentFolder.split('/');
+  var folders = [];
+
+  folders.push(<Link color='inherit' key="" full_path=""
+    onClick={(arg) => {
+      setCurrentFolder(arg.target.attributes['full_path'].value)
+    }} >
+    My folder
+  </Link>);
+  for (var i = 0; i < f.length - 1; i++) {
+    var tmp = f.slice(0, i + 1).join("/") + "/";
+    folders.push(
+      <Link color='inherit' key={tmp} full_path={tmp}
+        onClick={(arg) => setCurrentFolder(arg.target.attributes['full_path'].value)}>
+        {f[i]}
+      </Link>
     )
   }
 
-  renderTable() {
-    if(this.state.loading){
-      return (<Grid container justify="center"><CircularProgress align='center' /></Grid>)
-    }
-    if(this.state.error){
-      return (
-      <Grid containerjustify="center">
-        <Typography color="error" align="center">{this.state.error}</Typography>
-      </Grid>
-      )
-    }
-    return (
-      <TableContainer component={Paper}>
-        <Table aria-label="simple table">
-          <TableHead >
-            <TableRow>
-              
-              <TableCell></TableCell>
-               <TableCell  >Name</TableCell>
-              <TableCell align="right">Size</TableCell>
-              <TableCell align="right">Owner</TableCell>
-              <TableCell align="right">Last modified</TableCell>
-              <TableCell align="right">&nbsp;</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {this.state.folders.map((row) => (
-                this.renderFolderRow(row)
-            ))}
-            {this.state.files.map((row) => (
-                this.renderFileRow(row)
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  }
-  renderToolbarBody(){
-    const f = this.state.currentFolder.split('/');
-    var folders = [];
-    
-    folders.push(<Link color='inherit' full_path="" 
-    onClick={(arg)=>this.setState({currentFolder:arg.target.attributes['full_path'].value})} >
-      My folder
-    </Link>);
-    for (var i = 0; i < f.length-1; i++){
-      var tmp = f.slice(0,i+1).join("/") +"/";
-      folders.push(
-        <Link color='inherit' full_path={tmp}
-          onClick={(arg)=>this.setState({currentFolder:arg.target.attributes['full_path'].value})}>
-         {f[i]}
-        </Link>
-      )
-    }
-    
-    return (
-      <Breadcrumbs aria-label="breadcrumb">
-        {folders.map((v,i)=>{
+  return (
+    <Breadcrumbs aria-label="breadcrumb">
+      {folders.map((v, i) => {
         return v
-        })}&nbsp;
-      </Breadcrumbs>
-    )
+      })}&nbsp;
+    </Breadcrumbs>
+  )
+}
+const FileTable = ({ loading, error, folders, files }) => {
+  return (
+    <TableContainer component={Paper}>
+      <Table aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell></TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell align="right">Size</TableCell>
+            <TableCell align="right">Owner</TableCell>
+            <TableCell align="right">Last modified</TableCell>
+            <TableCell align="right">&nbsp;</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {folders.map((row) => <FolderRow {...row} />)}
+          {files.map((row) => <FileRow {...row} />)}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
+const FileExplorer = ({ api, classes, folder }) => {
+  const [loading, setLoading] = useState(true);
+  const [folders, setFolders] = useState([]);
+  const [files, setFiles] = useState([]);
+  const [error, setError] = useState("");
+  const [currentFolder, _setCurrentFolder] = useState(folder || "");
+
+  const setCurrentFolder = (f) => {
+    //this is necessesary to avoid the following warning using useEffect(_getFilesList, [currentFolder])
+    //
+    //React Hook useEffect has missing dependencies: '_processApiResponse' and 'api'.
+    //Either include them or remove the dependency array  react-hooks/exhaustive-deps
+    //
+    _setCurrentFolder(f);
+    _getFilesList();
   }
-  
-  render(){
-      const { classes } = this.props;
-    //return (<Container>{this.renderToolbarBody()}{this.renderTable()} </Container>)
-    return (
+
+
+  function startDownload({ Key, Name }) {
+    console.log("Download:", Key);
+    api.getObject({
+      Key: Key,
+      Bucket: "test-bucket"
+    },
+      (err, res) => {
+        if (err) throw err;
+        saveByteArray(Name, res.contentType, res.Body)
+      })
+  }
+
+  function shareDialog(row) {
+    console.log("Sharing:", row.Key);
+  }
+
+  function _getFilesList() {
+    api.listObjects({
+      Prefix: currentFolder,
+      Delimiter: "/",
+      Bucket: "test-bucket"
+    }, _processApiResponse);
+  }
+
+  function _processApiResponse(err, data) {
+    //console.log(data);
+    if (err) {
+      setError(err.toString());
+      setLoading(false);
+      return;
+    }
+    var files = data.Contents.map((f) => {
+      f.Name = f.Key.split('/');
+      f.Name = f.Name[f.Name.length - 1];
+      f.startDownload = startDownload;
+      return f;
+    });
+    var folders = data.CommonPrefixes.map((f) => {
+      f.Name = f.Prefix.split('/');
+      // it ends with / then the split contains a empty string as last element
+      f.Name = f.Name[f.Name.length - 2] + "/";
+      f.setCurrentFolder = setCurrentFolder;
+      return f;
+    });
+    //setTimeout(()=> //to delay response
+    //console.log(files, folders)
+    setFiles(files);
+    setFolders(folders);
+    setError("");
+    setLoading(false);
+    //, 3000);
+  }
+
+  return (
       <Container className={classes.cont} >
         <AppBar position='sticky' color='inherit' className={classes.allarga}>
           <Toolbar>
-            {this.renderToolbarBody()}
+          <FoldersBar currentFolder={currentFolder} setCurrentFolder={setCurrentFolder} />
           </Toolbar>
         </AppBar>
-        {this.renderTable()}
+      <Grid container justify="center">
+        {loading === true && (<CircularProgress align='center' />)}
+        {error !== "" &&
+          (<Typography color="error" align="center">{error}</Typography>)}
+        {(loading === false && error === "") &&
+          <FileTable
+            files={files}
+            folders={folders}
+            setCurrentFolder={setCurrentFolder}
+            onDownload={startDownload}
+            onSharing={shareDialog}
+          />
+        }
+      </Grid>
       </Container>
-    );
-  }
-
+  );
 }
-export default withStyles(useStyles)(FileTable)
+export default withStyles(useStyles)(FileExplorer)
