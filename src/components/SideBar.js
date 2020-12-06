@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SideBar = ({sidebarOpen}) => {
     const classes = useStyles();
-
+   
     return(
         <Drawer
         variant="permanent"
