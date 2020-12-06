@@ -12,7 +12,6 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 
-const logoSpace = 65;
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
