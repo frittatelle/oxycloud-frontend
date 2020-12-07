@@ -8,6 +8,9 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
 import Divider from '@material-ui/core/Divider';
+ //Added by Vina 7-12-2020
+import {getUser, removeUserSession} from './Queries';
+//end of added comp
 
 //Icons
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
@@ -75,10 +78,15 @@ const useStyles = makeStyles((theme) => ({
     },    
 }));
 
-const Header = ({handleSidebar, sidebarOpen}) => {
+const Header = ({handleSidebar, sidebarOpen,props}) => {
 
     const classes = useStyles();
-
+ // handle click event of logout button
+ const handleLogout = () => {   
+    removeUserSession(); 
+    props.history.push('/login');
+  }
+ 
     return(
         <div className={classes.root}>
             <AppBar position="fixed" color="white" className={classes.appBar}>
@@ -86,6 +94,10 @@ const Header = ({handleSidebar, sidebarOpen}) => {
                     <Typography variant="h6" className={classes.logo}>
                        <Typography color="primary" variant="inherit" component="span">Oxy</Typography>Cloud    
                     </Typography>
+        //Added by Vina 7-12-2020
+                    Welcome User!<br /><br />
+        <input type="button" onClick={handleLogout} value="Logout" />
+        //end of added component
                     <Divider orientation="vertical" flexItem />
                     <IconButton onClick={handleSidebar}>
                         {sidebarOpen ? <KeyboardArrowLeftIcon /> : <KeyboardArrowRightIcon /> }
