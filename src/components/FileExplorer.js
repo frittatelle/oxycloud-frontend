@@ -12,18 +12,12 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import FileTable from './FileExplorer/FileTable'
 import FoldersBar from './FileExplorer/FoldersBar'
 
-const useStyles = theme => ({
-   allarga:{
-       margin: 0,
-       maxWidth:"100%",
-  },
-    cont:{
-        // width:`calc(100% - ${drawerWidth}px)`,
-        maxWidth:"100%",
-        marginLeft:0,
-        marginRight:0,
-        paddingLeft:0,
-      paddingRight: 0,
+const useStyles = () => ({
+  cont: {
+    marginLeft: 0,
+    marginRight: 0,
+    paddingLeft: 0,
+    paddingRight: 0
   }
 });
 
@@ -105,8 +99,8 @@ const FileExplorer = ({ api, classes, folder }) => {
   }
 
   return (
-      <Container className={classes.cont} >
-        <AppBar position='sticky' color='inherit' className={classes.allarga}>
+    <Container className={classes.cont}>
+      <AppBar position='sticky' color='inherit'>
           <Toolbar>
           <FoldersBar currentFolder={currentFolder} setCurrentFolder={setCurrentFolder} />
           </Toolbar>
@@ -128,4 +122,4 @@ const FileExplorer = ({ api, classes, folder }) => {
       </Container>
   );
 }
-export default withStyles(useStyles)(FileExplorer)
+export default withStyles(useStyles)(FileExplorer);
