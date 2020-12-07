@@ -1,64 +1,104 @@
 import * as React from 'react';
-import clsx from 'clsx';
+import {useQuery,useMutation,queryCache} from 'react-query';
+
 import FacebookIcon from '@material-ui/icons/Facebook';
 import TwitterIcon from '@material-ui/icons/Twitter';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-// import Image from './Background.PNG';
-import {  Box,FormControl,InputLabel,Input,Grid,TextField, Container,ButtonGroup ,Button,InputAdornment } from '@material-ui/core';
+
+import {  Box,InputLabel,Input,Container,ButtonGroup ,Button,InputAdornment } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
+//visibility of password 
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
+//alert
+import swal from 'sweetalert2';
+
+//api
+import axios from 'axios';
+import {setUserSession} from './Queries';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexWrap: 'wrap',
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     '& .MuiInputBase-root': {
       margin: theme.spacing(1,0,1,0),
-      width: '25ch',
+      width: '25ch'
     },
     '& .MuiButtonGroup-root': {
       margin: theme.spacing(3,0,3,0),
     },
     '& .MuiBox-root': {
       backgroundColor: 'white',
-      margin: theme.spacing(2,2,2,2)
+      margin: theme.spacing(2,4,2,4),
+      verticalAlign :'middle',
+      border: 'solid cornflowerblue',
+      borderRadius :'5px',
+      padding:theme.spacing(3,3,1,3),
     },
+    '& .MuiInputLabel-formControl':{
+      top: '10px',
+      left: '30px',
+      position: 'relative'
+      },
+      '& .MuiContainer-root':{
+        width :'max-content',
+      }
   },
-    margin: {
-        margin: theme.spacing(2,2,2,2),
-        alignItems: 'center', 
+    form: {
         justifyContent: 'center',
-        padding:theme.spacing(0,0,0,0),
-        width:'100%',
-        maxWidth:'1200'
+        display:'grid',
+        width:'100%'
       },
       input:{
-        marginLeft:'20',
-        '& .MuiInputBase-input':{
-        alignItems:'center',
-        justifyContent: 'center'}
-        },
+        justifyContent: 'center',
+        display:'grid',
+        margin :'auto',
+        padding: theme.spacing(1,0,1,0),
+        }
 }));
 
-function HomeScreen ()  {
+function Login (props)  {
     const classes = useStyles();
-
     const [values, setValues] = React.useState({
-      amount: '',
+      username: '',
       password: '',
-      weight: '',
-      weightRange: '',
       showPassword: false,
     });
   
-    const handleChange = (prop) => (event) => {
-      setValues({ ...values, [prop]: event.target.value });
-    };
-  
+  const username = useFormInput('');
+  const password = useFormInput('');
+  const [error, setError] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+
+    const handleSubmit = () => {
+      console.log(username.value);
+      console.log( password.value);
+      setError(null);
+      setLoading(true);
+      axios.post('http://localhost:3001/users/signin', { username: username.value, password: password.value }).then(response => {
+        setLoading(false);
+        setUserSession(response.data.token, response.data.user);
+        props.history.push('/FileExplorer');
+      }).catch(error => {
+        setLoading(false);
+        if (error.response!=null) setError(error.response.data.message);
+        else swal.fire({
+               title: "Login Error",
+               text: 'Something went wrong. Please try again later.',
+               type: "error",
+               confirmButtonColor: "#283593"
+             });
+      });
+    }
+   
     const handleClickShowPassword = () => {
       setValues({ ...values, showPassword: !values.showPassword });
     };
@@ -66,28 +106,30 @@ function HomeScreen ()  {
     const handleMouseDownPassword = (event) => {
       event.preventDefault();
     };
+   
     return(
     <div className={classes.root}>
     <Container>
       <Box >
-      
-      <FormControl className={classes.margin}>
-      <div className={classes.input}>
-        <Grid container spacing={1} alignItems="flex-end">
-          <Grid item>
-            <AccountCircle />
-          </Grid>
-          <Grid item>
-            <TextField id="input-with-icon-grid" label="Username" />
-          </Grid>
-        </Grid>
+      <form className={classes.form} id='LoginForm'>
+       <div className={classes.input}>
+       <InputLabel htmlFor="username">Username</InputLabel>
+        <Input
+          id="username"
+          {...username}
+          startAdornment={
+            <InputAdornment position="start">
+              <AccountCircle />
+            </InputAdornment>
+          }
+        />
         </div>
         <div className={classes.input}>
+        <InputLabel htmlFor="password">Password</InputLabel>
         <Input
-            id="standard-adornment-password"
+            id="password"
             type={values.showPassword ? 'text' : 'password'}
-            value={values.password}
-            onChange={handleChange('password')} 
+            {...password}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -101,30 +143,42 @@ function HomeScreen ()  {
             }
           />
       </div>
-      <ButtonGroup
+
+<div className={classes.input}>
+<ButtonGroup
         orientation="vertical"
         color="primary"
-        aria-label="vertical contained primary button group"
+        aria-label=""
         variant="contained"
       >
         <Button>Forgot Password</Button>
-        <Button>Login</Button>
+        <Button onClick={handleSubmit} disabled={loading}  value={loading ? 'Loading...' : 'Login'}>Login</Button>
       </ButtonGroup>
-     <IconButton >
+      </div>
+      </form>
+      <div className={classes.input}>
+      <InputLabel>or sign up using</InputLabel>
+      <IconButton  id="sFacebook" onClick={handleClickShowPassword}>  
                         <FacebookIcon />
                     </IconButton>     
-                    <IconButton >
+                    <IconButton id="sTwitter" onClick={handleClickShowPassword}>
                         <TwitterIcon />
                     </IconButton> 
-         
-</FormControl>
-
+                    </div>
         </Box>
         </Container>
-       
         </div>
-    
     );
 }
-
-  export default HomeScreen;
+const useFormInput = initialValue => {
+  const [value, setValue] = React.useState(initialValue);
+ 
+  const handleChange = e => {
+    setValue(e.target.value);
+  }
+  return {
+    value,
+    onChange: handleChange
+  }
+}
+export default Login;
