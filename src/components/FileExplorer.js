@@ -14,6 +14,7 @@ import FoldersBar from './FileExplorer/FoldersBar'
 
 const useStyles = () => ({
   cont: {
+    maxWidth: "100%",
     marginLeft: 0,
     marginRight: 0,
     paddingLeft: 0,
