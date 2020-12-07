@@ -1,79 +1,35 @@
-import { makeStyles } from '@material-ui/core/styles';
-import { ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import theme from './styles/theme';
-
-//React
-import { useState } from 'react'; 
+/React
+import React, { useState, useEffect }from 'react'; 
+import axios from 'axios';
 
 //Components
-import Header from './components/Header';
-import SideBar from './components/SideBar';
-import FileExplorer from './components/FileExplorer'
+import Routers from './components/Router';
 
-//AWS API
-import AWS from 'aws-sdk'
+//API
+import {getToken,setUserSession,removeUserSession} from './components/Queries';
 
-
-var s3_config = {
-  s3ForcePathStyle: true,
-  accessKeyId: 'S3RVER',
-  secretAccessKey: 'S3RVER',
-  endpoint: new AWS.Endpoint('http://localhost:4568')
-}
-
-
-// Temporatry style, put this style in the actual components!
-const useStyles = makeStyles(theme => ({
-  root:{
-    display: 'flex',
-      
-  },
-  content: {
-    paddingTop:theme.spacing(8),
-    flexGrow: 380,
-    height: "100vh",
-    overflow: "auto"
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4)
-  },
-  paper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column"
-  },
-}));
-
-
-function App() {
-  const api = new AWS.S3(s3_config);
-  //Temporary state management to open/close the drawer 
-  // CHANGE IT TO A SMARTER SOLUTION!
-  const [sidebarOpen,setSidebarOpen] = useState(false);
-  const handleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-    console.log(sidebarOpen);
+function App(){
+  const [authLoading, setAuthLoading] = useState(true);
+  //function from component/queries : {getToken,setUserSession,removeUserSession}
+  useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      return;
+    }
+    axios.get(`http://localhost:4000/verifyToken?token=${token}`).then(response => {
+      setUserSession(response.data.token, response.data.user);
+      setAuthLoading(false);
+    }).catch(error => {
+      removeUserSession();
+      setAuthLoading(false);
+    });
+  }, []);
+ 
+  if (authLoading && getToken()) {
+    return <div className="content">Checking Authentication...</div>
   }
-
-  const classes = useStyles();
-
-  return (
-    <ThemeProvider theme={theme}>
-      <div className={classes.root}>
-        <CssBaseline />
-        <Header handleSidebar={handleSidebar} sidebarOpen={sidebarOpen} />
-        <SideBar sidebarOpen={sidebarOpen}/>
-
-        {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}
-        <main className={classes.content}>          
-          <FileExplorer maxWidth="lg" currentFolder="" api={api}/>
-        </main>
-      </div>
-    </ThemeProvider>
-  );
-}
-
+      return (
+       <Routers />
+      );
+  }
 export default App;
