@@ -20,18 +20,21 @@ const theme = createMuiTheme({
         borderRadius: 16,
     },
     overrides: {
-        MuiIconButton:{
-            root: {
+        MuiAvatar:{
+            colorDefault:{
                 backgroundColor: '#257cff',  
                 color: '#fff',
                 '&:hover': {
                     backgroundColor: '#73aaff',
                 },
-                padding: 5,
-                marginLeft: 32,
-                marginRight:32,
-            }
+            },
         },
+        MuiListItem:{
+            root:{
+                paddingTop: 15,
+                paddingBottom: 15,
+            }   
+        }
     },
 });
 

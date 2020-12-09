@@ -5,7 +5,7 @@ import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
+import Avatar from '@material-ui/core/Avatar';
 import InputBase from '@material-ui/core/InputBase';
 import Divider from '@material-ui/core/Divider';
 
@@ -17,6 +17,7 @@ import ViewComfyIcon from '@material-ui/icons/ViewComfy';
 import AddIcon from '@material-ui/icons/Add';
 import SettingsIcon from '@material-ui/icons/Settings';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import IconButton from '@material-ui/core/IconButton'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,6 +36,10 @@ const useStyles = makeStyles((theme) => ({
     span:{
         color: theme.palette.primary,
     },
+    avatar:{
+        marginLeft: theme.spacing(3),
+        marginRight: theme.spacing(3),
+    },
     search: {
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
@@ -43,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
           backgroundColor: fade(theme.palette.primary.main, 0.25),
         },
         marginRight: theme.spacing(3),
+        marginLeft: 0,
         width: '100%',
         [theme.breakpoints.up('lg')]: {
           width: 'auto',
@@ -81,15 +87,17 @@ const Header = ({handleSidebar, sidebarOpen}) => {
 
     return(
         <div className={classes.root}>
-            <AppBar position="fixed" color="white" className={classes.appBar}>
+            <AppBar position="fixed" color="inherit" className={classes.appBar}>
                 <Toolbar>
                     <Typography variant="h6" className={classes.logo}>
                        <Typography color="primary" variant="inherit" component="span">Oxy</Typography>Cloud    
                     </Typography>
                     <Divider orientation="vertical" flexItem />
-                    <IconButton onClick={handleSidebar}>
-                        {sidebarOpen ? <KeyboardArrowLeftIcon /> : <KeyboardArrowRightIcon /> }
-                    </IconButton>       
+                    <Avatar className={classes.avatar}>
+                        <IconButton color="inherit" onClick={handleSidebar}>
+                            {sidebarOpen ? <KeyboardArrowLeftIcon /> : <KeyboardArrowRightIcon /> }
+                        </IconButton> 
+                    </Avatar>       
                     <div className={classes.search}>
                         <div className={classes.searchIcon}>
                             <SearchIcon />
@@ -103,18 +111,26 @@ const Header = ({handleSidebar, sidebarOpen}) => {
                             inputProps={{ 'aria-label': 'search' }}
                         />
                     </div>  
-                    <IconButton >
-                        <ViewComfyIcon />
-                    </IconButton>     
-                    <IconButton >
-                        <AddIcon />
-                    </IconButton> 
-                    <IconButton >
-                        <NotificationsIcon />
-                    </IconButton> 
-                    <IconButton >
-                        <SettingsIcon />
-                    </IconButton>            
+                    <Avatar className={classes.avatar}>
+                        <IconButton color="inherit" >
+                            <ViewComfyIcon />
+                        </IconButton>
+                    </Avatar>     
+                    <Avatar className={classes.avatar}>
+                        <IconButton color="inherit" >
+                            <AddIcon />
+                        </IconButton>    
+                    </Avatar> 
+                    <Avatar className={classes.avatar}>
+                        <IconButton color="inherit" >
+                            <NotificationsIcon />
+                        </IconButton>  
+                    </Avatar> 
+                    <Avatar className={classes.avatar}>
+                        <IconButton color="inherit" >
+                            <SettingsIcon />
+                        </IconButton>  
+                    </Avatar>            
                 </Toolbar>
             </AppBar>    
         </div>

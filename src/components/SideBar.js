@@ -18,6 +18,11 @@ import Toolbar from '@material-ui/core/Toolbar';
 
 //Icons
 import FolderIcon from '@material-ui/icons/Folder';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
+import StarBorderIcon from '@material-ui/icons/StarBorder';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import ShareIcon from '@material-ui/icons/Share';
+import StorageIcon from '@material-ui/icons/Storage';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -39,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 			duration: theme.transitions.duration.standard,
 		}),
 		overflowX: 'hidden',
-		width: 64,
+		width: 72,
 	},
 }));
 
@@ -86,30 +91,70 @@ const SideBar = ({sidebarOpen, api}) => {
 						[classes.drawerClose]: !sidebarOpen,
 					}),}}
 				>
-					{/* Inserting the empty Toolbar for Header space*/}
 					<Toolbar />
 					<List>
 						{/*TODO: map through S3 folders*/}
 						{data.map((element) => (
 							<ListItem button key={element.Key}>
-								<ListItemIcon><FolderIcon /></ListItemIcon>
+								<ListItemAvatar >
+									<Avatar >
+										<FolderIcon/>
+									</Avatar>
+								</ListItemAvatar>
 								<ListItemText primary={element.Key} />
 							</ListItem>
 						))}
 					</List>
 					<Divider />
-					<List>
-					{/*TODO: map through S3 folders*/}
-					{['All mail', 'Trash', 'Spam'].map((text) => (
-						<ListItem button key={text}>
+					{/* Static Lists (favorites, deleted ...) */}
+					<List>	
+						<ListItem button>
 							<ListItemAvatar>
 								<Avatar>
-									<FolderIcon />
+									<AccessTimeIcon />
 								</Avatar>
 							</ListItemAvatar>
+							<ListItemText primary="Recent" />
 						</ListItem>
-					))}
+						<ListItem button>
+							<ListItemAvatar>
+								<Avatar>
+									<StarBorderIcon />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText primary="Favorites" />
+						</ListItem>
+						<ListItem button>
+							<ListItemAvatar>
+								<Avatar>
+									<ShareIcon />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText primary="Shared" />
+						</ListItem>			
 					</List>
+					<Divider />
+					<List>
+						<ListItem button>
+							<ListItemAvatar>
+								<Avatar>
+									<DeleteOutlineIcon />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText primary="Deleted" />
+						</ListItem>		
+					</List>
+					<Divider />
+					<List>
+						<ListItem button>
+							<ListItemAvatar>
+								<Avatar>
+									<StorageIcon />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText primary="Storage" />
+						</ListItem>		
+					</List>										
 				</Drawer>
 			)}
 		</>
