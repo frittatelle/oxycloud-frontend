@@ -6,6 +6,7 @@ import theme from './styles/theme';
 
 //React
 import { useState } from 'react'; 
+import { ReactQueryDevtools } from 'react-query-devtools';
 
 //Components
 import Header from './components/Header';
@@ -62,14 +63,15 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      <ReactQueryDevtools initialIsOpen={false} />
       <div className={classes.root}>
         <CssBaseline />
         <Header handleSidebar={handleSidebar} sidebarOpen={sidebarOpen} />
-        <SideBar sidebarOpen={sidebarOpen}/>
+        <SideBar sidebarOpen={sidebarOpen} currentFolder="" api={api}/>
 
         {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}
         <main className={classes.content}>          
-          <FileExplorer maxWidth="lg" currentFolder="" api={api}/>
+          {/* <FileExplorer maxWidth="lg" currentFolder="" api={api}/> */}
         </main>
       </div>
     </ThemeProvider>
