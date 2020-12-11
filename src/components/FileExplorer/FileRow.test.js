@@ -19,7 +19,7 @@ afterEach(() => {
   container = null;
 });
 
-it("check text", () => {
+it("check text", async () => {
   act(() => {
     render(
       <FileRow
@@ -32,39 +32,45 @@ it("check text", () => {
     expect(container.querySelector("[title='file owner']").textContent).toBe("Giovanni Mucciaccia")
     expect(container.querySelector("[title='file size']").textContent).toBe("1 kB")
   });
-})
+});
 
-it("check size formatting", () => {
-  act(() => {
-    render(
-      <FileRow
-        Key="FAKE"
-        Name="file.txt"
-        Size={1024 ** 2}
-        Owner={{ DisplayName: "Giovanni Mucciaccia" }}
-      />, container)
-    expect(container.querySelector("[title='file size']").textContent).toBe("1 MB")
+describe("size human readable", () => {
+  it("1MB", async () => {
+    act(() => {
+      render(
+        <FileRow
+          Key="FAKE"
+          Name="file.txt"
+          Size={1024 ** 2}
+          Owner={{ DisplayName: "Giovanni Mucciaccia" }}
+        />, container)
+      expect(container.querySelector("[title='file size']").textContent).toBe("1 MB")
+    });
   });
 
-  act(() => {
-    render(
-      <FileRow
-        Key="FAKE"
-        Name="file.txt"
-        Size={1024 ** 3}
-        Owner={{ DisplayName: "Giovanni Mucciaccia" }}
-      />, container)
-    expect(container.querySelector("[title='file size']").textContent).toBe("1 GB")
+  it("1G", async () => {
+    act(() => {
+      render(
+        <FileRow
+          Key="FAKE"
+          Name="file.txt"
+          Size={1024 ** 3}
+          Owner={{ DisplayName: "Giovanni Mucciaccia" }}
+        />, container)
+      expect(container.querySelector("[title='file size']").textContent).toBe("1 GB")
+    });
   });
 
-  act(() => {
-    render(
-      <FileRow
-        Key="FAKE"
-        Name="file.txt"
-        Size={1024 ** 4}
-        Owner={{ DisplayName: "Giovanni Mucciaccia" }}
-      />, container)
-    expect(container.querySelector("[title='file size']").textContent).toBe("1 TB")
-  });
-})
+  it("1T", async () => {
+    act(() => {
+      render(
+        <FileRow
+          Key="FAKE"
+          Name="file.txt"
+          Size={1024 ** 4}
+          Owner={{ DisplayName: "Giovanni Mucciaccia" }}
+        />, container)
+      expect(container.querySelector("[title='file size']").textContent).toBe("1 TB")
+    });
+  })
+});
