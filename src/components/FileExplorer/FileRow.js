@@ -15,7 +15,7 @@ function getReadableFileSizeString(fileSizeInBytes) {
   do {
     fileSizeInBytes = fileSizeInBytes / 1024;
     i++;
-  } while (fileSizeInBytes > 1024);
+  } while (fileSizeInBytes >= 1024);
   var val = Math.max(fileSizeInBytes, 0.1).toFixed(1)
   if (val.toString().endsWith(".0")) {
     val = val.replace(".0", "")
