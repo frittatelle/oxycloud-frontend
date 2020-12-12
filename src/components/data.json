@@ -1,0 +1,77 @@
+
+ [
+
+{
+  "id":0,
+  "ext":"png",
+  "icon":"faFileImage"
+    
+
+},
+     {
+  "id":1,
+  "ext":"jpg",
+  "icon":"faFileImage"
+    
+
+},
+     {
+  "id":2,
+  "ext":"pdf",
+  "icon":"faFilePdf"
+    
+
+},
+      {
+  "id":3,
+  "ext":"txt",
+  "icon":"faFileAlt"
+      },
+     
+      {
+  "id":4,
+  "ext":"doc",
+  "icon":"faFileAlt"
+      },
+     
+      {
+  "id":5,
+  "ext":"docx",
+  "icon":"faFileAlt"
+      },
+     
+      {
+  "id":6,
+  "ext":"rtf",
+  "icon":"faFileAlt"
+      },
+     
+      {
+  "id":7,
+  "ext":"odt",
+  "icon":"faFileAlt"
+      },
+     
+      {
+  "id":8,
+  "ext":"xls",
+  "icon":"faFileExcel"
+      },
+       {
+  "id":8,
+  "ext":"xlsx",
+  "icon":"faFileExcel"
+      },
+       {
+  "id":8,
+  "ext":"ppt",
+  "icon":"faFilePowerpoint"
+      },
+     
+       {
+  "id":8,
+  "ext":"pptx",
+  "icon":"faFilePowerpoint"
+      }
+ 
+]

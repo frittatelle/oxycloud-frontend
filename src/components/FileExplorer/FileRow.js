@@ -2,12 +2,38 @@ import React from 'react';
 
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import data from './data.json';
 
+import { faFileImage} from "@fortawesome/free-solid-svg-icons";
+import { faFile} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import GetAppIcon from '@material-ui/icons/GetApp';
 import ShareIcon from '@material-ui/icons/Share';
 import IconButton from '@material-ui/core/IconButton';
 import ImageIcon from '@material-ui/icons/Image';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
+
+const icons = require("@fortawesome/free-solid-svg-icons");
+
+ function getExt(ext1){
+          console.log(data.length)
+            for(var i=0;i<data.length;i++){
+                 console.log(data[i].ext)
+                if(ext1==data[i].ext){
+                   
+                    return (
+                        <FontAwesomeIcon className="my-icon" icon={icons[data[i].icon]} />
+                        )
+                }
+                    
+                }
+               if(data.ext==null){
+                   return (
+                       <FontAwesomeIcon className="my-icon" icon={faFile} />
+                       )
+               }
+            }
+            
 
 function getReadableFileSizeString(fileSizeInBytes) {
   var i = -1;
@@ -63,7 +89,7 @@ const FileRow = ({
   return (
     <TableRow key={Key} >
       <TableCell>
-        {getIcon(Name.split('.').pop())}
+        {getExt(row.Name.split('.').pop())}
       </TableCell>
       <TableCell title="file name" component="th">
         {Name}
