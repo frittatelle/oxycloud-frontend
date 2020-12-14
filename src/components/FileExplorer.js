@@ -1,6 +1,6 @@
-import React from 'react';
+import {useState,Component,React} from 'react'; 
 //components
-import { makeStyles } from '@material-ui/core/styles';
+
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -19,14 +19,55 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 import Delete from '@material-ui/icons/Delete';
 import ImageIcon from '@material-ui/icons/Image';
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
+import Header from './Header';
+import SideBar from './SideBar';
+import AWS from 'aws-sdk'
 //icons
 import GetAppIcon from '@material-ui/icons/GetApp';
 import ShareIcon from '@material-ui/icons/Share';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress'
 
+import { makeStyles } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import theme from '../styles/theme';
+
+
+var s3_config = {
+  s3ForcePathStyle: true,
+  accessKeyId: 'S3RVER',
+  secretAccessKey: 'S3RVER',
+  endpoint: new AWS.Endpoint('http://localhost:4568')
+}
+
+
+
 const drawerWidth = 240;
+// Temporatry style, put this style in the actual components!
+
+
 const useStyles = theme => ({
+  root:{
+    display: 'flex',
+      
+  },
+  content: {
+    paddingTop:theme.spacing(8),
+    flexGrow: 380,
+    height: "100vh",
+    overflow: "auto"
+  },
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4)
+  },
+  paper: {
+    padding: theme.spacing(2),
+    display: "flex",
+    overflow: "auto",
+    flexDirection: "column"
+  },
    allarga:{
        margin: 0,
        maxWidth:"100%",
@@ -58,7 +99,7 @@ function getIcon(ext) {
     for(var i=0; i<mapping.image.length; i++) {
        
        
-  if(mapping.image[i]==(ext))
+  if(mapping.image[i]===(ext))
       if(ext=="png"||ext=="gif"||ext=="jpg"){
         return( <ImageIcon />  
                )
@@ -126,19 +167,29 @@ function formatDate(date) {
 
   return  day + "/" + month + "/" + year + " " + hourFormatted + ":" +
           minuteFormatted + morning;
+};
+
+const {sidebarOpen,setSidebarOpen}=()=>{
+useState='false';
+}
+const handleSidebar = (setSidebarOpen) => {
+  setSidebarOpen(!sidebarOpen);
+  console.log(sidebarOpen);
 }
 
- class FileTable extends React.Component{
-
+ class FileTable extends Component{
   constructor(props){
     super(props);
     this.api = props.api;
     this.state = {
       currentFolder: props.currentFolder || "",
+      sidebarOpen,setSidebarOpen : 'false',
       loading: true,
       files: null,
       folders: null
     };
+   
+    
   }
   componentDidMount(){
     this._getFilesList();
@@ -152,14 +203,13 @@ function formatDate(date) {
       this._getFilesList();
     }
   }
-    
 
   _getFilesList(){    
-    this.api.listObjects({
-      Prefix: this.state.currentFolder,
-      Delimiter: "/",
-      Bucket: "test-bucket"
-    },this._processApiResponse.bind(this));
+    // this.api.listObjects({
+    //   Prefix: this.state.currentFolder,
+    //   Delimiter: "/",
+    //   Bucket: "test-bucket"
+    // },this._processApiResponse.bind(this));
   }
   _processApiResponse(err,data){
     //console.log(data);
@@ -199,7 +249,6 @@ function formatDate(date) {
       })
   }
     
-     
   
     shareDialog(row){
     console.log("Sharing:", row.Key)
@@ -233,7 +282,22 @@ function formatDate(date) {
     </TableRow>
     )
   }
-
+  Sidebar() {
+    
+    const api = new AWS.S3(s3_config);
+    //Temporary state management to open/close the drawer 
+    // CHANGE IT TO A SMARTER SOLUTION!
+   
+    return (
+      <ThemeProvider theme={theme}>
+        <div className={useStyles.root}>
+          <CssBaseline />
+          <Header handleSidebar= {handleSidebar} sidebarOpen={sidebarOpen} />
+          <SideBar sidebarOpen={sidebarOpen}/>
+        </div>
+      </ThemeProvider>
+    );
+  }
   renderFolderRow(row){
     return (
       <TableRow key={row.Prefix}>
@@ -321,6 +385,7 @@ function formatDate(date) {
     return (
       <Container className={classes.cont} >
         <AppBar position='sticky' color='inherit' className={classes.allarga}>
+          {this.Sidebar()}
           <Toolbar>
             {this.renderToolbarBody()}
           </Toolbar>
