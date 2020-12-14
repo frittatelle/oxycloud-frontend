@@ -1,18 +1,19 @@
 
 //React
-import React, { useState, useEffect }from 'react'; 
-import axios from 'axios';
+import * as React from 'react';
 
 //Components
 import Routers from './components/Router';
+import MasterHeader from './components/Shared/MasterHeader';
+import MasterFooter from './components/Shared/MasterFooter';
 
-//API
 import {getToken,setUserSession,removeUserSession} from './components/Queries';
+import axios from 'axios';
 
-function App(){
-  const [authLoading, setAuthLoading] = useState(true);
+function App (){
+  const [authLoading, setAuthLoading] = React.useState(true);
   //function from component/queries : {getToken,setUserSession,removeUserSession}
-  useEffect(() => {
+  React.useEffect(() => {
     const token = getToken();
     if (!token) {
       return;
@@ -23,14 +24,25 @@ function App(){
     }).catch(error => {
       removeUserSession();
       setAuthLoading(false);
+  
     });
   }, []);
- 
+  
   if (authLoading && getToken()) {
     return <div className="content">Checking Authentication...</div>
   }
+  
+
+// class App extends React.Component {
+//   render() {
       return (
-       <Routers />
-      );
-  }
+        <div >
+        <MasterHeader />
+          <Routers/>
+        <MasterFooter />
+        </div>
+       )
+//       }
+// }
+}
 export default App;
