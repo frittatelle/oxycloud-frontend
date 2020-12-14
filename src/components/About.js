@@ -1,14 +1,8 @@
 import * as React from 'react';
 
-//Animation
-import ParticlesBg from "particles-bg";
-
 //materialUI
-import {Container,makeStyles,withStyles,Button} from '@material-ui/core';
+import {makeStyles,withStyles} from '@material-ui/core';
 import PropTypes from 'prop-types';
-
-//Components
-import {getDomain} from './Queries';
 
 const useStyles = makeStyles((theme) => ({
   root: {
