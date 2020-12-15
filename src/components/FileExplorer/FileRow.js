@@ -2,7 +2,8 @@ import React from 'react';
 
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import data from './data.json';
+import data from '../data.json';
+//C:\Users\admin\Desktop\Nuova cartella\oxycloud-frontend\src\components\data.json
 
 import { faFileImage} from "@fortawesome/free-solid-svg-icons";
 import { faFile} from "@fortawesome/free-solid-svg-icons";
@@ -64,23 +65,9 @@ function formatDate(date) {
     minuteFormatted + morning;
 }
 
-const mapping = {
-  'image': ['png', 'gif', "txt", 'jpg'],
-  'document': ['docx', 'txt']
-}
+
 //const Icons = {'image':['ImageIcon','InsertDriveFileIcon']}
 
-function getIcon(ext) {
-  for (var i = 0; i < mapping.image.length; i++) {
-    if (mapping.image[i] === (ext))
-      if (ext === "png" || ext === "gif" || ext === "jpg") {
-        return <ImageIcon />
-      }
-    if (ext === "txt" || ext === "pdf" || ext === "docx") {
-      return <InsertDriveFileIcon />
-    }
-  }
-}
 
 const FileRow = ({
   Key, Name, Size, Owner, LastModified,
@@ -89,7 +76,7 @@ const FileRow = ({
   return (
     <TableRow key={Key} >
       <TableCell>
-        {getExt(row.Name.split('.').pop())}
+        {getExt(Name.split('.').pop())}
       </TableCell>
       <TableCell title="file name" component="th">
         {Name}
