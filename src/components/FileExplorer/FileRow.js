@@ -66,32 +66,32 @@ function formatDate(date) {
 }
 
 
-const FileRow = ({
-  Key, Name, Size, Owner, LastModified,
-  startDownload, startSharing }) => {
+const FileRow = ({ file:
+  { path, name, size, owner, last_edit },
+  on_download, on_share }) => {
   //console.log(startDownload)
   return (
-    <TableRow key={Key} >
+    <TableRow key={path} >
       <TableCell>
-        {getExt(Name.split('.').pop())}
+        {getIcon(name.split('.').pop())}
       </TableCell>
       <TableCell title="file name" component="th">
-        {Name}
+        {name}
       </TableCell>
       <TableCell title="file size" align="right">
-        {getReadableFileSizeString(Size)}
+        {getReadableFileSizeString(size)}
       </TableCell>
       <TableCell title="file owner" align="right">
-        {Owner.DisplayName}
+        {owner}
       </TableCell>
       <TableCell title="last modified datetime" align="right">
-        {formatDate(new Date(LastModified))}
+        {formatDate(last_edit)}
       </TableCell>
       <TableCell align="right">
-        <IconButton onClick={() => startDownload({ Key, Name })}>
+        <IconButton onClick={() => on_download({ path, name })}>
           <GetAppIcon fontSize='small' />
         </IconButton>
-        <IconButton onClick={() => startSharing({ Key, Name })}>
+        <IconButton onClick={() => on_share({ path, name })}>
           <ShareIcon fontSize='small' />
         </IconButton>
       </TableCell>

@@ -8,7 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import FileRow from "./FileRow"
 import FolderRow from "./FolderRow"
 
-const FileTable = ({ folders, files }) => {
+const FileTable = ({ folders, files, on_share, on_download, on_change_folder }) => {
   return (
     <TableContainer>
       <Table aria-label="simple table">
@@ -23,8 +23,19 @@ const FileTable = ({ folders, files }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {folders.map((row) => <FolderRow {...row} />)}
-          {files.map((row) => <FileRow {...row} />)}
+          {folders.map((f) =>
+            <FolderRow
+              name={f.name}
+              path={f.path}
+              on_share={on_share}
+              on_change_folder={on_change_folder}
+            />)}
+          {files.map((f) =>
+            <FileRow
+              file={f}
+              on_share={on_share}
+              on_download={on_download}
+            />)}
         </TableBody>
       </Table>
     </TableContainer>

@@ -12,6 +12,7 @@
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.2.2",
     "aws-sdk": "^2.799.0",
+    "clsx": "^1.1.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-html-parser": "^2.0.2",
@@ -44,6 +45,8 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-decorators": "^7.12.1"
+    "@types/jest": "^26.0.19",
+    "jest": "^26.6.0",
+    "s3rver": "^3.6.1"
   }
 }

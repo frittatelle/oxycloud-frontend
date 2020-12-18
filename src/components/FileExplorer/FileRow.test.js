@@ -23,10 +23,13 @@ it("check text", async () => {
   act(() => {
     render(
       <FileRow
-        Key="FAKE"
-        Name="file.txt"
-        Size={1024}
-        Owner={{ DisplayName: "Giovanni Mucciaccia" }}
+        file={{
+          path: "FAKE",
+          name: "file.txt",
+          size: 1024,
+          owner: "Giovanni Mucciaccia",
+          last_edit: new Date()
+        }}
       />, container)
     expect(container.querySelector("[title='file name']").textContent).toBe("file.txt")
     expect(container.querySelector("[title='file owner']").textContent).toBe("Giovanni Mucciaccia")
@@ -39,10 +42,13 @@ describe("size human readable", () => {
     act(() => {
       render(
         <FileRow
-          Key="FAKE"
-          Name="file.txt"
-          Size={1024 ** 2}
-          Owner={{ DisplayName: "Giovanni Mucciaccia" }}
+          file={{
+            path: "FAKE",
+            name: "file.txt",
+            size: 1024 ** 2,
+            owner: "Giovanni Mucciaccia",
+            last_edit: new Date()
+          }}
         />, container)
       expect(container.querySelector("[title='file size']").textContent).toBe("1 MB")
     });
@@ -52,10 +58,13 @@ describe("size human readable", () => {
     act(() => {
       render(
         <FileRow
-          Key="FAKE"
-          Name="file.txt"
-          Size={1024 ** 3}
-          Owner={{ DisplayName: "Giovanni Mucciaccia" }}
+          file={{
+            path: "FAKE",
+            name: "file.txt",
+            size: 1024 ** 3,
+            owner: "Giovanni Mucciaccia",
+            last_edit: new Date()
+          }}
         />, container)
       expect(container.querySelector("[title='file size']").textContent).toBe("1 GB")
     });
@@ -65,10 +74,13 @@ describe("size human readable", () => {
     act(() => {
       render(
         <FileRow
-          Key="FAKE"
-          Name="file.txt"
-          Size={1024 ** 4}
-          Owner={{ DisplayName: "Giovanni Mucciaccia" }}
+          file={{
+            path: "FAKE",
+            name: "file.txt",
+            size: 1024 ** 4,
+            owner: "Giovanni Mucciaccia",
+            last_edit: new Date()
+          }}
         />, container)
       expect(container.querySelector("[title='file size']").textContent).toBe("1 TB")
     });
