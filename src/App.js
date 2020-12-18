@@ -5,6 +5,7 @@ import theme from './styles/theme';
 
 //React
 import { useState } from 'react';
+import { ReactQueryDevtools } from 'react-query-devtools';
 
 //Components
 import Header from './components/Header';
@@ -14,12 +15,12 @@ import FileExplorer from './components/FileExplorer'
 
 // Temporatry style, put this style in the actual components!
 const useStyles = makeStyles(theme => ({
-  root:{
+  root: {
     display: 'flex',
 
   },
   content: {
-    paddingTop:theme.spacing(8),
+    paddingTop: theme.spacing(8),
     flexGrow: 380,
     height: "100vh",
     overflow: "auto"
@@ -40,7 +41,7 @@ const useStyles = makeStyles(theme => ({
 function App() {
   //Temporary state management to open/close the drawer
   // CHANGE IT TO A SMARTER SOLUTION!
-  const [sidebarOpen,setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const handleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
     console.log(sidebarOpen);
@@ -50,10 +51,11 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      <ReactQueryDevtools initialIsOpen={false} />
       <div className={classes.root}>
         <CssBaseline />
         <Header handleSidebar={handleSidebar} sidebarOpen={sidebarOpen} />
-        <SideBar sidebarOpen={sidebarOpen}/>
+        <SideBar sidebarOpen={sidebarOpen} folder="" />
 
         {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}
         <main className={classes.content}>
