@@ -53,7 +53,7 @@ const FileExplorer = ({ classes, folder }) => {
   function startDownload({ path, name }) {
     console.log("Download:", path);
     Storage.get(path)
-      .then((bin, ct) => saveByteArray(name, ct, bin))
+      .then((res) => saveByteArray(name, res.content_type, res.body))
       .catch(setError)
   }
 
