@@ -43,23 +43,23 @@ class Storage {
       Key: file_path,
       Bucket: this.bucket
     }).promise()
-    return res.Body, res.ContentType
+    return { body: res.Body, content_type: res.ContentType };
   }
 
   async put(binary, file_path) {
-    throw "Not implemented";
+    throw new Error("Not implemented");
   }
 
   async rm(file_path) {
-    throw "Not implemented";
+    throw new Error("Not implemented");
   }
 
   async mkdir(path) {
-    throw "Not implemented";
+    throw new Error("Not implemented");
   }
 
   async rmdir(path) {
-    throw "Not implemented";
+    throw new Error("Not implemented");
   }
 }
 
