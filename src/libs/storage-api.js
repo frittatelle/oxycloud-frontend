@@ -9,14 +9,23 @@ const S3_CONF = {
   s3ForcePathStyle: true,
   accessKeyId: S3_ACCESS_KEY_ID,
   secretAccessKey: S3_SECRET_ACCESS_KEY,
-  endpoint: new AWS.Endpoint(S3_ENDPOINT),
+  endpoint: S3_ENDPOINT,
   bucketName: S3_BUCKET_NAME
 }
 
 class Storage {
   constructor(conf) {
     this.bucket = conf.bucketName;
-    this.s3_api = new AWS.S3(conf);
+    this.conf = conf;
+  }
+
+  set conf(value) {
+    this._conf = value;
+    this.s3_api = new AWS.S3(value);
+  }
+
+  get conf() {
+    return this._conf;
   }
 
   async ls(folder = "") {
@@ -38,6 +47,18 @@ class Storage {
   }
 
   async put(binary, file_path) {
+    throw "Not implemented";
+  }
+
+  async rm(file_path) {
+    throw "Not implemented";
+  }
+
+  async mkdir(path) {
+    throw "Not implemented";
+  }
+
+  async rmdir(path) {
     throw "Not implemented";
   }
 }
