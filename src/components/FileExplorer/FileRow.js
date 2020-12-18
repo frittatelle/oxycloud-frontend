@@ -3,37 +3,32 @@ import React from 'react';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import data from '../data.json';
-//C:\Users\admin\Desktop\Nuova cartella\oxycloud-frontend\src\components\data.json
 
-import { faFileImage} from "@fortawesome/free-solid-svg-icons";
-import { faFile} from "@fortawesome/free-solid-svg-icons";
+
+import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import GetAppIcon from '@material-ui/icons/GetApp';
 import ShareIcon from '@material-ui/icons/Share';
 import IconButton from '@material-ui/core/IconButton';
-import ImageIcon from '@material-ui/icons/Image';
-import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile';
 
 const icons = require("@fortawesome/free-solid-svg-icons");
 
- function getExt(ext1){
-          console.log(data.length)
-            for(var i=0;i<data.length;i++){
-                 console.log(data[i].ext)
-                if(ext1==data[i].ext){
+function getIcon(ext) {
+  for (var i = 0; i < data.length; i++) {
+    if (ext === data[i].ext) {
 
-                    return (
-                        <FontAwesomeIcon className="my-icon" icon={icons[data[i].icon]} />
-                        )
-                }
+      return (
+        <FontAwesomeIcon className="my-icon" icon={icons[data[i].icon]} />
+      )
+    }
 
-                }
-               if(data.ext==null){
-                   return (
-                       <FontAwesomeIcon className="my-icon" icon={faFile} />
-                       )
-               }
-            }
+  }
+  if (data.ext == null) {
+    return (
+      <FontAwesomeIcon className="my-icon" icon={faFile} />
+    )
+  }
+}
 
 
 function getReadableFileSizeString(fileSizeInBytes) {
