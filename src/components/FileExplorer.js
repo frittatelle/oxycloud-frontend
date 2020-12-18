@@ -9,6 +9,10 @@ import Grid from '@material-ui/core/Grid'
 //icons
 import CircularProgress from '@material-ui/core/CircularProgress'
 
+
+//Oxycloud
+import Storage from "../libs/storage-api"
+
 import FileTable from './FileExplorer/FileTable'
 import FoldersBar from './FileExplorer/FoldersBar'
 
@@ -23,14 +27,15 @@ const useStyles = () => ({
 });
 
 function saveByteArray(fileName, contentType, byte) {
-  var blob = new Blob([byte], {type: contentType});
+  var blob = new Blob([byte], { type: contentType });
   var link = document.createElement('a');
   link.href = window.URL.createObjectURL(blob);
   link.download = fileName;
   link.click();
+  link.remove();
 };
 
-const FileExplorer = ({ api, classes, folder }) => {
+const FileExplorer = ({ classes, folder }) => {
   const [loading, setLoading] = useState(true);
   const [folders, setFolders] = useState([]);
   const [files, setFiles] = useState([]);
@@ -45,16 +50,11 @@ const FileExplorer = ({ api, classes, folder }) => {
   //Either include them or remove the dependency array  react-hooks/exhaustive-deps
 
 
-  function startDownload({ Key, Name }) {
-    console.log("Download:", Key);
-    api.getObject({
-      Key: Key,
-      Bucket: "test-bucket"
-    },
-      (err, res) => {
-        if (err) throw err;
-        saveByteArray(Name, res.contentType, res.Body)
-      })
+  function startDownload({ path, name }) {
+    console.log("Download:", path);
+    Storage.get(path)
+      .then((bin, ct) => saveByteArray(name, ct, bin))
+      .catch(setError)
   }
 
   function shareDialog(row) {
@@ -63,64 +63,42 @@ const FileExplorer = ({ api, classes, folder }) => {
 
   function _getFilesList() {
     setLoading(true);
-    api.listObjects({
-      Prefix: currentFolder,
-      Delimiter: "/",
-      Bucket: "test-bucket"
-    }).promise()
-      .then(_processApiResponse)
+    Storage.ls(currentFolder)
+      .then(({ files, folders }) => {
+        setFiles(files);
+        setFolders(folders);
+        setLoading(false);
+      })
       .catch((err) => {
         setError(err.toString());
         setLoading(false);
       });
   }
 
-  function _processApiResponse(data) {
-
-    setFiles(data.Contents.map((f) => {
-      f.Name = f.Key.split('/');
-      f.Name = f.Name[f.Name.length - 1];
-      f.startDownload = startDownload;
-      return f;
-    }));
-
-    setFolders(data.CommonPrefixes.map((f) => {
-      f.Name = f.Prefix.split('/');
-      // it ends with / then the split contains a empty string as last element
-      f.Name = f.Name[f.Name.length - 2] + "/";
-      f.setCurrentFolder = setCurrentFolder;
-      return f;
-    }));
-
-    //setTimeout(()=> //to delay response
-    //console.log(files, folders)
-    setError("");
-    setLoading(false);
-    //, 3000);
-  }
 
   return (
     <Container className={classes.cont}>
       <AppBar position='sticky' color='inherit'>
-          <Toolbar>
+        <Toolbar>
           <FoldersBar currentFolder={currentFolder} setCurrentFolder={setCurrentFolder} />
-          </Toolbar>
-        </AppBar>
-        <Grid container justify="center">
-          {loading === true && (<CircularProgress align='center' />)}
-          {error !== "" &&
-            (<Typography color="error" align="center">{error}</Typography>)}
-          {(loading === false && error === "") &&
-            <FileTable
-              files={files}
-              folders={folders}
-              setCurrentFolder={setCurrentFolder}
-              onDownload={startDownload}
-              onSharing={shareDialog}
-            />
-          }
-        </Grid>
-      </Container>
+        </Toolbar>
+      </AppBar>
+      <Grid container justify="center">
+        {loading === true && (<CircularProgress align='center' />)}
+        {error !== "" &&
+          (<Typography color="error" align="center">{error}</Typography>)}
+        {(loading === false && error === "") &&
+          <FileTable
+          current_folder={currentFolder}
+            files={files}
+            folders={folders}
+          on_change_folder={setCurrentFolder}
+          on_download={startDownload}
+          on_share={shareDialog}
+          />
+        }
+      </Grid>
+    </Container>
   );
 }
 export default withStyles(useStyles)(FileExplorer);
