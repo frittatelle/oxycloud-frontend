@@ -1,4 +1,4 @@
-import Storage from "./storage-api";
+import Storage from "./Storage";
 import fs from 'fs';
 
 //to run and initialize a s3 bucket
