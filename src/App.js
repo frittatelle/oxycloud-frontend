@@ -42,6 +42,7 @@ function App() {
   //Temporary state management to open/close the drawer
   // CHANGE IT TO A SMARTER SOLUTION!
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentFolder, setCurrentFolder] = useState("");
   const handleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
     console.log(sidebarOpen);
@@ -55,11 +56,11 @@ function App() {
       <div className={classes.root}>
         <CssBaseline />
         <Header handleSidebar={handleSidebar} sidebarOpen={sidebarOpen} />
-        <SideBar sidebarOpen={sidebarOpen} folder="" />
+        <SideBar sidebarOpen={sidebarOpen} folder={currentFolder} />
 
         {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}
         <main className={classes.content}>
-          <FileExplorer maxWidth="lg" folder="" />
+          <FileExplorer maxWidth="lg" folder={currentFolder} setFolder={setCurrentFolder} />
         </main>
       </div>
     </ThemeProvider>
