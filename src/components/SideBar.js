@@ -57,7 +57,7 @@ const SideBar = ({ sidebarOpen, folder }) => {
 
 	//useQuery (get data)
 	const { data, status, isError, error } = useQuery(
-		["FSTree", folder], () => OxyStorage.ls(folder))
+		["fsTree", folder], () => OxyStorage.ls(folder))
 
 	console.log(status, isError, error);
 

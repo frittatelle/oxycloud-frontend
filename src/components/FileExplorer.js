@@ -38,7 +38,7 @@ function saveByteArray(fileName, contentType, byte) {
 
 const FileExplorer = ({ classes, folder, setFolder }) => {
 
-  const FSTree = useQuery(["FStree", folder], () => OxyStorage.ls(folder))
+  const FSTree = useQuery(["fsTree", folder], () => OxyStorage.ls(folder))
 
   function startDownload({ path, name }) {
     console.log("Download:", path);
