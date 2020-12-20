@@ -24,7 +24,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import StorageIcon from '@material-ui/icons/Storage';
 
 //api
-import Storage from "../libs/storage-api"
+import { OxyStorage } from "../utils/api"
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const fetchData = async (folder) => {
-	const res = await Storage.ls(folder);
+	const res = await OxyStorage.ls(folder);
 	return res.folders;
 }
 

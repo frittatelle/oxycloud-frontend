@@ -11,7 +11,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 
 
 //Oxycloud
-import Storage from "../libs/storage-api"
+import { OxyStorage } from "../utils/api"
 
 import FileTable from './FileExplorer/FileTable'
 import FoldersBar from './FileExplorer/FoldersBar'
@@ -52,7 +52,7 @@ const FileExplorer = ({ classes, folder }) => {
 
   function startDownload({ path, name }) {
     console.log("Download:", path);
-    Storage.get(path)
+    OxyStorage.get(path)
       .then((res) => saveByteArray(name, res.content_type, res.body))
       .catch(setError)
   }
@@ -63,7 +63,7 @@ const FileExplorer = ({ classes, folder }) => {
 
   function _getFilesList() {
     setLoading(true);
-    Storage.ls(currentFolder)
+    OxyStorage.ls(currentFolder)
       .then(({ files, folders }) => {
         setFiles(files);
         setFolders(folders);
