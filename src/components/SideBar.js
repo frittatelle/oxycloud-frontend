@@ -50,32 +50,25 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const fetchData = async (folder) => {
-	const res = await OxyStorage.ls(folder);
-	return res.folders;
-}
-
 const SideBar = ({ sidebarOpen, folder }) => {
 
 	//Styles
 	const classes = useStyles();
 
 	//useQuery (get data)
-	const {data, status, isError, error} = useQuery(
-		["data"],
-		() => fetchData(folder)
-	);
+	const { data, status, isError, error } = useQuery(
+		["FSTree", folder], () => OxyStorage.ls(folder))
 
 	console.log(status, isError, error);
 
-	return(
+	return (
 		<>
 			{status === 'loading' && (
-               console.log(status)
-         )}
-         {status === 'error' && (
-               console.log(error)
-         )}
+				console.log(status)
+			)}
+			{status === 'error' && (
+				console.log(error)
+			)}
 			{status === 'success' && (
 				<Drawer
 					variant="permanent"
@@ -85,18 +78,19 @@ const SideBar = ({ sidebarOpen, folder }) => {
 					})}
 					classes={{
 						paper: clsx({
-						[classes.drawerOpen]: sidebarOpen,
-						[classes.drawerClose]: !sidebarOpen,
-					}),}}
+							[classes.drawerOpen]: sidebarOpen,
+							[classes.drawerClose]: !sidebarOpen,
+						}),
+					}}
 				>
 					<Toolbar />
 					<List>
 						{/*TODO: map through S3 folders*/}
-						{data.map((element) => (
+						{data.folders.map((element) => (
 							<ListItem button key={element.path}>
 								<ListItemAvatar >
 									<Avatar >
-										<FolderIcon/>
+										<FolderIcon />
 									</Avatar>
 								</ListItemAvatar>
 								<ListItemText primary={element.name} />
