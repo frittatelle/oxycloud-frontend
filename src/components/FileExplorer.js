@@ -64,10 +64,8 @@ const FileExplorer = ({ classes, folder, setFolder }) => {
           (<Typography color="error" align="center">ERROR:{FSTree.error}</Typography>)}
         {(!FSTree.isLoading && !FSTree.error) &&
           <FileTable
-          current_folder={folder}
-          files={FSTree.data.files}
-          folders={FSTree.data.folders}
-          on_change_folder={setFolder}
+          folder={folder}
+            on_change_folder={setFolder}
             on_download={startDownload}
             on_share={shareDialog}
           />
