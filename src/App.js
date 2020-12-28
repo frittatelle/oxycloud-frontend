@@ -45,7 +45,6 @@ function App() {
   const [currentFolder, setCurrentFolder] = useState("");
   const handleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
-    console.log(sidebarOpen);
   }
 
   const classes = useStyles();
@@ -56,7 +55,7 @@ function App() {
       <div className={classes.root}>
         <CssBaseline />
         <Header handleSidebar={handleSidebar} sidebarOpen={sidebarOpen} />
-        <SideBar sidebarOpen={sidebarOpen} folder={currentFolder} />
+        <SideBar sidebarOpen={sidebarOpen} folder={currentFolder} setFolder={setCurrentFolder}/>
 
         {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}
         <main className={classes.content}>
