@@ -1,106 +1,98 @@
-const OAUTH_ENDPOINT = process.env.OAUTH_ENDPOINT;
-const APP_ID = process.env.COGNITO_APP_ID;
-const APP_SECRET = process.env.COGNITO_APP_SECRET;
-const BASE_URL = process.env.BASE_URL;
+import { CognitoAuth } from 'amazon-cognito-auth-js';
+import AWS from "aws-sdk";
 
-const REFRESH_TOKEN_KEY = "cognito_refresh_token";
+const USER_POOL_ID = process.env.REACT_APP_USER_POOL_ID;
+const USER_POOL_SUBDOMAIN = process.env.REACT_APP_USER_POOL_SUBDOMAIN;
+const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
+const SIGNIN_REDIRECT_URI = process.env.REACT_APP_SIGNIN_REDIRECT_URI;
+const SIGNOUT_REDIRECT_URI = process.env.REACT_APP_SIGNOUT_REDIRECT_URI;
+const IDENTITY_POOL_ID = process.env.REACT_APP_IDENTITY_POOL_ID;
+const REGION = process.env.REACT_APP_REGION;
 
-const serialize = function (obj) {
-  var str = [];
-  for (var p in obj)
-    if (obj.hasOwnProperty(p)) {
-      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-    }
-  return str.join("&");
-}
+const cognitoWebDomain = `${USER_POOL_SUBDOMAIN}.auth.${REGION}.amazoncognito.com`;
 
-const makeRequest = async (endpoint, method, body, auth) => {
-  let headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-  if (auth) headers['Authorization'] = auth;
-  let params = {
-    method: method,
-    headers: headers
-  };
+AWS.config.region = REGION;
 
-  if (method !== "GET" && method !== "HEAD") {
-    let _body = { client_id: APP_ID };
-    for (var k in body)
-      _body[k] = body[k];
-
-    params['body'] = serialize(body)
-  }
-  let res = await fetch(OAUTH_ENDPOINT + endpoint, params);
-  res = await res.json();
-  if (res.hasOwnProperty("error")) {
-    throw new Error(res['error']);
-  }
-  return res;
-}
 
 class Session {
-  login_url = OAUTH_ENDPOINT + "login?" +
-    serialize({
-      client_id: APP_ID,
-      response_type: "code",
-      redirect_uri: BASE_URL
-    });
+  cognitoSession = null;
+  cognitoAuth = new CognitoAuth({
+    ClientId: CLIENT_ID,
+    AppWebDomain: cognitoWebDomain,
+    RedirectUriSignIn: SIGNIN_REDIRECT_URI,
+    RedirectUriSignOut: SIGNOUT_REDIRECT_URI,
+    UserPoolId: USER_POOL_ID,
+    TokenScopesArray: []
+  });
 
-  async getTokens(code) {
-    let res = null;
-    if (code) {//get tokens first time
-      res = await makeRequest("oauth2/token", "POST", {
-        grant_type: "authorization_code",
-        code: code,
-        redirect_uri: BASE_URL
-      }, 'Basic ' + btoa(APP_ID + ":" + APP_SECRET));
-
-      this.refresh_token = res['refresh_token'];
-    } else {//refresh
-      res = await makeRequest("oauth2/token", "POST", {
-        grant_type: "refresh_token",
-        refresh_token: this.refresh_token
-      }, 'Basic ' + btoa(APP_ID + ":" + APP_SECRET));
+  listeners = [];
+  constructor() {
+    this.cognitoAuth.userhandler = {
+      onSuccess: async (result) => {
+        this.cognitoSession = result;
+        await this.refreshAwsCredentials();
+      },
+      onFailure: function (err) {
+        alert(err);
+      }
     }
-
-    this.id_token = res['id_token'];
-    this.access_token = res['access_token'];
-    let d = new Date()
-    d.setSeconds(d.getSeconds() + res['expires_in']);
-    this.expires_date = d;
-    if (!this.user_info)
-      this.user_info = await this._getUserInfo();
-  }
-  get is_authorized() {
-    return localStorage.getItem(REFRESH_TOKEN_KEY) !== null;
-  }
-  get refresh_token() {
-    return localStorage.getItem(REFRESH_TOKEN_KEY);
-  }
-
-  set refresh_token(val) {
-    localStorage.setItem(REFRESH_TOKEN_KEY, val)
-  }
-
-  async _getUserInfo() {
-    let res = await makeRequest("oauth2/userInfo", "GET", {}, 'Bearer ' + this.access_token)
-    return res;
+    this.cognitoAuth.getSession();
+    this.cognitoAuth.parseCognitoWebResponse(window.location.href);
+    //clean address bar
+    if (window.location.href.indexOf("#access_token") !== -1)
+      window.location.href = window.location.href.split("#access_token")[0]
   }
 
   async logOut() {
-    let url = OAUTH_ENDPOINT + "logout?" +
-      serialize({
-        client_id: APP_ID,
-        logout_uri: BASE_URL
-      });
-
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
-    delete this.access_token
-    delete this.expires_date
-    delete this.id_token
-    delete this.user_info
-    window.location = url;
+    this.cognitoSession = null;
+    this.cognitoAuth.signOut()
   }
 
+  get isAuthorized() {
+    return this.cognitoSession !== null;
+  }
+
+  get userInfo() {
+    return {
+      username: this.tokenPayload['cognito:username'],
+      email: this.tokenPayload['email'],
+      id: this.tokenPayload['sub']
+    }
+  }
+
+  get tokenPayload() {
+    return this.cognitoSession.getIdToken().decodePayload()
+  }
+
+  async refreshAwsCredentials() {
+    if (!AWS.config.credentials) {
+
+      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: IDENTITY_POOL_ID,
+        Logins: {
+          [this.tokenPayload.iss.replace("https://", "")]: this.cognitoSession.getIdToken().getJwtToken()
+        }
+      });
+    }
+
+    if (AWS.config.credentials.data == null || //not requested yet
+      Date.parse(AWS.config.credentials.data.Credentials.Expiration) - Date.parse(new Date()) < 0) {// is expired
+      await new Promise((res, rej) => AWS.config.credentials.refresh((err => {
+        if (err) {
+          rej(err);
+        } else {
+          res();
+        }
+      }))).catch(e => { throw e; });
+
+    }
+
+    //this is not necessesary AWS sdk read them without pass to the constructor of the service
+    return AWS.config.credentials.data['Credentials'];
+  }
 }
 
-export default new Session();
+let session = new Session();
+
+
+export default session;
