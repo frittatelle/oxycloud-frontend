@@ -21,26 +21,30 @@ class Session {
   ACTION_REFRESH_CREDENTIALS = "Refresh credentials"
 
   cognitoSession = null;
-  cognitoAuth = new CognitoAuth({
-    ClientId: CLIENT_ID,
-    AppWebDomain: cognitoWebDomain,
-    RedirectUriSignIn: SIGNIN_REDIRECT_URI,
-    RedirectUriSignOut: SIGNOUT_REDIRECT_URI,
-    UserPoolId: USER_POOL_ID,
-    TokenScopesArray: []
-  });
+  cognitoAuth = null;
 
   onSuccess = (action) => console.log(action)
   onFailure = (action, err) => console.error(action, err)
 
   constructor() {
-    this.cognitoAuth.userhandler = {
-      onSuccess: async (result) => {
-        this.cognitoSession = result;
-        await this.refreshAwsCredentials();
-        this.onSuccess(this.ACTION_SIGNIN)
-      },
-      onFailure: (err) => this.onFailure(this.ACTION_SIGNIN, err)
+    //HORRIBLE workoaround to make it works both for unittest
+    if (process.env.NODE_ENV !== "test") {
+      this.cognitoAuth = new CognitoAuth({
+        ClientId: CLIENT_ID,
+        AppWebDomain: cognitoWebDomain,
+        RedirectUriSignIn: SIGNIN_REDIRECT_URI,
+        RedirectUriSignOut: SIGNOUT_REDIRECT_URI,
+        UserPoolId: USER_POOL_ID,
+        TokenScopesArray: []
+      });
+      this.cognitoAuth.userhandler = {
+        onSuccess: async (result) => {
+          this.cognitoSession = result;
+          await this.refreshAwsCredentials();
+          this.onSuccess(this.ACTION_SIGNIN)
+        },
+        onFailure: (err) => this.onFailure(this.ACTION_SIGNIN, err)
+      }
     }
   }
 
