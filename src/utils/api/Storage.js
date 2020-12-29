@@ -6,6 +6,7 @@ const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
 
 
 class Storage {
+  basePath = ""
   constructor(conf) {
     this.conf = conf ?? {};
   }
@@ -13,6 +14,7 @@ class Storage {
   set conf(value) {
     this._conf = value;
     this.bucket = value ? value.bucketName ?? S3_BUCKET_NAME : S3_BUCKET_NAME;
+    this.base_path = value ? value.basePath ?? this.basePath : this.basePath;
     this.s3_api = new AWS.S3(value);
   }
 
@@ -23,16 +25,16 @@ class Storage {
   async ls(folder = "") {
     return _processApiResponse(await
       this.s3_api.listObjects({
-        Prefix: folder,
+        Prefix: this.basePath + folder,
         Delimiter: "/",
         Bucket: this.bucket
       }).promise()
-    );
+      , this.basePath);
   }
 
   async get(file_path, progress_cb) {
     let res = await this.s3_api.getObject({
-      Key: file_path,
+      Key: this.basePath + file_path,
       Bucket: this.bucket
     }).on("httpDownloadProgress", (p) => {
       if (typeof progress_cb === "function")
@@ -58,13 +60,17 @@ class Storage {
   }
 }
 
-function _processApiResponse(data) {
+function _processApiResponse(data, basePath) {
   var files = data.Contents.map((f) => {
-    f.Name = f.Key.split('/');
-    f.Name = f.Name[f.Name.length - 1];
+
+    if (basePath !== "")
+      f.Key = f.Key.split(basePath).pop();
+
+    let name = f.Key.split('/');
+    name = name[name.length - 1];
     return {
       path: f.Key,
-      name: f.Name,
+      name: name,
       size: f.Size,
       last_edit: new Date(f.LastModified),
       owner: f.Owner ? f.Owner.DisplayName : "you"
@@ -72,10 +78,12 @@ function _processApiResponse(data) {
   });
 
   var folders = data.CommonPrefixes.map((f) => {
-    f.Name = f.Prefix.split('/');
+    if (basePath !== "")
+      f.Prefix = f.Prefix.split(basePath).pop();
+    let name = f.Prefix.split('/');
     // it ends with / then the split contains a empty string as last element
-    f.Name = f.Name[f.Name.length - 2] + "/";
-    return { name: f.Name, path: f.Prefix };
+    name = name[name.length - 2] + "/";
+    return { name: name, path: f.Prefix };
   });
   return { files, folders }
 }
