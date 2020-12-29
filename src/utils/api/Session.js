@@ -48,10 +48,12 @@ class Session {
     this.onSuccess = onSuccess ?? this.onSuccess
     this.onFailure = onFailure ?? this.onFailure
     this.cognitoAuth.getSession();
-    this.cognitoAuth.parseCognitoWebResponse(window.location.href);
-    //clean address bar
-    if (window.location.href.indexOf("#access_token") !== -1)
-      window.location.href = window.location.href.split("#access_token")[0]
+    if (window.location.href.indexOf("#access_token") !== -1) {
+      //parse token in address bar
+      this.cognitoAuth.parseCognitoWebResponse(window.location.href);
+      //clean address bar
+      window.location.href = window.location.href.split("#access_token")[0];
+    }
   }
 
   async signOut() {
