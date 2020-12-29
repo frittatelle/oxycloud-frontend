@@ -1,5 +1,5 @@
 import React from 'react';
-//Splash screen
+//Splash screen, move it in another file?
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
@@ -69,6 +69,7 @@ export default function App() {
   }, [])
   return (
     <ThemeProvider theme={theme}>
+      {/* routing is required, this is a messy solution */}
       {process.env.REACT_APP_PRODUCTION ? <span /> : <ReactQueryDevtools initialIsOpen={false} />}
       <CssBaseline />
       {isAuthorized ? <Home /> : <SplashScreen />}
