@@ -18,11 +18,13 @@ import AddIcon from '@material-ui/icons/Add';
 import SettingsIcon from '@material-ui/icons/Settings';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import IconButton from '@material-ui/core/IconButton'
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { OxySession } from '../utils/api';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
-    },    
+    },
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
     },
@@ -78,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
             width: '20ch',
             },
         },
-    },    
+    },
 }));
 
 const Header = ({handleSidebar, sidebarOpen}) => {
@@ -90,14 +92,14 @@ const Header = ({handleSidebar, sidebarOpen}) => {
             <AppBar position="fixed" color="inherit" className={classes.appBar}>
                 <Toolbar>
                     <Typography variant="h6" className={classes.logo}>
-                       <Typography color="primary" variant="inherit" component="span">Oxy</Typography>Cloud    
+                       <Typography color="primary" variant="inherit" component="span">Oxy</Typography>Cloud
                     </Typography>
                     <Divider orientation="vertical" flexItem />
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" onClick={handleSidebar}>
                             {sidebarOpen ? <KeyboardArrowLeftIcon /> : <KeyboardArrowRightIcon /> }
-                        </IconButton> 
-                    </Avatar>       
+                        </IconButton>
+                    </Avatar>
                     <div className={classes.search}>
                         <div className={classes.searchIcon}>
                             <SearchIcon />
@@ -110,31 +112,37 @@ const Header = ({handleSidebar, sidebarOpen}) => {
                             }}
                             inputProps={{ 'aria-label': 'search' }}
                         />
-                    </div>  
+                    </div>
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
                             <ViewComfyIcon />
                         </IconButton>
-                    </Avatar>     
+                    </Avatar>
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
                             <AddIcon />
-                        </IconButton>    
-                    </Avatar> 
+                        </IconButton>
+                    </Avatar>
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
                             <NotificationsIcon />
-                        </IconButton>  
-                    </Avatar> 
+                        </IconButton>
+                    </Avatar>
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
                             <SettingsIcon />
-                        </IconButton>  
-                    </Avatar>            
+                        </IconButton>
+                    </Avatar>
+
+                    <Avatar className={classes.avatar}>
+                        <IconButton color="inherit" >
+                            <ExitToAppIcon onClick={() => { OxySession.signOut() }} />
+                        </IconButton>
+                    </Avatar>
                 </Toolbar>
-            </AppBar>    
+            </AppBar>
         </div>
-        
+
     );
 }
 
