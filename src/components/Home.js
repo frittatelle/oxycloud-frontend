@@ -11,9 +11,8 @@ import FileExplorer from './FileExplorer'
 
 // Temporatry style, put this style in the actual components!
 const useStyles = makeStyles(theme => ({
-  root: {
+  local_root: {
     display: 'flex',
-
   },
   content: {
     paddingTop: theme.spacing(8),
@@ -47,7 +46,7 @@ function App() {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
+    <div className={classes.local_root}>
       <Header handleSidebar={handleSidebar} sidebarOpen={sidebarOpen} />
       <SideBar sidebarOpen={sidebarOpen} folder={currentFolder} />
       {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}

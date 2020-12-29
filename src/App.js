@@ -19,7 +19,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { ReactQueryDevtools } from 'react-query-devtools';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  card: {
     maxWidth: 345,
     paddingLeft: theme.spacing(3),
     paddingRight: theme.spacing(3),
@@ -46,7 +46,7 @@ const SplashScreen = () => {
       justify="center"
       style={{ minHeight: '90vh' }}
     >
-      <Card className={classes.root} align="center">
+      <Card className={classes.card} align="center">
         <CardActionArea>
           <Typography align='center' variant="h3" className={classes.logo}>
             <Typography color="primary" variant="inherit" component="span">Oxy</Typography>Cloud
