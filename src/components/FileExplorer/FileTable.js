@@ -8,7 +8,12 @@ import TableRow from '@material-ui/core/TableRow';
 import FileRow from "./FileRow"
 import FolderRow from "./FolderRow"
 
-const FileTable = ({ folders, files, on_share, on_download, on_change_folder }) => {
+import { OxyStorage } from "../../utils/api"
+
+import { useQuery } from 'react-query';
+
+const FileTable = ({ folder, on_share, on_download, on_change_folder }) => {
+  const FSTree = useQuery(["fsTree", folder], () => OxyStorage.ls(folder))
   return (
     <TableContainer>
       <Table aria-label="simple table">
@@ -23,14 +28,14 @@ const FileTable = ({ folders, files, on_share, on_download, on_change_folder }) 
           </TableRow>
         </TableHead>
         <TableBody>
-          {folders.map((f) =>
+          {FSTree.data.folders.map((f) =>
             <FolderRow
               name={f.name}
               path={f.path}
               on_share={on_share}
               on_change_folder={on_change_folder}
             />)}
-          {files.map((f) =>
+          {FSTree.data.files.map((f) =>
             <FileRow
               file={f}
               on_share={on_share}

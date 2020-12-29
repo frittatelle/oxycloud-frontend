@@ -1,26 +1,20 @@
 import AWS from "aws-sdk";
-//import { S3_ENDPOINT, ACCESS_KEY_ID, SECRET_ACCESS_KEY, BUCKET_NAME } from process.env;
-const S3_ENDPOINT = process.env.S3_ENDPOINT || "http://localhost:4568"
-const S3_ACCESS_KEY_ID = process.env.S3_ACCESS_KEY_ID || "S3RVER"
-const S3_SECRET_ACCESS_KEY = process.env.S3_SECRET_ACCESS_KEY || "S3RVER"
-const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME || "test-bucket"
+import Session from "./Session"
 
-const S3_CONF = {
-  s3ForcePathStyle: true,
-  accessKeyId: S3_ACCESS_KEY_ID,
-  secretAccessKey: S3_SECRET_ACCESS_KEY,
-  endpoint: S3_ENDPOINT,
-  bucketName: S3_BUCKET_NAME
-}
+
+const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
+
 
 class Storage {
+  basePath = ""
   constructor(conf) {
-    this.bucket = conf.bucketName;
-    this.conf = conf;
+    this.conf = conf ?? {};
   }
 
   set conf(value) {
     this._conf = value;
+    this.bucket = value ? value.bucketName ?? S3_BUCKET_NAME : S3_BUCKET_NAME;
+    this.base_path = value ? value.basePath ?? this.basePath : this.basePath;
     this.s3_api = new AWS.S3(value);
   }
 
@@ -31,17 +25,20 @@ class Storage {
   async ls(folder = "") {
     return _processApiResponse(await
       this.s3_api.listObjects({
-        Prefix: folder,
+        Prefix: this.basePath + folder,
         Delimiter: "/",
         Bucket: this.bucket
       }).promise()
-    );
+      , this.basePath);
   }
 
   async get(file_path, progress_cb) {
     let res = await this.s3_api.getObject({
-      Key: file_path,
+      Key: this.basePath + file_path,
       Bucket: this.bucket
+    }).on("httpDownloadProgress", (p) => {
+      if (typeof progress_cb === "function")
+        progress_cb(p.loaded / p.total)
     }).promise()
     return { body: res.Body, content_type: res.ContentType };
   }
@@ -63,31 +60,37 @@ class Storage {
   }
 }
 
-function _processApiResponse(data) {
+function _processApiResponse(data, basePath) {
   var files = data.Contents.map((f) => {
-    f.Name = f.Key.split('/');
-    f.Name = f.Name[f.Name.length - 1];
+
+    if (basePath !== "")
+      f.Key = f.Key.split(basePath).pop();
+
+    let name = f.Key.split('/');
+    name = name[name.length - 1];
     return {
       path: f.Key,
-      name: f.Name,
+      name: name,
       size: f.Size,
       last_edit: new Date(f.LastModified),
-      owner: f.Owner.DisplayName
+      owner: f.Owner ? f.Owner.DisplayName : "you"
     }
   });
 
   var folders = data.CommonPrefixes.map((f) => {
-    f.Name = f.Prefix.split('/');
+    if (basePath !== "")
+      f.Prefix = f.Prefix.split(basePath).pop();
+    let name = f.Prefix.split('/');
     // it ends with / then the split contains a empty string as last element
-    f.Name = f.Name[f.Name.length - 2] + "/";
-    return { name: f.Name, path: f.Prefix };
+    name = name[name.length - 2] + "/";
+    return { name: name, path: f.Prefix };
   });
   return { files, folders }
 }
 
+//HORRIBLE WORKAROUND
+//Actually Storage should not refer Session
+if (process.env.NODE_ENV !== "test")
+  Session.init();
 
-
-var _storage = new Storage(S3_CONF);
-
-
-export default _storage;
+export default new Storage();

@@ -24,7 +24,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import StorageIcon from '@material-ui/icons/Storage';
 
 //api
-import Storage from "../libs/storage-api"
+import { OxyStorage } from "../utils/api"
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -50,32 +50,25 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const fetchData = async (folder) => {
-	const res = await Storage.ls(folder);
-	return res.folders;
-}
-
 const SideBar = ({ sidebarOpen, folder }) => {
 
 	//Styles
 	const classes = useStyles();
 
 	//useQuery (get data)
-	const {data, status, isError, error} = useQuery(
-		["data"],
-		() => fetchData(folder)
-	);
+	const { data, status, isError, error } = useQuery(
+		["fsTree", folder], () => OxyStorage.ls(folder))
 
 	console.log(status, isError, error);
 
-	return(
+	return (
 		<>
 			{status === 'loading' && (
-               console.log(status)
-         )}
-         {status === 'error' && (
-               console.log(error)
-         )}
+				console.log(status)
+			)}
+			{status === 'error' && (
+				console.log(error)
+			)}
 			{status === 'success' && (
 				<Drawer
 					variant="permanent"
@@ -85,18 +78,19 @@ const SideBar = ({ sidebarOpen, folder }) => {
 					})}
 					classes={{
 						paper: clsx({
-						[classes.drawerOpen]: sidebarOpen,
-						[classes.drawerClose]: !sidebarOpen,
-					}),}}
+							[classes.drawerOpen]: sidebarOpen,
+							[classes.drawerClose]: !sidebarOpen,
+						}),
+					}}
 				>
 					<Toolbar />
 					<List>
 						{/*TODO: map through S3 folders*/}
-						{data.map((element) => (
+						{data.folders.map((element) => (
 							<ListItem button key={element.path}>
 								<ListItemAvatar >
 									<Avatar >
-										<FolderIcon/>
+										<FolderIcon />
 									</Avatar>
 								</ListItemAvatar>
 								<ListItemText primary={element.name} />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 //components
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -9,9 +9,10 @@ import Grid from '@material-ui/core/Grid'
 //icons
 import CircularProgress from '@material-ui/core/CircularProgress'
 
+import { useQuery } from 'react-query';
 
 //Oxycloud
-import Storage from "../libs/storage-api"
+import { OxyStorage } from "../utils/api"
 
 import FileTable from './FileExplorer/FileTable'
 import FoldersBar from './FileExplorer/FoldersBar'
@@ -35,66 +36,38 @@ function saveByteArray(fileName, contentType, byte) {
   link.remove();
 };
 
-const FileExplorer = ({ classes, folder }) => {
-  const [loading, setLoading] = useState(true);
-  const [folders, setFolders] = useState([]);
-  const [files, setFiles] = useState([]);
-  const [error, setError] = useState("");
-  const [currentFolder, setCurrentFolder] = useState(folder || "");
+const FileExplorer = ({ classes, folder, setFolder }) => {
 
-
-  useEffect(_getFilesList, [currentFolder]);
-  // this result in the following warning:
-  //
-  //React Hook useEffect has missing dependencies: '_processApiResponse' and 'api'.
-  //Either include them or remove the dependency array  react-hooks/exhaustive-deps
-
+  const FSTree = useQuery(["fsTree", folder], () => OxyStorage.ls(folder))
 
   function startDownload({ path, name }) {
     console.log("Download:", path);
-    Storage.get(path)
+    OxyStorage.get(path)
       .then((res) => saveByteArray(name, res.content_type, res.body))
-      .catch(setError)
+      .catch(console.error)
   }
 
   function shareDialog(row) {
     console.log("Sharing:", row.Key);
   }
 
-  function _getFilesList() {
-    setLoading(true);
-    Storage.ls(currentFolder)
-      .then(({ files, folders }) => {
-        setFiles(files);
-        setFolders(folders);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.toString());
-        setLoading(false);
-      });
-  }
-
-
   return (
     <Container className={classes.cont}>
       <AppBar position='sticky' color='inherit'>
         <Toolbar>
-          <FoldersBar currentFolder={currentFolder} setCurrentFolder={setCurrentFolder} />
+          <FoldersBar currentFolder={folder} setCurrentFolder={setFolder} />
         </Toolbar>
       </AppBar>
       <Grid container justify="center">
-        {loading === true && (<CircularProgress align='center' />)}
-        {error !== "" &&
-          (<Typography color="error" align="center">{error}</Typography>)}
-        {(loading === false && error === "") &&
+        {FSTree.isLoading && (<CircularProgress align='center' />)}
+        {FSTree.error &&
+          (<Typography color="error" align="center">ERROR:{FSTree.error}</Typography>)}
+        {(!FSTree.isLoading && !FSTree.error) &&
           <FileTable
-          current_folder={currentFolder}
-            files={files}
-            folders={folders}
-          on_change_folder={setCurrentFolder}
-          on_download={startDownload}
-          on_share={shareDialog}
+          folder={folder}
+            on_change_folder={setFolder}
+            on_download={startDownload}
+            on_share={shareDialog}
           />
         }
       </Grid>
