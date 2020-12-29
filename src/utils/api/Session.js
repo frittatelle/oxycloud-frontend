@@ -13,6 +13,9 @@ const cognitoWebDomain = `${USER_POOL_SUBDOMAIN}.auth.${REGION}.amazoncognito.co
 
 AWS.config.region = REGION;
 
+const ACTION_SIGNIN = "SignIn";
+const ACTION_SIGNOUT = "SignOut";
+const ACTION_REFRESH_CREDENTIALS = "Refresh credentials"
 
 class Session {
   cognitoSession = null;
@@ -24,17 +27,18 @@ class Session {
     UserPoolId: USER_POOL_ID,
     TokenScopesArray: []
   });
-  onSuccess = () => console.log("signin completed")
-  onFailure = (err) => console.error("signin failed", err)
-  listeners = [];
+
+  onSuccess = (action) => console.log(action)
+  onFailure = (action, err) => console.error(action, err)
+
   constructor() {
     this.cognitoAuth.userhandler = {
       onSuccess: async (result) => {
         this.cognitoSession = result;
         await this.refreshAwsCredentials();
-        this.onSuccess()
+        this.onSuccess(ACTION_SIGNIN)
       },
-      onFailure: this.onFailure
+      onFailure: (err) => this.onFailure(ACTION_SIGNIN, err)
     }
   }
 
@@ -48,9 +52,10 @@ class Session {
       window.location.href = window.location.href.split("#access_token")[0]
   }
 
-  async logOut() {
+  async signOut() {
     this.cognitoSession = null;
-    this.cognitoAuth.signOut()
+    this.cognitoAuth.signOut();
+    this.onSuccess(ACTION_SIGNOUT);
   }
 
   get isAuthorized() {
@@ -88,11 +93,11 @@ class Session {
         } else {
           res();
         }
-      }))).catch(e => { throw e; });
+      }))).catch(e => this.onFailure(ACTION_REFRESH_CREDENTIALS, e));
 
     }
-
-    //this is not necessesary AWS sdk read them without pass to the constructor of the service
+    this.onSuccess(ACTION_REFRESH_CREDENTIALS);
+    //this is not necessesary
     return AWS.config.credentials.data['Credentials'];
   }
 }
