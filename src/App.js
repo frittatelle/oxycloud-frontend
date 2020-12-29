@@ -1,70 +1,55 @@
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import theme from './styles/theme';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import CircularProgress from '@material-ui/core/CircularProgress'
+import Session from "./utils/api/"
 
-//React
-import { useState } from 'react';
-import { ReactQueryDevtools } from 'react-query-devtools';
-
-//Components
-import Header from './components/Header';
-import SideBar from './components/SideBar';
-import FileExplorer from './components/FileExplorer'
-
-
-// Temporatry style, put this style in the actual components!
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
-
+    maxWidth: 345,
+    paddingLeft: theme.spacing(3),
+    paddingRight: theme.spacing(3),
+    paddingTop: theme.spacing(2),
   },
-  content: {
-    paddingTop: theme.spacing(8),
-    flexGrow: 380,
-    height: "100vh",
-    overflow: "auto"
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4)
-  },
-  paper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column"
-  },
+  logo: {
+    fontWeight: 800,
+    '&:hover': {
+      cursor: 'pointer',
+    },
+    marginBot: theme.spacing(4)
+  }
 }));
 
-
-function App() {
-  //Temporary state management to open/close the drawer
-  // CHANGE IT TO A SMARTER SOLUTION!
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [currentFolder, setCurrentFolder] = useState("");
-  const handleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-    console.log(sidebarOpen);
-  }
-
+const SplashScreen = () => {
   const classes = useStyles();
 
   return (
-    <ThemeProvider theme={theme}>
-      {process.env.REACT_APP_PRODUCTION ? <span /> : <ReactQueryDevtools initialIsOpen={false} />}
-      <div className={classes.root}>
-        <CssBaseline />
-        <Header handleSidebar={handleSidebar} sidebarOpen={sidebarOpen} />
-        <SideBar sidebarOpen={sidebarOpen} folder={currentFolder} />
-
-        {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}
-        <main className={classes.content}>
-          <FileExplorer maxWidth="lg" folder={currentFolder} setFolder={setCurrentFolder} />
-        </main>
-      </div>
-    </ThemeProvider>
+    <Grid
+      container
+      spacing={0}
+      direction="column"
+      alignItems="center"
+      justify="center"
+      style={{ minHeight: '90vh' }}
+    >
+      <Card className={classes.root} align="center">
+        <CardActionArea>
+          <Typography align='center' variant="h3" className={classes.logo}>
+            <Typography color="primary" variant="inherit" component="span">Oxy</Typography>Cloud
+          </Typography>
+          <CardContent>
+            <CircularProgress align='center' />
+          </CardContent>
+        </CardActionArea>
+      </Card>
+    </Grid>
   );
 }
 
-export default App;
+export default function App() {
+  return <SplashScreen />
+}
