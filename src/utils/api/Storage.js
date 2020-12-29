@@ -7,12 +7,12 @@ const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
 
 class Storage {
   constructor(conf) {
-    this.conf = conf;
+    this.conf = conf ?? {};
   }
 
   set conf(value) {
     this._conf = value;
-    this.bucket = value ? value.bucketName : S3_BUCKET_NAME;
+    this.bucket = value ? value.bucketName ?? S3_BUCKET_NAME : S3_BUCKET_NAME;
     this.s3_api = new AWS.S3(value);
   }
 
@@ -77,16 +77,9 @@ function _processApiResponse(data) {
   return { files, folders }
 }
 
+//HORRIBLE WORKAROUND
+//Actually Storage should not refer Session
+if (process.env.NODE_ENV !== "test")
+  Session.init();
 
-
-var _storage = null;
-
-export default (() => {
-  if (_storage === null) {
-    //HORRIBLE workoaround to make it works both for unittest and use
-    if (process.env.NODE_ENV !== "test")
-      Session.init();
-    _storage = new Storage();
-  }
-  return _storage
-})();
+export default new Storage();
