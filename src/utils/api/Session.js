@@ -4,8 +4,8 @@ import AWS from "aws-sdk";
 const USER_POOL_ID = process.env.REACT_APP_USER_POOL_ID;
 const USER_POOL_SUBDOMAIN = process.env.REACT_APP_USER_POOL_SUBDOMAIN;
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
-const SIGNIN_REDIRECT_URI = process.env.REACT_APP_SIGNIN_REDIRECT_URI;
-const SIGNOUT_REDIRECT_URI = process.env.REACT_APP_SIGNOUT_REDIRECT_URI;
+const SIGNIN_REDIRECT_URL = process.env.REACT_APP_SIGNIN_REDIRECT_URL;
+const SIGNOUT_REDIRECT_URL = process.env.REACT_APP_SIGNOUT_REDIRECT_URL;
 const IDENTITY_POOL_ID = process.env.REACT_APP_IDENTITY_POOL_ID;
 const REGION = process.env.REACT_APP_REGION;
 
@@ -32,8 +32,8 @@ class Session {
       this.cognitoAuth = new CognitoAuth({
         ClientId: CLIENT_ID,
         AppWebDomain: cognitoWebDomain,
-        RedirectUriSignIn: SIGNIN_REDIRECT_URI,
-        RedirectUriSignOut: SIGNOUT_REDIRECT_URI,
+        RedirectURLSignIn: SIGNIN_REDIRECT_URL,
+        RedirectURLSignOut: SIGNOUT_REDIRECT_URL,
         UserPoolId: USER_POOL_ID,
         TokenScopesArray: []
       });
