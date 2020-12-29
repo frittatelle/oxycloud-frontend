@@ -1,4 +1,5 @@
 import React from 'react';
+//Splash screen
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -6,7 +7,9 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress'
-import Session from "./utils/api/"
+//Splash screen - end
+import { OxySession } from "./utils/api"
+import Home from "./components/Home"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,5 +54,11 @@ const SplashScreen = () => {
 }
 
 export default function App() {
-  return <SplashScreen />
+  const [isAuthorized, setAuthorized] = React.useState(false);
+  React.useEffect(() => {
+    OxySession.init((action) => {
+      if (action === OxySession.ACTION_SIGNIN) setAuthorized(true)
+    })
+  }, [])
+  return <span>{isAuthorized ? <Home /> : <SplashScreen />}</span>
 }
