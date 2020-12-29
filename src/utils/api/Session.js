@@ -24,18 +24,23 @@ class Session {
     UserPoolId: USER_POOL_ID,
     TokenScopesArray: []
   });
-
+  onSuccess = () => console.log("signin completed")
+  onFailure = (err) => console.error("signin failed", err)
   listeners = [];
   constructor() {
     this.cognitoAuth.userhandler = {
       onSuccess: async (result) => {
         this.cognitoSession = result;
         await this.refreshAwsCredentials();
+        this.onSuccess()
       },
-      onFailure: function (err) {
-        alert(err);
-      }
+      onFailure: this.onFailure
     }
+  }
+
+  init(onSuccess, onFailure) {
+    this.onSuccess = onSuccess ?? this.onSuccess
+    this.onFailure = onFailure ?? this.onFailure
     this.cognitoAuth.getSession();
     this.cognitoAuth.parseCognitoWebResponse(window.location.href);
     //clean address bar
