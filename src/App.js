@@ -52,7 +52,7 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {process.env.REACT_APP_PRODUCTION ? <span /> : <ReactQueryDevtools initialIsOpen={false} />}
       <div className={classes.root}>
         <CssBaseline />
         <Header handleSidebar={handleSidebar} sidebarOpen={sidebarOpen} />
