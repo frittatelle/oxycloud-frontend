@@ -102,7 +102,8 @@ class Session {
   }
 }
 
-let session = new Session();
+let _session = null;
 
-
-export default session;
+// lazy instanciation
+// eslint-disable-next-line
+export default () => { if (_session === null) _session = new Session(); return _session };
