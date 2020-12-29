@@ -32,8 +32,8 @@ class Session {
       this.cognitoAuth = new CognitoAuth({
         ClientId: CLIENT_ID,
         AppWebDomain: cognitoWebDomain,
-        RedirectURLSignIn: SIGNIN_REDIRECT_URL,
-        RedirectURLSignOut: SIGNOUT_REDIRECT_URL,
+        RedirectUriSignIn: SIGNIN_REDIRECT_URL,
+        RedirectUriSignOut: SIGNOUT_REDIRECT_URL,
         UserPoolId: USER_POOL_ID,
         TokenScopesArray: []
       });
