@@ -1,11 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles';
-import { ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import theme from '../styles/theme';
 
 //React
 import { useState } from 'react';
-import { ReactQueryDevtools } from 'react-query-devtools';
 
 //Components
 import Header from './Header';
@@ -51,19 +47,14 @@ function App() {
   const classes = useStyles();
 
   return (
-    <ThemeProvider theme={theme}>
-      {process.env.REACT_APP_PRODUCTION ? <span /> : <ReactQueryDevtools initialIsOpen={false} />}
-      <div className={classes.root}>
-        <CssBaseline />
-        <Header handleSidebar={handleSidebar} sidebarOpen={sidebarOpen} />
-        <SideBar sidebarOpen={sidebarOpen} folder={currentFolder} />
-
-        {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}
-        <main className={classes.content}>
-          <FileExplorer maxWidth="lg" folder={currentFolder} setFolder={setCurrentFolder} />
-        </main>
-      </div>
-    </ThemeProvider>
+    <div className={classes.root}>
+      <Header handleSidebar={handleSidebar} sidebarOpen={sidebarOpen} />
+      <SideBar sidebarOpen={sidebarOpen} folder={currentFolder} />
+      {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}
+      <main className={classes.content}>
+        <FileExplorer maxWidth="lg" folder={currentFolder} setFolder={setCurrentFolder} />
+      </main>
+    </div>
   );
 }
 

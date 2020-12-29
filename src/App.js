@@ -1,6 +1,5 @@
 import React from 'react';
 //Splash screen
-import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
@@ -8,8 +7,16 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress'
 //Splash screen - end
+
 import { OxySession } from "./utils/api"
 import Home from "./components/Home"
+
+
+import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import theme from './styles/theme';
+import { makeStyles } from '@material-ui/core/styles';
+import { ReactQueryDevtools } from 'react-query-devtools';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,5 +67,11 @@ export default function App() {
       if (action === OxySession.ACTION_SIGNIN) setAuthorized(true)
     })
   }, [])
-  return <span>{isAuthorized ? <Home /> : <SplashScreen />}</span>
+  return (
+    <ThemeProvider theme={theme}>
+      {process.env.REACT_APP_PRODUCTION ? <span /> : <ReactQueryDevtools initialIsOpen={false} />}
+      <CssBaseline />
+      {isAuthorized ? <Home /> : <SplashScreen />}
+    </ThemeProvider>
+  )
 }
