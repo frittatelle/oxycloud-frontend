@@ -34,6 +34,9 @@ class Storage {
     let res = await this.s3_api.getObject({
       Key: file_path,
       Bucket: this.bucket
+    }).on("httpDownloadProgress", (p) => {
+      if (typeof progress_cb === "function")
+        progress_cb(p.loaded / p.total)
     }).promise()
     return { body: res.Body, content_type: res.ContentType };
   }
