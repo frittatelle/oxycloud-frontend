@@ -13,11 +13,13 @@ const cognitoWebDomain = `${USER_POOL_SUBDOMAIN}.auth.${REGION}.amazoncognito.co
 
 AWS.config.region = REGION;
 
-const ACTION_SIGNIN = "SignIn";
-const ACTION_SIGNOUT = "SignOut";
-const ACTION_REFRESH_CREDENTIALS = "Refresh credentials"
+
 
 class Session {
+  ACTION_SIGNIN = "SignIn";
+  ACTION_SIGNOUT = "SignOut";
+  ACTION_REFRESH_CREDENTIALS = "Refresh credentials"
+
   cognitoSession = null;
   cognitoAuth = new CognitoAuth({
     ClientId: CLIENT_ID,
@@ -36,9 +38,9 @@ class Session {
       onSuccess: async (result) => {
         this.cognitoSession = result;
         await this.refreshAwsCredentials();
-        this.onSuccess(ACTION_SIGNIN)
+        this.onSuccess(this.ACTION_SIGNIN)
       },
-      onFailure: (err) => this.onFailure(ACTION_SIGNIN, err)
+      onFailure: (err) => this.onFailure(this.ACTION_SIGNIN, err)
     }
   }
 
@@ -55,7 +57,7 @@ class Session {
   async signOut() {
     this.cognitoSession = null;
     this.cognitoAuth.signOut();
-    this.onSuccess(ACTION_SIGNOUT);
+    this.onSuccess(this.ACTION_SIGNOUT);
   }
 
   get isAuthorized() {
@@ -93,10 +95,10 @@ class Session {
         } else {
           res();
         }
-      }))).catch(e => this.onFailure(ACTION_REFRESH_CREDENTIALS, e));
+      }))).catch(e => this.onFailure(this.ACTION_REFRESH_CREDENTIALS, e));
 
     }
-    this.onSuccess(ACTION_REFRESH_CREDENTIALS);
+    this.onSuccess(this.ACTION_REFRESH_CREDENTIALS);
     //this is not necessesary
     return AWS.config.credentials.data['Credentials'];
   }
