@@ -12,10 +12,10 @@ import ShareIcon from '@material-ui/icons/Share';
 import IconButton from '@material-ui/core/IconButton';
 
 const getIcon = (ext) => {
-  for (var type in data)
-    if (ext === type.ext)
-      return <FontAwesomeIcon className="my-icon" icon={FaIcons[type.icon]} />
-  return <FontAwesomeIcon className="my-icon" icon={FaIcons['faFile']} />
+  for (const [, type] of data.entries())
+    if (type.ext === ext)
+      return <FontAwesomeIcon icon={FaIcons[type.icon]} />
+  return <FontAwesomeIcon icon={FaIcons['faFile']} />
 }
 
 
