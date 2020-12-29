@@ -1,27 +1,18 @@
 import AWS from "aws-sdk";
-//import { S3_ENDPOINT, ACCESS_KEY_ID, SECRET_ACCESS_KEY, BUCKET_NAME } from process.env;
-//const S3_ENDPOINT = process.env.S3_ENDPOINT || "http://localhost:4568"
-//const S3_ACCESS_KEY_ID = process.env.S3_ACCESS_KEY_ID || "S3RVER"
-//const S3_SECRET_ACCESS_KEY = process.env.S3_SECRET_ACCESS_KEY || "S3RVER"
-const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME
+import Session from "./Session"
 
-const S3_CONF = {
-  s3ForcePathStyle: true,
- // accessKeyId: S3_ACCESS_KEY_ID,
- // secretAccessKey: S3_SECRET_ACCESS_KEY,
- // endpoint: S3_ENDPOINT,
-  bucketName: S3_BUCKET_NAME
-}
+
+const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
+
 
 class Storage {
   constructor(conf) {
-    this.bucket = conf.bucketName;
     this.conf = conf;
   }
 
   set conf(value) {
     this._conf = value;
-    this.bucket = value.bucketName;
+    this.bucket = value ? value.bucketName : S3_BUCKET_NAME;
     this.s3_api = new AWS.S3(value);
   }
 
@@ -73,7 +64,7 @@ function _processApiResponse(data) {
       name: f.Name,
       size: f.Size,
       last_edit: new Date(f.LastModified),
-      owner: f.Owner.DisplayName
+      owner: f.Owner ? f.Owner.DisplayName : "you"
     }
   });
 
@@ -88,7 +79,14 @@ function _processApiResponse(data) {
 
 
 
-var _storage = new Storage(S3_CONF);
+var _storage = null;
 
-
-export default _storage;
+export default (() => {
+  if (_storage === null) {
+    //HORRIBLE workoaround to make it works both for unittest and use
+    if (process.env.NODE_ENV !== "test")
+      Session.init();
+    _storage = new Storage();
+  }
+  return _storage
+})();
