@@ -1,15 +1,15 @@
 import AWS from "aws-sdk";
 //import { S3_ENDPOINT, ACCESS_KEY_ID, SECRET_ACCESS_KEY, BUCKET_NAME } from process.env;
-const S3_ENDPOINT = process.env.S3_ENDPOINT || "http://localhost:4568"
-const S3_ACCESS_KEY_ID = process.env.S3_ACCESS_KEY_ID || "S3RVER"
-const S3_SECRET_ACCESS_KEY = process.env.S3_SECRET_ACCESS_KEY || "S3RVER"
-const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME || "test-bucket"
+//const S3_ENDPOINT = process.env.S3_ENDPOINT || "http://localhost:4568"
+//const S3_ACCESS_KEY_ID = process.env.S3_ACCESS_KEY_ID || "S3RVER"
+//const S3_SECRET_ACCESS_KEY = process.env.S3_SECRET_ACCESS_KEY || "S3RVER"
+const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME
 
 const S3_CONF = {
   s3ForcePathStyle: true,
-  accessKeyId: S3_ACCESS_KEY_ID,
-  secretAccessKey: S3_SECRET_ACCESS_KEY,
-  endpoint: S3_ENDPOINT,
+ // accessKeyId: S3_ACCESS_KEY_ID,
+ // secretAccessKey: S3_SECRET_ACCESS_KEY,
+ // endpoint: S3_ENDPOINT,
   bucketName: S3_BUCKET_NAME
 }
 
@@ -21,6 +21,7 @@ class Storage {
 
   set conf(value) {
     this._conf = value;
+    this.bucket = value.bucketName;
     this.s3_api = new AWS.S3(value);
   }
 

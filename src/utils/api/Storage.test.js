@@ -23,9 +23,14 @@ beforeAll(() => {
     ],
   }).run(() => { });
 
-  let new_conf = Storage.conf;
-  new_conf.endpoint = "http://localhost:6660";
-  Storage.conf = new_conf;
+  Storage.conf = {
+    s3ForcePathStyle: true,
+    accessKeyId: "S3RVER",
+    secretAccessKey: "S3RVER",
+    endpoint: "http://localhost:6660",
+    bucketName: "test-bucket",
+    Bucket: "test-bucket"
+  };
 });
 
 afterAll(() => {
