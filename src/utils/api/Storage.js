@@ -60,21 +60,21 @@ class Storage {
 }
 
 function _processApiResponse(data, basePath) {
-  var files = data.Contents.map((f) => {
+  var files = data.Contents.filter((f) => !f.Key.endsWith("/"))
+    .map((f) => {
+      if (basePath !== "")
+        f.Key = f.Key.split(basePath).pop();
 
-    if (basePath !== "")
-      f.Key = f.Key.split(basePath).pop();
-
-    let name = f.Key.split('/');
-    name = name[name.length - 1];
-    return {
-      path: f.Key,
-      name: name,
-      size: f.Size,
-      last_edit: new Date(f.LastModified),
-      owner: f.Owner ? f.Owner.DisplayName : "you"
-    }
-  });
+      let name = f.Key.split('/');
+      name = name[name.length - 1];
+      return {
+        path: f.Key,
+        name: name,
+        size: f.Size,
+        last_edit: new Date(f.LastModified),
+        owner: f.Owner ? f.Owner.DisplayName : "you"
+      }
+    });
 
   var folders = data.CommonPrefixes.map((f) => {
     if (basePath !== "")
