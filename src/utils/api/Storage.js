@@ -1,5 +1,4 @@
 import AWS from "aws-sdk";
-import Session from "./Session"
 
 
 const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
@@ -88,9 +87,4 @@ function _processApiResponse(data, basePath) {
   return { files, folders }
 }
 
-//HORRIBLE WORKAROUND
-//Actually Storage should not refer Session
-if (process.env.NODE_ENV !== "test")
-  Session.init();
-
-export default new Storage();
+export default Storage;
