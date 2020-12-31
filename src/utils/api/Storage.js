@@ -1,5 +1,4 @@
 import AWS from "aws-sdk";
-import Session from "./Session"
 
 
 const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
@@ -14,8 +13,8 @@ class Storage {
   set conf(value) {
     this._conf = value;
     this.bucket = value ? value.bucketName ?? S3_BUCKET_NAME : S3_BUCKET_NAME;
-    this.base_path = value ? value.basePath ?? this.basePath : this.basePath;
-    this.s3_api = new AWS.S3(value);
+    this.basePath = value ? value.basePath ?? this.basePath : this.basePath;
+    this.s3Api = new AWS.S3(value);
   }
 
   get conf() {
@@ -24,7 +23,7 @@ class Storage {
 
   async ls(folder = "") {
     return _processApiResponse(await
-      this.s3_api.listObjects({
+      this.s3Api.listObjects({
         Prefix: this.basePath + folder,
         Delimiter: "/",
         Bucket: this.bucket
@@ -33,7 +32,7 @@ class Storage {
   }
 
   async get(file_path, progress_cb) {
-    let res = await this.s3_api.getObject({
+    let res = await this.s3Api.getObject({
       Key: this.basePath + file_path,
       Bucket: this.bucket
     }).on("httpDownloadProgress", (p) => {
@@ -61,21 +60,21 @@ class Storage {
 }
 
 function _processApiResponse(data, basePath) {
-  var files = data.Contents.map((f) => {
+  var files = data.Contents.filter((f) => !f.Key.endsWith("/"))
+    .map((f) => {
+      if (basePath !== "")
+        f.Key = f.Key.split(basePath).pop();
 
-    if (basePath !== "")
-      f.Key = f.Key.split(basePath).pop();
-
-    let name = f.Key.split('/');
-    name = name[name.length - 1];
-    return {
-      path: f.Key,
-      name: name,
-      size: f.Size,
-      last_edit: new Date(f.LastModified),
-      owner: f.Owner ? f.Owner.DisplayName : "you"
-    }
-  });
+      let name = f.Key.split('/');
+      name = name[name.length - 1];
+      return {
+        path: f.Key,
+        name: name,
+        size: f.Size,
+        last_edit: new Date(f.LastModified),
+        owner: f.Owner ? f.Owner.DisplayName : "you"
+      }
+    });
 
   var folders = data.CommonPrefixes.map((f) => {
     if (basePath !== "")
@@ -88,9 +87,4 @@ function _processApiResponse(data, basePath) {
   return { files, folders }
 }
 
-//HORRIBLE WORKAROUND
-//Actually Storage should not refer Session
-if (process.env.NODE_ENV !== "test")
-  Session.init();
-
-export default new Storage();
+export default Storage;

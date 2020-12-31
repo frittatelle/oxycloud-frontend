@@ -7,6 +7,7 @@ const S3rver = require('s3rver');
 
 const _LOCAL_DIR = '/tmp/s3rver_test_directory';
 let instance;
+let storage;
 beforeAll(() => {
   const corsConfig = require.resolve('s3rver/example/cors.xml');
   const websiteConfig = require.resolve('s3rver/example/website.xml');
@@ -23,14 +24,14 @@ beforeAll(() => {
     ],
   }).run(() => { });
 
-  Storage.conf = {
+  storage = new Storage({
     s3ForcePathStyle: true,
     accessKeyId: "S3RVER",
     secretAccessKey: "S3RVER",
     endpoint: "http://localhost:6660",
     bucketName: "test-bucket",
     Bucket: "test-bucket"
-  };
+  });
 });
 
 afterAll(() => {
@@ -49,10 +50,10 @@ afterEach(() => {
 
 describe("list files", () => {
   it("ls method exist", () => {
-    expect(Storage.ls).not.toBe(undefined);
+    expect(storage.ls).not.toBe(undefined);
   });
   it("call ls method", async () => {
-    let res = await Storage.ls();
+    let res = await storage.ls();
     expect(res).not.toBe(undefined);
     expect(res).toHaveProperty("files");
     expect(res).toHaveProperty("folders");
@@ -61,7 +62,7 @@ describe("list files", () => {
 
 describe("get files", () => {
   it("get method exist", () => {
-    expect(Storage.get).not.toBe(undefined);
+    expect(storage.get).not.toBe(undefined);
   });
 
 });
@@ -69,7 +70,7 @@ describe("get files", () => {
 
 describe("put files", () => {
   it("put method exist", () => {
-    expect(Storage.put).not.toBe(undefined);
+    expect(storage.put).not.toBe(undefined);
   });
 
 });
@@ -77,14 +78,14 @@ describe("put files", () => {
 
 describe("delete files", () => {
   it("rm method exist", () => {
-    expect(Storage.rm).not.toBe(undefined);
+    expect(storage.rm).not.toBe(undefined);
   });
 
 });
 
 describe("create directory", () => {
   it("mkdir method exist", () => {
-    expect(Storage.mkdir).not.toBe(undefined);
+    expect(storage.mkdir).not.toBe(undefined);
   });
 
 });
@@ -92,7 +93,7 @@ describe("create directory", () => {
 
 describe("delete directory", () => {
   it("rmdir method exist", () => {
-    expect(Storage.rmdir).not.toBe(undefined);
+    expect(storage.rmdir).not.toBe(undefined);
   });
 
 });
