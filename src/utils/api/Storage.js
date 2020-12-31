@@ -13,8 +13,8 @@ class Storage {
   set conf(value) {
     this._conf = value;
     this.bucket = value ? value.bucketName ?? S3_BUCKET_NAME : S3_BUCKET_NAME;
-    this.base_path = value ? value.basePath ?? this.basePath : this.basePath;
-    this.s3_api = new AWS.S3(value);
+    this.basePath = value ? value.basePath ?? this.basePath : this.basePath;
+    this.s3Api = new AWS.S3(value);
   }
 
   get conf() {
@@ -23,7 +23,7 @@ class Storage {
 
   async ls(folder = "") {
     return _processApiResponse(await
-      this.s3_api.listObjects({
+      this.s3Api.listObjects({
         Prefix: this.basePath + folder,
         Delimiter: "/",
         Bucket: this.bucket
@@ -32,7 +32,7 @@ class Storage {
   }
 
   async get(file_path, progress_cb) {
-    let res = await this.s3_api.getObject({
+    let res = await this.s3Api.getObject({
       Key: this.basePath + file_path,
       Bucket: this.bucket
     }).on("httpDownloadProgress", (p) => {
