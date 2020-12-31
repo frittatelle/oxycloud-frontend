@@ -74,7 +74,7 @@ class Session {
     return {
       username: this.tokenPayload['cognito:username'],
       email: this.tokenPayload['email'],
-      id: this.tokenPayload['sub']
+      id: AWS.config.credentials.params.IdentityId
     }
   }
 
