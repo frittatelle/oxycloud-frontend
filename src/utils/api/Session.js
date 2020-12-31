@@ -1,4 +1,5 @@
 import { CognitoAuth } from 'amazon-cognito-auth-js';
+import Storage from './Storage'
 import AWS from "aws-sdk";
 
 const USER_POOL_ID = process.env.REACT_APP_USER_POOL_ID;
@@ -107,6 +108,15 @@ class Session {
     this.onSuccess(this.ACTION_REFRESH_CREDENTIALS);
     //this is not necessesary
     return AWS.config.credentials.data['Credentials'];
+  }
+
+  get storage() {
+    //something better but it's fine for now
+    if (!this._storage)
+      this._storage = new Storage({
+        basePath: this.userInfo.id + "/"
+      });
+    return this._storage
   }
 }
 
