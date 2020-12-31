@@ -24,7 +24,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import StorageIcon from '@material-ui/icons/Storage';
 
 //api
-import { OxyStorage } from "../utils/api"
+import { OxySession } from "../utils/api"
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -56,7 +56,7 @@ const SideBar = ({ sidebarOpen, folder, setFolder }) => {
 	const classes = useStyles();
 
 	//useQuery (get data)
-	const res = useQuery(["fsTree", folder], () => OxyStorage.ls(folder));
+	const res = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder));
 	return (
 		<>
 			{res.isLoading && (

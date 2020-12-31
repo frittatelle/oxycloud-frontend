@@ -8,12 +8,12 @@ import TableRow from '@material-ui/core/TableRow';
 import FileRow from "./FileRow"
 import FolderRow from "./FolderRow"
 
-import { OxyStorage } from "../../utils/api"
+import { OxySession } from "../../utils/api"
 
 import { useQuery } from 'react-query';
 
 const FileTable = ({ folder, on_share, on_download, on_change_folder }) => {
-  const FSTree = useQuery(["fsTree", folder], () => OxyStorage.ls(folder))
+  const FSTree = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder))
   return (
     <TableContainer>
       <Table aria-label="simple table">

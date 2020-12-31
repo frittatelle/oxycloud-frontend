@@ -12,7 +12,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import { useQuery } from 'react-query';
 
 //Oxycloud
-import { OxyStorage } from "../utils/api"
+import { OxySession } from "../utils/api"
 
 import FileTable from './FileExplorer/FileTable'
 import FoldersBar from './FileExplorer/FoldersBar'
@@ -38,11 +38,11 @@ function saveByteArray(fileName, contentType, byte) {
 
 const FileExplorer = ({ classes, folder, setFolder }) => {
 
-  const FSTree = useQuery(["fsTree", folder], () => OxyStorage.ls(folder))
+  const FSTree = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder))
 
   function startDownload({ path, name }) {
     console.log("Download:", path);
-    OxyStorage.get(path)
+    OxySession.storage.get(path)
       .then((res) => saveByteArray(name, res.content_type, res.body))
       .catch(console.error)
   }
