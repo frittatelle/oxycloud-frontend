@@ -1,5 +1,5 @@
 import AWS from "aws-sdk";
-import {useRef} from "react";
+
 
 const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
 
@@ -63,7 +63,7 @@ basePath = ""
   }
   async put(file="") {
     
-    const res = await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       this.s3Api.upload({
         
         Bucket: this.bucket,

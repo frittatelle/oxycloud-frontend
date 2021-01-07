@@ -20,7 +20,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import IconButton from '@material-ui/core/IconButton'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { OxySession } from '../utils/api';
-import { OxyStorage } from '../utils/api';
+
 import {useState} from "react";
 
 const useStyles = makeStyles((theme) => ({
