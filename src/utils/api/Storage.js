@@ -1,15 +1,31 @@
 import AWS from "aws-sdk";
-
+import {useRef} from "react";
 
 const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
 
 
+ // var fileStream = fs.createReadStream(file_path);
+  //fileStream.on('error', function(err) {
+    //console.log('File Error', err);
+  //});
+
+
 class Storage {
-  basePath = ""
+basePath = ""
   constructor(conf) {
     this.conf = conf ?? {};
+  
+  
+   
+    this.onChange = this.onChange.bind(this);
+    this.state = {
+      file: 'o',
+    };
   }
-
+  
+  onChange(e) {
+    this.setState({file:e.target.files[0]})
+  }
   set conf(value) {
     this._conf = value;
     this.bucket = value ? value.bucketName ?? S3_BUCKET_NAME : S3_BUCKET_NAME;
@@ -41,11 +57,29 @@ class Storage {
     }).promise()
     return { body: res.Body, content_type: res.ContentType };
   }
-
-  async put(binary, file_path) {
-    throw new Error("Not implemented");
+   handleChange = async (e) => {
+    const file = e.target.files[0];
+    console.log("file",file);
   }
+  async put(file="") {
+    
+    const res = await new Promise((resolve, reject) => {
+      this.s3Api.upload({
+        
+        Bucket: this.bucket,
+        Body: '',
+        Key: file,
+        ContentType:file.type,
+       
+        
+      }, (err, data) => err == null ? resolve(data) : reject(err));
+    
+    });
+    
 
+
+  }
+  
   async rm(file_path) {
     throw new Error("Not implemented");
   }
@@ -58,6 +92,8 @@ class Storage {
     throw new Error("Not implemented");
   }
 }
+ 
+
 
 function _processApiResponse(data, basePath) {
   var files = data.Contents.filter((f) => !f.Key.endsWith("/"))

@@ -20,6 +20,8 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import IconButton from '@material-ui/core/IconButton'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { OxySession } from '../utils/api';
+import { OxyStorage } from '../utils/api';
+import {useState} from "react";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -84,7 +86,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Header = ({handleSidebar, sidebarOpen}) => {
+    
+    const [file,selectFile]=useState(null);
 
+   function onFileChange(event){ 
+     
+        // Update the state 
+        selectFile( event.target.files[0] ); 
+        console.log("new file",event.target.files[0]);
+       console.log("name", file.name)
+      };     
     const classes = useStyles();
 
     return(
@@ -139,6 +150,18 @@ const Header = ({handleSidebar, sidebarOpen}) => {
                             <ExitToAppIcon onClick={() => { OxySession.signOut() }} />
                         </IconButton>
                     </Avatar>
+                    
+ <input type="file" name="file" onChange={onFileChange}/>
+                    <Avatar className={classes.avatar}>
+                        
+                        <IconButton color="inherit" >
+                             
+                            <ExitToAppIcon onClick={() => { OxySession.storage.put(file.name,file.type) }} />
+                            
+                        </IconButton>
+                        
+                    </Avatar>
+                    
                 </Toolbar>
             </AppBar>
         </div>
