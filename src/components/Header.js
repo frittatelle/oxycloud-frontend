@@ -21,7 +21,7 @@ import IconButton from '@material-ui/core/IconButton'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { OxySession } from '../utils/api';
 
-import {useState} from "react";
+import {useState,useRef} from "react";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -70,6 +70,8 @@ const useStyles = makeStyles((theme) => ({
     inputRoot: {
         color: 'inherit',
     },
+    
+      
     inputInput: {
         padding: theme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
@@ -87,15 +89,34 @@ const useStyles = makeStyles((theme) => ({
 
 const Header = ({handleSidebar, sidebarOpen}) => {
     
-    const [file,selectFile]=useState(null);
-
-   function onFileChange(event){ 
-     
+   
+    
+    const [,selectFile]=useState("");
+    
+    const inputFile=useRef();
+    
+   const onFileChange=(e)=>{ 
+    e.preventDefault();
         // Update the state 
-        selectFile( event.target.files[0] ); 
-        console.log("new file",event.target.files[0]);
+       const file=e.target.files[0];
+       selectFile(file); 
+        console.log("new file",e.target.files[0]);
        console.log("name", file.name)
-      };     
+       console.log("file", file);
+     OxySession.storage.put(file)
+      
+      
+   }
+        
+     const upload=()=>{
+       
+          
+         inputFile.current.click();
+         
+      }
+
+      
+     
     const classes = useStyles();
 
     return(
@@ -129,16 +150,32 @@ const Header = ({handleSidebar, sidebarOpen}) => {
                             <ViewComfyIcon />
                         </IconButton>
                     </Avatar>
+                  
+              
+                    
+                    <button id="f" value = "Choose image" hidden onClick ={()=>upload()} />
+                   <input id = "imagefile" type="file" hidden ref={inputFile} onChange={(e)=>onFileChange(e)}/>
+                    
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
+                       <label for="f">
                             <AddIcon />
+                            </label>
+                            
                         </IconButton>
+
+                        
                     </Avatar>
+                       
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
                             <NotificationsIcon />
                         </IconButton>
                     </Avatar>
+                   
+                  
+                    
+
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
                             <SettingsIcon />
@@ -149,17 +186,6 @@ const Header = ({handleSidebar, sidebarOpen}) => {
                         <IconButton color="inherit" >
                             <ExitToAppIcon onClick={() => { OxySession.signOut() }} />
                         </IconButton>
-                    </Avatar>
-                    
- <input type="file" name="file" onChange={onFileChange}/>
-                    <Avatar className={classes.avatar}>
-                        
-                        <IconButton color="inherit" >
-                             
-                            <ExitToAppIcon onClick={() => { OxySession.storage.put(file.name,file.type) }} />
-                            
-                        </IconButton>
-                        
                     </Avatar>
                     
                 </Toolbar>
