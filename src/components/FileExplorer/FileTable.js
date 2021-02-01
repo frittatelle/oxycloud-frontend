@@ -12,7 +12,7 @@ import { OxySession } from "../../utils/api"
 
 import { useQuery } from 'react-query';
 
-const FileTable = ({ folder, on_share, on_download, on_change_folder }) => {
+const FileTable = ({ folder, on_share, on_download, on_change_folder, on_rm }) => {
   const FSTree = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder))
   return (
     <TableContainer>
@@ -40,6 +40,7 @@ const FileTable = ({ folder, on_share, on_download, on_change_folder }) => {
               file={f}
               on_share={on_share}
               on_download={on_download}
+              on_rm={on_rm}
             />)}
         </TableBody>
       </Table>

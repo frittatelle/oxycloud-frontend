@@ -5,10 +5,10 @@ const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
 
 
 class Storage {
-basePath = ""
+  basePath = ""
   constructor(conf) {
     this.conf = conf ?? {};
-}
+  }
   set conf(value) {
     this._conf = value;
     this.bucket = value ? value.bucketName ?? S3_BUCKET_NAME : S3_BUCKET_NAME;
@@ -40,25 +40,33 @@ basePath = ""
     }).promise()
     return { body: res.Body, content_type: res.ContentType };
   }
-   
- 
-    async put(file) {
-    
-      let res=await this.s3Api.upload({
-          
-          Bucket: this.bucket,
-          Key: this.basePath+file.name,
-          Body: file,
-          ContentType:file.type,
-      }).promise()
-      return { body: res.Body, content_type: res.ContentType };
-   
-  
-  
-    }
-        
-  async rm(file_path) {
-    throw new Error("Not implemented");
+
+
+  async put(file, folder) {
+
+    let res = await this.s3Api.upload({
+
+      Bucket: this.bucket,
+
+      Key: this.basePath + folder + file.name,
+      Body: file,
+      ContentType: file.type,
+    }).promise()
+    return { body: res.Body, content_type: res.ContentType };
+
+
+
+  }
+
+  async rm(path) {
+    let res = await this.s3Api.deleteObject({
+
+      Bucket: this.bucket,
+      Key: this.basePath + path,
+
+
+    }).promise()
+    return { body: res.Body, content_type: res.ContentType };
   }
 
   async mkdir(path) {
@@ -69,7 +77,7 @@ basePath = ""
     throw new Error("Not implemented");
   }
 }
- 
+
 
 
 function _processApiResponse(data, basePath) {

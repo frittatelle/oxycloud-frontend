@@ -20,27 +20,27 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import IconButton from '@material-ui/core/IconButton'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { OxySession } from '../utils/api';
+import { useState } from 'react'
 
-import {useState,useRef} from "react";
 
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
     },
     appBar: {
-      zIndex: theme.zIndex.drawer + 1,
+        zIndex: theme.zIndex.drawer + 1,
     },
     logo: {
         marginRight: theme.spacing(3),
         fontWeight: 800,
-        '&:hover':{
+        '&:hover': {
             cursor: 'pointer',
         },
     },
-    span:{
+    span: {
         color: theme.palette.primary,
     },
-    avatar:{
+    avatar: {
         marginLeft: theme.spacing(3),
         marginRight: theme.spacing(3),
     },
@@ -49,13 +49,13 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: theme.shape.borderRadius,
         backgroundColor: fade(theme.palette.primary.main, 0.15),
         '&:hover': {
-          backgroundColor: fade(theme.palette.primary.main, 0.25),
+            backgroundColor: fade(theme.palette.primary.main, 0.25),
         },
         marginRight: theme.spacing(3),
         marginLeft: 0,
         width: '100%',
         [theme.breakpoints.up('lg')]: {
-          width: 'auto',
+            width: 'auto',
         },
     },
     searchIcon: {
@@ -70,8 +70,10 @@ const useStyles = makeStyles((theme) => ({
     inputRoot: {
         color: 'inherit',
     },
-    
-      
+    hide: {
+        display: 'none'
+    },
+
     inputInput: {
         padding: theme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
@@ -81,55 +83,38 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('sm')]: {
             width: '12ch',
             '&:focus': {
-            width: '20ch',
+                width: '20ch',
             },
         },
     },
 }));
 
-const Header = ({handleSidebar, sidebarOpen}) => {
-    
-   
-    
-    const [,selectFile]=useState("");
-    
-    const inputFile=useRef();
-    
-   const onFileChange=(e)=>{ 
-    e.preventDefault();
-        // Update the state 
-       const file=e.target.files[0];
-       selectFile(file); 
-        console.log("new file",e.target.files[0]);
-       console.log("name", file.name)
-       console.log("file", file);
-     OxySession.storage.put(file)
-      
-      
-   }
-        
-     const upload=()=>{
-       
-          
-         inputFile.current.click();
-         
-      }
+const Header = ({ handleSidebar, sidebarOpen, folder }) => {
 
-      
-     
+    const [, selectFile] = useState("");
+
+
+    function onFileChange(e) {
+
+        const file = e.target.files[0];
+        selectFile(file);
+
+        OxySession.storage.put(file, folder)
+    }
+
+
     const classes = useStyles();
-
-    return(
+    return (
         <div className={classes.root}>
             <AppBar position="fixed" color="inherit" className={classes.appBar}>
                 <Toolbar>
                     <Typography variant="h6" className={classes.logo}>
-                       <Typography color="primary" variant="inherit" component="span">Oxy</Typography>Cloud
+                        <Typography color="primary" variant="inherit" component="span">Oxy</Typography>Cloud
                     </Typography>
                     <Divider orientation="vertical" flexItem />
                     <Avatar className={classes.avatar}>
-                        <IconButton color="inherit" onClick={handleSidebar}>
-                            {sidebarOpen ? <KeyboardArrowLeftIcon /> : <KeyboardArrowRightIcon /> }
+                        <IconButton color="inherit" onClick={handleSidebar} >
+                            {sidebarOpen ? <KeyboardArrowLeftIcon /> : <KeyboardArrowRightIcon />}
                         </IconButton>
                     </Avatar>
                     <div className={classes.search}>
@@ -150,31 +135,23 @@ const Header = ({handleSidebar, sidebarOpen}) => {
                             <ViewComfyIcon />
                         </IconButton>
                     </Avatar>
-                  
-              
-                    
-                    <button id="f" value = "Choose image" hidden onClick ={()=>upload()} />
-                   <input id = "imagefile" type="file" hidden ref={inputFile} onChange={(e)=>onFileChange(e)}/>
-                    
+
+
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
-                       <label for="f">
-                            <AddIcon />
+                            <input id="imagefile" type="file" hidden onChange={(e) => onFileChange(e, folder)} />
+                            <label htmlFor="imagefile">
+                                <AddIcon />
                             </label>
-                            
                         </IconButton>
-
-                        
                     </Avatar>
-                       
+
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
                             <NotificationsIcon />
                         </IconButton>
                     </Avatar>
-                   
-                  
-                    
+
 
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
@@ -187,7 +164,7 @@ const Header = ({handleSidebar, sidebarOpen}) => {
                             <ExitToAppIcon onClick={() => { OxySession.signOut() }} />
                         </IconButton>
                     </Avatar>
-                    
+
                 </Toolbar>
             </AppBar>
         </div>

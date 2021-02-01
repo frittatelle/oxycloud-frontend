@@ -51,8 +51,7 @@ function formatDate(date) {
 
 const FileRow = ({ file:
   { path, name, size, owner, last_edit },
-  on_download, on_share }) => {
-  //console.log(startDownload)
+  on_download, on_share, on_rm }) => {
   return (
     <TableRow key={path} >
       <TableCell>
@@ -76,6 +75,9 @@ const FileRow = ({ file:
         </IconButton>
         <IconButton onClick={() => on_share({ path, name })}>
           <ShareIcon fontSize='small' />
+        </IconButton>
+        <IconButton onClick={() => on_rm({ path, name })}>
+          <GetAppIcon fontSize='small' />
         </IconButton>
       </TableCell>
     </TableRow>

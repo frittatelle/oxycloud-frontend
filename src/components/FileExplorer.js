@@ -37,14 +37,17 @@ function saveByteArray(fileName, contentType, byte) {
 };
 
 const FileExplorer = ({ classes, folder, setFolder }) => {
-
   const FSTree = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder))
-
   function startDownload({ path, name }) {
     console.log("Download:", path);
     OxySession.storage.get(path)
       .then((res) => saveByteArray(name, res.content_type, res.body))
       .catch(console.error)
+  }
+
+  function rm({ path, name }) {
+
+    OxySession.storage.rm(path, name)
   }
 
   function shareDialog(row) {
@@ -64,10 +67,11 @@ const FileExplorer = ({ classes, folder, setFolder }) => {
           (<Typography color="error" align="center">ERROR:{FSTree.error}</Typography>)}
         {(!FSTree.isLoading && !FSTree.error) &&
           <FileTable
-          folder={folder}
+            folder={folder}
             on_change_folder={setFolder}
             on_download={startDownload}
             on_share={shareDialog}
+            on_rm={rm}
           />
         }
       </Grid>

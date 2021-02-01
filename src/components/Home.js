@@ -42,13 +42,12 @@ function App() {
     setSidebarOpen(!sidebarOpen);
     console.log(sidebarOpen);
   }
-
   const classes = useStyles();
 
   return (
     <div className={classes.local_root}>
-      <Header handleSidebar={handleSidebar} sidebarOpen={sidebarOpen} />
-       <SideBar sidebarOpen={sidebarOpen} folder={currentFolder} setFolder={setCurrentFolder}/>
+      <Header handleSidebar={handleSidebar} sidebarOpen={sidebarOpen} folder={currentFolder} />
+      <SideBar sidebarOpen={sidebarOpen} folder={currentFolder} setFolder={setCurrentFolder} />
       {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}
       <main className={classes.content}>
         <FileExplorer maxWidth="lg" folder={currentFolder} setFolder={setCurrentFolder} />
