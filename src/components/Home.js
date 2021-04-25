@@ -7,7 +7,7 @@ import { useState } from 'react';
 import Header from './Header';
 import SideBar from './SideBar';
 import FileExplorer from './FileExplorer'
-
+import BuySubsc from './BuySubsc'
 
 // Temporatry style, put this style in the actual components!
 const useStyles = makeStyles(theme => ({
@@ -51,6 +51,7 @@ function App() {
       {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}
       <main className={classes.content}>
         <FileExplorer maxWidth="lg" folder={currentFolder} setFolder={setCurrentFolder} />
+        <BuySubsc  maxWidth="sm" />
       </main>
     </div>
   );
