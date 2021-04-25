@@ -24,7 +24,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import StorageIcon from '@material-ui/icons/Storage';
 
 //api
-import { OxySession } from "../utils/api"
+//import { OxySession } from "../utils/api"
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -56,16 +56,16 @@ const SideBar = ({ sidebarOpen, folder, setFolder }) => {
 	const classes = useStyles();
 
 	//useQuery (get data)
-	const res = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder));
+	//const res = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder));
 	return (
 		<>
-			{res.isLoading && (
+			{/* {res.isLoading && (
 				console.log(res.status)
 			)}
 			{res.isError && (
 				console.log(res.error)
 			)}
-			{res.isSuccess && (
+			{res.isSuccess && ( */}
 				<Drawer
 					variant="permanent"
 					className={clsx(classes.drawer, {
@@ -81,7 +81,7 @@ const SideBar = ({ sidebarOpen, folder, setFolder }) => {
 				>
 					<Toolbar />
 					<List>
-						{res.data.folders.map(f => (
+						{/* {res.data.folders.map(f => ( }
 							<ListItem button key={f.path} onClick={() => setFolder(f.path)}>
 								<ListItemAvatar >
 									<Avatar >
@@ -90,7 +90,8 @@ const SideBar = ({ sidebarOpen, folder, setFolder }) => {
 								</ListItemAvatar>
 								<ListItemText primary={f.name} />
 							</ListItem>
-						))}
+						))
+						} */}
 					</List>
 					<Divider />
 					{/* Static Lists (favorites, deleted ...) */}
@@ -143,7 +144,8 @@ const SideBar = ({ sidebarOpen, folder, setFolder }) => {
 						</ListItem>
 					</List>
 				</Drawer>
-			)}
+			)
+			{/* } */}
 		</>
 	);
 }
