@@ -52,15 +52,14 @@ class Storage {
 
 
   async put(file, folder) {
-    console.log(file);
-    console.log(API_ENDPOINT+"/docs");
-    let res = await axios.put(API_ENDPOINT+"/docs", file,{
+    let displayname = folder + file.name;
+    let url = API_ENDPOINT+"/docs?filename="+displayname;
+    let res = await axios.put(url, file,{
         headers: {
           'Authorization': this.session.idToken.jwtToken,
-          'Content-Type': file.type
+          'Content-Type': file.type,
         }
-    }).promise();//.then(console.log).catch(console.error);
-   console.log(res);
+    }).promise();
    return res
   }
 
