@@ -114,7 +114,8 @@ class Session {
     //something better but it's fine for now
     if (!this._storage)
       this._storage = new Storage({
-        basePath: this.userInfo.id + "/"
+        basePath: this.userInfo.id + "/",
+        session: this.cognitoSession
       });
     return this._storage
   }

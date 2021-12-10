@@ -1,19 +1,28 @@
 import AWS from "aws-sdk";
+import axios from 'axios';
 
-
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL;
 const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
-
-
 class Storage {
   basePath = ""
   constructor(conf) {
     this.conf = conf ?? {};
+    axios.interceptors.request.use(request => {
+      console.log('Starting Request', JSON.stringify(request, null, 2))
+      return request
+    })
+
+    axios.interceptors.response.use(response => {
+      console.log('Response:', JSON.stringify(response, null, 2))
+      return response
+    })
   }
   set conf(value) {
     this._conf = value;
     this.bucket = value ? value.bucketName ?? S3_BUCKET_NAME : S3_BUCKET_NAME;
     this.basePath = value ? value.basePath ?? this.basePath : this.basePath;
     this.s3Api = new AWS.S3(value);
+    this.session = value ? value.session ?? {} : {} 
   }
 
   get conf() {
@@ -43,19 +52,16 @@ class Storage {
 
 
   async put(file, folder) {
-
-    let res = await this.s3Api.upload({
-
-      Bucket: this.bucket,
-
-      Key: this.basePath + folder + file.name,
-      Body: file,
-      ContentType: file.type,
-    }).promise()
-    return { body: res.Body, content_type: res.ContentType };
-
-
-
+    console.log(file);
+    console.log(API_ENDPOINT+"/docs");
+    let res = await axios.put(API_ENDPOINT+"/docs", file,{
+        headers: {
+          'Authorization': this.session.idToken.jwtToken,
+          'Content-Type': file.type
+        }
+    }).promise();//.then(console.log).catch(console.error);
+   console.log(res);
+   return res
   }
 
   async rm(path) {
@@ -65,7 +71,7 @@ class Storage {
       Key: this.basePath + path,
 
 
-    }).promise()
+    })
     return { body: res.Body, content_type: res.ContentType };
   }
 
