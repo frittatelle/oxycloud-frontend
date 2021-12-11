@@ -1,7 +1,7 @@
 import AWS from "aws-sdk";
 import axios from 'axios';
 
-const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL;
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL + "/docs";
 const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
 class Storage {
   basePath = ""
@@ -30,13 +30,25 @@ class Storage {
   }
 
   async ls(folder = "") {
-    return _processApiResponse(await
-      this.s3Api.listObjects({
-        Prefix: this.basePath + folder,
-        Delimiter: "/",
-        Bucket: this.bucket
-      }).promise()
-      , this.basePath);
+    let res = await axios.get(API_ENDPOINT,{
+        params:{ folder: folder},
+        headers: {
+          'Authorization': this.session.idToken.jwtToken,
+        }
+    });
+    res = res.data;
+    for(var i=0;i<res.files.length;i++){
+        let file = res.files[i];
+        if(file.path.lastIndexOf("/")>0){
+            folder = file.path.substring(0, file.path.lastIndexOf("/") + 1);
+            file.name = file.path.substring(file.path.lastIndexOf("/") + 1, file.path.length);
+        }else{
+            file.name = file.path;
+        }
+    }
+    //TODO: include folders in backend response
+    res.folders = [];
+    return res
   }
 
   async get(file_path, progress_cb) {
@@ -53,14 +65,14 @@ class Storage {
 
   async put(file, folder) {
     let displayname = folder + file.name;
-    let url = API_ENDPOINT+"/docs?filename="+displayname;
-    let res = await axios.put(url, file,{
+    let res = await axios.put(API_ENDPOINT, file,{
+        params: {filename:displayname},
         headers: {
           'Authorization': this.session.idToken.jwtToken,
           'Content-Type': file.type,
         }
-    }).promise();
-   return res
+    });
+    return res
   }
 
   async rm(path) {

@@ -35,6 +35,9 @@ function getReadableFileSizeString(fileSizeInBytes) {
 
 function formatDate(date) {
   //https://stackoverflow.com/a/25275914
+  if(typeof date.getMonth !== 'function'){
+      date = new Date(Date.parse(date))
+  }
   var year = date.getFullYear(),
     month = date.getMonth() + 1, // months are zero indexed
     day = date.getDate(),
