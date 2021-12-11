@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import GetAppIcon from '@material-ui/icons/GetApp';
 import ShareIcon from '@material-ui/icons/Share';
 import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const getIcon = (ext) => {
   for (const [, type] of data.entries())
@@ -80,7 +81,7 @@ const FileRow = ({ file:
           <ShareIcon fontSize='small' />
         </IconButton>
         <IconButton onClick={() => on_rm(id)}>
-          <GetAppIcon fontSize='small' />
+          <DeleteIcon fontSize='small' />
         </IconButton>
       </TableCell>
     </TableRow>

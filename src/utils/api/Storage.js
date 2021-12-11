@@ -79,15 +79,15 @@ class Storage {
     return res
   }
 
-  async rm(path) {
-    let res = await this.s3Api.deleteObject({
-
-      Bucket: this.bucket,
-      Key: this.basePath + path,
-
-
-    })
-    return { body: res.Body, content_type: res.ContentType };
+  async rm(id) { 
+    let res = await axios.delete(API_ENDPOINT+"/"+id, {
+        params: {deleted: true},
+        headers: {
+          'Authorization': this.session.idToken.jwtToken,
+          'Content-Type': 'application/json',
+        }
+    });
+    return res;
   }
 
   async mkdir(path) {
