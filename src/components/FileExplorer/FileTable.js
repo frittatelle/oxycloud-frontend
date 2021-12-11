@@ -30,6 +30,7 @@ const FileTable = ({ folder, on_share, on_download, on_change_folder, on_rm }) =
         <TableBody>
           {FSTree.data.folders.map((f) =>
             <FolderRow
+              id={f.id}
               name={f.name}
               path={f.path}
               on_share={on_share}

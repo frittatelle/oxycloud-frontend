@@ -53,10 +53,10 @@ function formatDate(date) {
 
 
 const FileRow = ({ file:
-  { path, name, size, owner, last_edit },
+  { id, path, name, size, owner, last_edit },
   on_download, on_share, on_rm }) => {
   return (
-    <TableRow key={path} >
+    <TableRow key={id} >
       <TableCell>
         {getIcon(name.split('.').pop())}
       </TableCell>
@@ -73,13 +73,13 @@ const FileRow = ({ file:
         {formatDate(last_edit)}
       </TableCell>
       <TableCell align="right">
-        <IconButton onClick={() => on_download({ path, name })}>
+        <IconButton onClick={() => on_download({ id, name })}>
           <GetAppIcon fontSize='small' />
         </IconButton>
         <IconButton onClick={() => on_share({ path, name })}>
           <ShareIcon fontSize='small' />
         </IconButton>
-        <IconButton onClick={() => on_rm({ path, name })}>
+        <IconButton onClick={() => on_rm(id)}>
           <GetAppIcon fontSize='small' />
         </IconButton>
       </TableCell>

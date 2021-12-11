@@ -40,7 +40,7 @@ class Storage {
     for(var i=0;i<res.files.length;i++){
         let file = res.files[i];
         if(file.path.lastIndexOf("/")>0){
-            folder = file.path.substring(0, file.path.lastIndexOf("/") + 1);
+            file.folder = file.path.substring(0, file.path.lastIndexOf("/") + 1);
             file.name = file.path.substring(file.path.lastIndexOf("/") + 1, file.path.length);
         }else{
             file.name = file.path;
@@ -51,15 +51,19 @@ class Storage {
     return res
   }
 
-  async get(file_path, progress_cb) {
-    let res = await this.s3Api.getObject({
-      Key: this.basePath + file_path,
-      Bucket: this.bucket
-    }).on("httpDownloadProgress", (p) => {
-      if (typeof progress_cb === "function")
-        progress_cb(p.loaded / p.total)
-    }).promise()
-    return { body: res.Body, content_type: res.ContentType };
+  async get(file_id, progress_cb) {
+    let res = await axios.get(API_ENDPOINT+"/"+file_id, {
+        responseType: 'arraybuffer',
+        headers: {
+          'Authorization': this.session.idToken.jwtToken,
+        },
+        onDownloadProgress: progressEvent => {
+          if(typeof progress_cb === "function"){
+              progress_cb(progressEvent.loaded/progressEvent.total);
+          }
+        }
+    });
+    return { body: res.data, content_type: res.ContentType };
   }
 
 

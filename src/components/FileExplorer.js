@@ -38,16 +38,14 @@ function saveByteArray(fileName, contentType, byte) {
 
 const FileExplorer = ({ classes, folder, setFolder }) => {
   const FSTree = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder))
-  function startDownload({ path, name }) {
-    console.log("Download:", path);
-    OxySession.storage.get(path)
+  function startDownload({id,name}) {
+    OxySession.storage.get(id)
       .then((res) => saveByteArray(name, res.content_type, res.body))
       .catch(console.error)
   }
 
-  function rm({ path, name }) {
-
-    OxySession.storage.rm(path, name)
+  function rm(id) {
+    OxySession.storage.rm(id)
   }
 
   function shareDialog(row) {
