@@ -99,34 +99,4 @@ class Storage {
   }
 }
 
-
-
-function _processApiResponse(data, basePath) {
-  var files = data.Contents.filter((f) => !f.Key.endsWith("/"))
-    .map((f) => {
-      if (basePath !== "")
-        f.Key = f.Key.split(basePath).pop();
-
-      let name = f.Key.split('/');
-      name = name[name.length - 1];
-      return {
-        path: f.Key,
-        name: name,
-        size: f.Size,
-        last_edit: new Date(f.LastModified),
-        owner: f.Owner ? f.Owner.DisplayName : "you"
-      }
-    });
-
-  var folders = data.CommonPrefixes.map((f) => {
-    if (basePath !== "")
-      f.Prefix = f.Prefix.split(basePath).pop();
-    let name = f.Prefix.split('/');
-    // it ends with / then the split contains a empty string as last element
-    name = name[name.length - 2] + "/";
-    return { name: name, path: f.Prefix };
-  });
-  return { files, folders }
-}
-
 export default Storage;
