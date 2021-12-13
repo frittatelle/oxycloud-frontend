@@ -40,14 +40,19 @@ class Storage {
     for(var i=0;i<res.files.length;i++){
         let file = res.files[i];
         if(file.path.lastIndexOf("/")>0){
-            file.folder = file.path.substring(0, file.path.lastIndexOf("/") + 1);
             file.name = file.path.substring(file.path.lastIndexOf("/") + 1, file.path.length);
         }else{
             file.name = file.path;
         }
     }
-    //TODO: include folders in backend response
-    res.folders = [];
+    for(var i=0;i<res.folders.length;i++){
+        let folder = res.folders[i];
+        if(folder.path.lastIndexOf("/")>0){
+            folder.name = folder.path.substring(folder.path.lastIndexOf("/") + 1, folder.path.length);
+        }else{
+            folder.name = folder.path;
+        }
+    }
     return res
   }
 
@@ -68,7 +73,10 @@ class Storage {
 
 
   async put(file, folder) {
-    let displayname = folder + file.name;
+    let displayname = file.name;
+    if(folder !== ""){
+        displayname = folder + "/" + file.name;
+    } 
     let res = await axios.put(API_ENDPOINT, file,{
         params: {filename:displayname},
         headers: {
