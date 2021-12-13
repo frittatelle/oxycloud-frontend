@@ -57,17 +57,22 @@ class Storage {
   }
 
   async get(file_id, progress_cb) {
-    let res = await axios.get(API_ENDPOINT+"/"+file_id, {
-        responseType: 'arraybuffer',
+    let presigned_url = await axios.get(API_ENDPOINT+"/"+file_id, {
+        responseType: 'text',
         headers: {
           'Authorization': this.session.idToken.jwtToken,
-        },
+        }
+    }).data;
+   
+    let res = await axios.get(presigned_url, {
+        responseType: 'arraybuffer',
         onDownloadProgress: progressEvent => {
           if(typeof progress_cb === "function"){
               progress_cb(progressEvent.loaded/progressEvent.total);
           }
         }
     });
+
     return { body: res.data, content_type: res.ContentType };
   }
 
