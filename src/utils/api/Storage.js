@@ -120,7 +120,17 @@ class Storage {
   }
 
   async mkdir(path) {
-    throw new Error("Not implemented");
+    console.log(path);
+    let res = await axios.put(API_ENDPOINT,"",{
+        params: {
+            filename:path,
+            is_folder:true
+        },
+        headers: {
+          'Authorization': this.session.idToken.jwtToken,
+        }
+    });
+    return res.data;
   }
 
   async rmdir(path) {

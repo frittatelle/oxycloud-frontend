@@ -9,11 +9,18 @@ import Avatar from '@material-ui/core/Avatar';
 import InputBase from '@material-ui/core/InputBase';
 import Divider from '@material-ui/core/Divider';
 
+import Modal from "@material-ui/core/Modal";
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+
 //Icons
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import SearchIcon from '@material-ui/icons/Search';
-import ViewComfyIcon from '@material-ui/icons/ViewComfy';
+import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import AddIcon from '@material-ui/icons/Add';
 import SettingsIcon from '@material-ui/icons/Settings';
 import NotificationsIcon from '@material-ui/icons/Notifications';
@@ -88,10 +95,47 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 }));
-
+const MkDirModal = ({open, handleClose, currentFolder}) => {
+    const [dirName, setDirName] = useState("");
+    const mkdir = ()=>{
+        OxySession.storage.mkdir(currentFolder + "/" + dirName);
+        handleClose();
+        setDirName("");
+    }
+    return (
+        <Modal
+            style={{display:'flex',alignItems:'center',justifyContent:'center'}}
+            open={open}
+            onClose={handleClose}>
+              <Card align="left" style={{minWidth: 275}}>
+                  <CardContent>
+                    <Typography color="textSecondary" gutterBottom>
+                      New folder..
+                    </Typography>
+                    <form noValidate autoComplete="off">
+                      <TextField value={dirName} label="name" variant="outlined" 
+                        onChange={(e)=>{setDirName(e.target.value)}}/>
+                    </form>
+                    <CardActionArea>
+                        <Button disabled={dirName==""} size="small" onClick={()=>mkdir()}>Confirm</Button>
+                    </CardActionArea>
+              </CardContent>
+              </Card>
+        </Modal>
+   )
+}
 const Header = ({ handleSidebar, sidebarOpen, folder }) => {
 
     const [, selectFile] = useState("");
+    const [mkdirModalOpen, setMkdirModalOpen] = useState(false);
+
+    const handleMkdirModalOpen = () => {
+        setMkdirModalOpen(true);
+    };
+
+    const handleMkdirModalClose = () => {
+        setMkdirModalOpen(false);
+    };
 
 
     function onFileChange(e) {
@@ -132,7 +176,8 @@ const Header = ({ handleSidebar, sidebarOpen, folder }) => {
                     </div>
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
-                            <ViewComfyIcon />
+                            <CreateNewFolderIcon onClick={handleMkdirModalOpen}/>
+                            <MkDirModal currentFolder={folder} open={mkdirModalOpen} handleClose={handleMkdirModalClose}/> 
                         </IconButton>
                     </Avatar>
 
