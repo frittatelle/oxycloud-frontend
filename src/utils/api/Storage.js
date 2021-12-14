@@ -1,28 +1,14 @@
-import AWS from "aws-sdk";
 import axios from 'axios';
 
 const DOCS_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL + "/docs";
 const SHARE_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL + "/share";
-const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
 class Storage {
-  basePath = ""
   constructor(conf) {
     this.conf = conf ?? {};
-    axios.interceptors.request.use(request => {
-      console.log('Starting Request', JSON.stringify(request, null, 2))
-      return request
-    })
-
-    axios.interceptors.response.use(response => {
-      console.log('Response:', JSON.stringify(response, null, 2))
-      return response
-    })
   }
+
   set conf(value) {
     this._conf = value;
-    this.bucket = value ? value.bucketName ?? S3_BUCKET_NAME : S3_BUCKET_NAME;
-    this.basePath = value ? value.basePath ?? this.basePath : this.basePath;
-    this.s3Api = new AWS.S3(value);
     this.session = value ? value.session ?? {} : {} 
   }
 
@@ -31,11 +17,9 @@ class Storage {
   }
 
   async ls(folder = "") {
-    let res = await axios.get(DOCS_ENDPOINT,{
+    let client = this.docsClient()
+    let res = await client.get("",{
         params:{ folder: folder},
-        headers: {
-          'Authorization': this.session.idToken.jwtToken,
-        }
     });
     res = res.data;
     for(let i=0;i<res.files.length;i++){
@@ -58,12 +42,8 @@ class Storage {
   }
 
   async get(file_id, progress_cb) {
-    let presigned_url = await axios.get(DOCS_ENDPOINT+"/"+file_id, {
-        responseType: 'text',
-        headers: {
-          'Authorization': this.session.idToken.jwtToken,
-        }
-    });
+    let client = this.docsClient()
+    let presigned_url = await client.get("/"+file_id, {responseType: 'text'});
     presigned_url = presigned_url.data;
     
     let res = await axios.get(presigned_url, {
@@ -84,10 +64,10 @@ class Storage {
     if(folder !== ""){
         displayname = folder + "/" + file.name;
     } 
-    let res = await axios.put(DOCS_ENDPOINT,"",{
+    let client = this.docsClient()
+    let res = await client.put("","",{
         params: {filename:displayname},
         headers: {
-          'Authorization': this.session.idToken.jwtToken,
           'Content-Type': file.type,
         }
     });
@@ -110,52 +90,59 @@ class Storage {
   }
 
   async rm(id) { 
-    let res = await axios.delete(DOCS_ENDPOINT+"/"+id, {
+    let client = this.docsClient()
+    let res = await client.delete("/"+id, {
         params: {deleted: true},
-        headers: {
-          'Authorization': this.session.idToken.jwtToken,
-          'Content-Type': 'application/json',
-        }
     });
     return res;
   }
 
   async mkdir(path) {
-    console.log(path);
-    let res = await axios.put(DOCS_ENDPOINT,"",{
+    let client = this.docsClient()
+    let res = await client.put("","",{
         params: {
             filename:path,
             is_folder:true
         },
-        headers: {
-          'Authorization': this.session.idToken.jwtToken,
-        }
     });
     return res.data;
   }
     
   async share(id,userMail){
-    let res = await axios.post(SHARE_ENDPOINT+"/"+id,"",{
+    let client = this.shareClient()
+    let res = await client.post("/"+id,"",{
         params: {share_email:userMail},
-        headers: {
-          'Authorization': this.session.idToken.jwtToken,
-        }
     });   
     return res.data;
   }
 
   async rmShare(id,userMail){
-   let res = await axios.delete(DOCS_ENDPOINT+"/"+id, {
+    let client = this.shareClient()
+    let res = await client.delete("/"+id, {
         params: {unshare_email:userMail},
-        headers: {
-          'Authorization': this.session.idToken.jwtToken,
-        }
     });
     return res.data;  
   }
 
   async rmdir(path) {
     throw new Error("Not implemented");
+  }
+
+  docsClient(){
+      return axios.create({
+          baseURL: DOCS_ENDPOINT, 
+          headers: {
+              'Authorization': this.session.idToken.jwtToken,
+          }        
+      });
+  }
+  shareClient(){
+      return axios.create({
+          baseURL: SHARE_ENDPOINT, 
+          headers: {
+              'Authorization': this.session.idToken.jwtToken,
+          }
+        });
   }
 }
 
