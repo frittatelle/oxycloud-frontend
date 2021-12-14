@@ -16,6 +16,7 @@
     "aws-sdk": "^2.799.0",
     "axios": "^0.24.0",
     "clsx": "^1.1.1",
+    "form-data": "^4.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-html-parser": "^2.0.2",

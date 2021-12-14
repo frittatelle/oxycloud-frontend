@@ -82,14 +82,29 @@ class Storage {
     if(folder !== ""){
         displayname = folder + "/" + file.name;
     } 
-    let res = await axios.put(API_ENDPOINT, file,{
+    let res = await axios.put(API_ENDPOINT,"",{
         params: {filename:displayname},
         headers: {
           'Authorization': this.session.idToken.jwtToken,
           'Content-Type': file.type,
         }
     });
-    return res
+    let url = res.data.url;
+    let fields = res.data.fields;
+    //prepare form
+    let formData = new FormData();
+    for (const [key, value] of Object.entries(fields)) {
+        formData.append(key,value);
+    }
+    formData.append('file', file);
+    formData.append('submit','Upload to Amazon S3');
+    
+    let resb = axios({
+        method: 'post',
+        url: res.data.url,
+        data: formData
+    });
+    return resb.data
   }
 
   async rm(id) { 
