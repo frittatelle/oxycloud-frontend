@@ -37,7 +37,7 @@ class Storage {
         }
     });
     res = res.data;
-    for(var i=0;i<res.files.length;i++){
+    for(let i=0;i<res.files.length;i++){
         let file = res.files[i];
         if(file.path.lastIndexOf("/")>0){
             file.name = file.path.substring(file.path.lastIndexOf("/") + 1, file.path.length);
@@ -45,7 +45,7 @@ class Storage {
             file.name = file.path;
         }
     }
-    for(var i=0;i<res.folders.length;i++){
+    for(let i=0;i<res.folders.length;i++){
         let folder = res.folders[i];
         if(folder.path.lastIndexOf("/")>0){
             folder.name = folder.path.substring(folder.path.lastIndexOf("/") + 1, folder.path.length);
@@ -101,7 +101,7 @@ class Storage {
     
     let resb = axios({
         method: 'post',
-        url: res.data.url,
+        url: url,
         data: formData
     });
     return resb.data
