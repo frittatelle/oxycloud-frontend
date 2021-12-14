@@ -1,7 +1,8 @@
 import AWS from "aws-sdk";
 import axios from 'axios';
 
-const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL + "/docs";
+const DOCS_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL + "/docs";
+const SHARE_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL + "/share";
 const S3_BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
 class Storage {
   basePath = ""
@@ -30,7 +31,7 @@ class Storage {
   }
 
   async ls(folder = "") {
-    let res = await axios.get(API_ENDPOINT,{
+    let res = await axios.get(DOCS_ENDPOINT,{
         params:{ folder: folder},
         headers: {
           'Authorization': this.session.idToken.jwtToken,
@@ -57,7 +58,7 @@ class Storage {
   }
 
   async get(file_id, progress_cb) {
-    let presigned_url = await axios.get(API_ENDPOINT+"/"+file_id, {
+    let presigned_url = await axios.get(DOCS_ENDPOINT+"/"+file_id, {
         responseType: 'text',
         headers: {
           'Authorization': this.session.idToken.jwtToken,
@@ -83,7 +84,7 @@ class Storage {
     if(folder !== ""){
         displayname = folder + "/" + file.name;
     } 
-    let res = await axios.put(API_ENDPOINT,"",{
+    let res = await axios.put(DOCS_ENDPOINT,"",{
         params: {filename:displayname},
         headers: {
           'Authorization': this.session.idToken.jwtToken,
@@ -109,7 +110,7 @@ class Storage {
   }
 
   async rm(id) { 
-    let res = await axios.delete(API_ENDPOINT+"/"+id, {
+    let res = await axios.delete(DOCS_ENDPOINT+"/"+id, {
         params: {deleted: true},
         headers: {
           'Authorization': this.session.idToken.jwtToken,
@@ -121,7 +122,7 @@ class Storage {
 
   async mkdir(path) {
     console.log(path);
-    let res = await axios.put(API_ENDPOINT,"",{
+    let res = await axios.put(DOCS_ENDPOINT,"",{
         params: {
             filename:path,
             is_folder:true
@@ -131,6 +132,26 @@ class Storage {
         }
     });
     return res.data;
+  }
+    
+  async share(id,userMail){
+    let res = await axios.post(SHARE_ENDPOINT+"/"+id,"",{
+        params: {share_email:userMail},
+        headers: {
+          'Authorization': this.session.idToken.jwtToken,
+        }
+    });   
+    return res.data;
+  }
+
+  async rmShare(id,userMail){
+   let res = await axios.delete(DOCS_ENDPOINT+"/"+id, {
+        params: {unshare_email:userMail},
+        headers: {
+          'Authorization': this.session.idToken.jwtToken,
+        }
+    });
+    return res.data;  
   }
 
   async rmdir(path) {

@@ -5,6 +5,7 @@ import TableRow from '@material-ui/core/TableRow';
 import data from '../data.json';
 
 
+
 import * as FaIcons from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -51,11 +52,10 @@ function formatDate(date) {
   return day + "/" + month + "/" + year + " " + hourFormatted + ":" +
     minuteFormatted + morning;
 }
-
-
 const FileRow = ({ file:
   { id, path, name, size, owner, last_edit },
   on_download, on_share, on_rm }) => {
+
   return (
     <TableRow key={id} >
       <TableCell>
@@ -77,7 +77,7 @@ const FileRow = ({ file:
         <IconButton onClick={() => on_download({ id, name })}>
           <GetAppIcon fontSize='small' />
         </IconButton>
-        <IconButton onClick={() => on_share({ path, name })}>
+        <IconButton onClick={() => on_share({ id, name })}>
           <ShareIcon fontSize='small' />
         </IconButton>
         <IconButton onClick={() => on_rm(id)}>

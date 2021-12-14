@@ -17,6 +17,16 @@ import { OxySession } from "../utils/api"
 import FileTable from './FileExplorer/FileTable'
 import FoldersBar from './FileExplorer/FoldersBar'
 
+//modal
+import Modal from "@material-ui/core/Modal";
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import { useState } from 'react'
+
+
 const useStyles = () => ({
   cont: {
     maxWidth: "100%",
@@ -35,21 +45,56 @@ function saveByteArray(fileName, contentType, byte) {
   link.click();
   link.remove();
 };
+const ShareModal = ({open, handleClose, shareParams}) => {
+    const [userMail, setUserMail] = useState("");
+    const share = ()=>{
+        OxySession.storage.share(shareParams.id, userMail);
+        setUserMail("");
+    }
+    const delShare = ()=>{
+    }
+    return (
+        <Modal
+            style={{display:'flex',alignItems:'center',justifyContent:'center'}}
+            open={open}
+            onClose={handleClose}>
+              <Card align="left" style={{minWidth: 275}}>
+                  <CardContent>
+                    <Typography color="textSecondary" gutterBottom>
+                        Share '{shareParams.name}' with ... 
+                    </Typography>
+                    <form noValidate autoComplete="off">
+                      <TextField value={userMail} label="email" variant="outlined" 
+                        onChange={(e)=>{setUserMail(e.target.value)}}/>
+                    </form>
+                    <CardActionArea>
+                        <Button disabled={userMail===""} size="small" onClick={()=>share()}>Confirm</Button>
+                    </CardActionArea>
+              </CardContent>
+              </Card>
+        </Modal>
+   )
+}
+
 
 const FileExplorer = ({ classes, folder, setFolder }) => {
   const FSTree = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder))
-  function startDownload({id,name}) {
-    OxySession.storage.get(id)
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [shareParams, setShareParams] = useState({name:"", id:""});
+
+  const handleShareModalClose = () => setShareModalOpen(false);
+
+  const startDownload = ({id,name}) => OxySession.storage.get(id)
       .then((res) => saveByteArray(name, res.content_type, res.body))
-      .catch(console.error)
-  }
+      .catch(console.error);
+  
 
-  function rm(id) {
-    OxySession.storage.rm(id)
-  }
+  const rm = (id) => OxySession.storage.rm(id);
 
-  function shareDialog(row) {
-    console.log("Sharing:", row.Key);
+  const shareDialog = (params) => {
+    console.log("Sharing:", params);
+    setShareParams(params);
+    setShareModalOpen(true);
   }
 
   return (
@@ -71,8 +116,13 @@ const FileExplorer = ({ classes, folder, setFolder }) => {
             on_share={shareDialog}
             on_rm={rm}
           />
+          
         }
       </Grid>
+        <ShareModal 
+            shareParams={shareParams} 
+            open={shareModalOpen} 
+            handleClose={handleShareModalClose} />
     </Container>
   );
 }
