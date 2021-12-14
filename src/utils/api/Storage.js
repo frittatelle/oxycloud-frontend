@@ -62,8 +62,9 @@ class Storage {
         headers: {
           'Authorization': this.session.idToken.jwtToken,
         }
-    }).data;
-   
+    });
+    presigned_url = presigned_url.data;
+    
     let res = await axios.get(presigned_url, {
         responseType: 'arraybuffer',
         onDownloadProgress: progressEvent => {
