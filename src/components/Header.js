@@ -117,7 +117,7 @@ const MkDirModal = ({open, handleClose, currentFolder}) => {
                         onChange={(e)=>{setDirName(e.target.value)}}/>
                     </form>
                     <CardActionArea>
-                        <Button disabled={dirName==""} size="small" onClick={()=>mkdir()}>Confirm</Button>
+                        <Button disabled={dirName===""} size="small" onClick={()=>mkdir()}>Confirm</Button>
                     </CardActionArea>
               </CardContent>
               </Card>
