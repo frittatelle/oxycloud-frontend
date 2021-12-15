@@ -64,6 +64,7 @@ class Storage {
     if(folder !== ""){
         displayname = folder + "/" + file.name;
     } 
+
     let client = this.docsClient()
     let res = await client.put("","",{
         params: {filename:displayname},
@@ -92,7 +93,10 @@ class Storage {
   async rm(id) { 
     let client = this.docsClient()
     let res = await client.delete("/"+id, {
-        params: {deleted: true},
+        params: {
+            delete: true,
+            doom: false
+        },
     });
     return res;
   }
@@ -101,7 +105,7 @@ class Storage {
     let client = this.docsClient()
     let res = await client.put("","",{
         params: {
-            filename:path,
+            filename:path.replace(/^\/+|\/+$/g, ''),//aka trim("/")
             is_folder:true
         },
     });
