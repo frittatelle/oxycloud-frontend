@@ -50,23 +50,15 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const SideBar = ({ sidebarOpen, folder, setFolder }) => {
+const SideBar = ({ sidebarOpen, rootFolder, setRootFolder }) => {
 
 	//Styles
 	const classes = useStyles();
-
+    console.log(rootFolder)
 	//useQuery (get data)
-	const res = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder));
 	return (
 		<>
-			{res.isLoading && (
-				console.log(res.status)
-			)}
-			{res.isError && (
-				console.log(res.error)
-			)}
-			{res.isSuccess && (
-				<Drawer
+			<Drawer
 					variant="permanent"
 					className={clsx(classes.drawer, {
 						[classes.drawerOpen]: sidebarOpen,
@@ -81,65 +73,38 @@ const SideBar = ({ sidebarOpen, folder, setFolder }) => {
 				>
 					<Toolbar />
 					<List>
-						{res.data.folders.map(f => (
-							<ListItem button key={f.path} onClick={() => setFolder(f.path)}>
-								<ListItemAvatar >
-									<Avatar >
-										<FolderIcon />
-									</Avatar>
-								</ListItemAvatar>
-								<ListItemText primary={f.name} />
-							</ListItem>
-						))}
-					</List>
-					<Divider />
-					{/* Static Lists (favorites, deleted ...) */}
-					<List>
-						<ListItem button>
-							<ListItemAvatar>
-								<Avatar>
-									<AccessTimeIcon />
-								</Avatar>
-							</ListItemAvatar>
-							<ListItemText primary="Recent" />
-						</ListItem>
-						<ListItem button>
-							<ListItemAvatar>
-								<Avatar>
-									<StarBorderIcon />
-								</Avatar>
-							</ListItemAvatar>
-							<ListItemText primary="Favorites" />
-						</ListItem>
-						<ListItem button>
-							<ListItemAvatar>
-								<Avatar>
-									<ShareIcon />
-								</Avatar>
-							</ListItemAvatar>
-							<ListItemText primary="Shared" />
-						</ListItem>
-					</List>
-					<Divider />
-					<List>
-						<ListItem button>
-							<ListItemAvatar>
-								<Avatar>
-									<DeleteOutlineIcon />
-								</Avatar>
-							</ListItemAvatar>
-							<ListItemText primary="Deleted" />
-						</ListItem>
-					</List>
-					<Divider />
-					<List>
-						<ListItem button>
+                        <ListItem button 
+                                selected={rootFolder==="FOLDER"}
+                                onClick={()=>setRootFolder("FOLDER")}
+                                >
 							<ListItemAvatar>
 								<Avatar>
 									<StorageIcon />
 								</Avatar>
 							</ListItemAvatar>
-							<ListItemText primary="Storage" />
+							<ListItemText primary="My folder" />
+						</ListItem>
+						<ListItem button 
+                                selected={rootFolder==="SHARED"}
+                                onClick={()=>setRootFolder("SHARED")}
+                                >
+							<ListItemAvatar>
+								<Avatar>
+									<ShareIcon />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText primary="Shared with me" />
+						</ListItem>
+						<ListItem button 
+                            selected={rootFolder==="TRASH"}
+                            onClick={()=>setRootFolder("TRASH")}
+                            >
+							<ListItemAvatar>
+								<Avatar>
+									<DeleteOutlineIcon />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText primary="Trash" />
 						</ListItem>
 					</List>
 				</Drawer>

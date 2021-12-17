@@ -32,12 +32,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-
 function App() {
   //Temporary state management to open/close the drawer
   // CHANGE IT TO A SMARTER SOLUTION!
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentFolder, setCurrentFolder] = useState("");
+  //My folder || Trash || Shared with me
+  const [rootFolder, setRootFolder] = useState("FOLDER");
+  
   const handleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
     console.log(sidebarOpen);
@@ -46,11 +48,22 @@ function App() {
 
   return (
     <div className={classes.local_root}>
-      <Header handleSidebar={handleSidebar} sidebarOpen={sidebarOpen} folder={currentFolder} />
-      <SideBar sidebarOpen={sidebarOpen} folder={currentFolder} setFolder={setCurrentFolder} />
-      {/* Temporary container , make a new component!, insert Toolbar component for spacing!*/}
+      <Header 
+        handleSidebar={handleSidebar} 
+        sidebarOpen={sidebarOpen} 
+        folder={currentFolder} 
+      />
+      <SideBar 
+        sidebarOpen={sidebarOpen} 
+        rootFolder={rootFolder} 
+        setRootFolder={setRootFolder} 
+      />
       <main className={classes.content}>
-        <FileExplorer maxWidth="lg" folder={currentFolder} setFolder={setCurrentFolder} />
+        <FileExplorer 
+            maxWidth="lg" 
+            folder={currentFolder} 
+            setFolder={setCurrentFolder} 
+        />
       </main>
     </div>
   );
