@@ -54,14 +54,14 @@ function formatDate(date) {
 }
 const FileRow = ({ file:
   { id, path, name, size, owner, last_edit },
-  on_download, on_share, on_rm }) => {
-
+  on_download, on_share, on_rm,
+  enable_rm, enable_download, enable_sharing}) => {
+    console.log(enable_rm,enable_sharing);
   return (
     <TableRow key={id} >
-      <TableCell>
-        {getIcon(name.split('.').pop())}
-      </TableCell>
       <TableCell title="file name" component="th">
+        {getIcon(name.split('.').pop())}
+        {' '}
         {name}
       </TableCell>
       <TableCell title="file size" align="right">
@@ -73,16 +73,22 @@ const FileRow = ({ file:
       <TableCell title="last modified datetime" align="right">
         {formatDate(last_edit)}
       </TableCell>
-      <TableCell align="right">
+      <TableCell align="right" width="15%">
+      {enable_download &&
         <IconButton onClick={() => on_download({ id, name })}>
           <GetAppIcon fontSize='small' />
         </IconButton>
+      }
+      {enable_sharing && 
         <IconButton onClick={() => on_share({ id, name })}>
           <ShareIcon fontSize='small' />
         </IconButton>
+      }
+      {enable_rm &&
         <IconButton onClick={() => on_rm(id)}>
           <DeleteIcon fontSize='small' />
         </IconButton>
+      }
       </TableCell>
     </TableRow>
   )

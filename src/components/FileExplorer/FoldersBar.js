@@ -1,16 +1,18 @@
 import Link from '@material-ui/core/Link'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
 
-const FoldersBar = ({ currentFolder, setCurrentFolder }) => {
+const FoldersBar = ({ currentFolder, setCurrentFolder, rootFolder }) => {
   const f = (currentFolder+"/").split('/');
   var folders = [];
-  
+   
   folders.push(
     <Link color='inherit' key="" full_path=""
       onClick={(arg) => {
         setCurrentFolder(arg.target.attributes['full_path'].value)
       }} >
-      My folder
+        {rootFolder==="FOLDER" && 'My folder'}
+        {rootFolder==="TRASH" && 'Trash'}
+        {rootFolder==="SHARED" && 'Shared with me'}
         </Link>
   );
   for (var i = 0; i < f.length - 1; i++) {

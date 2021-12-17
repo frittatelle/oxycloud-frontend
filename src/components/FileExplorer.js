@@ -24,7 +24,7 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 
 const useStyles = () => ({
@@ -77,8 +77,18 @@ const ShareModal = ({open, handleClose, shareParams}) => {
 }
 
 
-const FileExplorer = ({ classes, folder, setFolder }) => {
-  const FSTree = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder))
+const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
+  const FSTree = useQuery(["fsTree", folder], () => {
+      switch(rootFolder){
+        case 'FOLDER':
+              return OxySession.storage.ls(folder,false)
+        case 'TRASH':
+              return OxySession.storage.ls(folder,true)
+        case 'SHARED':
+              return OxySession.storage.lsShared(folder)
+
+      }
+  });
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareParams, setShareParams] = useState({name:"", id:""});
 
@@ -87,10 +97,16 @@ const FileExplorer = ({ classes, folder, setFolder }) => {
   const startDownload = ({id,name}) => OxySession.storage.get(id)
       .then((res) => saveByteArray(name, res.content_type, res.body))
       .catch(console.error);
-  
+  useEffect(() => {
+    FSTree.refetch()
+  },[folder, rootFolder])
 
   const rm = (id) => { 
-      OxySession.storage.rm(id);
+      if(rootFolder==="FOLDER"){
+        OxySession.storage.rm(id);
+      }else{
+        OxySession.storage.rm(id, false, true);
+      }
       FSTree.refetch();
   };
 
@@ -104,7 +120,10 @@ const FileExplorer = ({ classes, folder, setFolder }) => {
     <Container className={classes.cont}>
       <AppBar position='sticky' color='inherit'>
         <Toolbar>
-          <FoldersBar currentFolder={folder} setCurrentFolder={setFolder} />
+          <FoldersBar 
+            currentFolder={folder} 
+            setCurrentFolder={setFolder} 
+            rootFolder={rootFolder}/>
         </Toolbar>
       </AppBar>
       <Grid container justify="center">
@@ -118,6 +137,9 @@ const FileExplorer = ({ classes, folder, setFolder }) => {
             on_download={startDownload}
             on_share={shareDialog}
             on_rm={rm}
+            enable_rm={rootFolder==='FOLDER'||rootFolder==='TRASH'}
+            enable_download={rootFolder==='FOLDER'||rootFolder==='SHARED'}
+            enable_sharing={rootFolder==='FOLDER'}
           />
           
         }

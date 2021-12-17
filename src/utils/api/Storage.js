@@ -16,10 +16,10 @@ class Storage {
     return this._conf;
   }
 
-  async ls(folder = "") {
+  async ls(folder = "", deleted=false) {
     let client = this.docsClient()
     let res = await client.get("",{
-        params:{ folder: folder},
+        params:{ folder: folder, deleted: deleted},
     });
     res = res.data;
     for(let i=0;i<res.files.length;i++){
@@ -90,12 +90,12 @@ class Storage {
     return resb.data
   }
 
-  async rm(id) { 
+  async rm(id, restore=false, permanent=false) { 
     let client = this.docsClient()
     let res = await client.delete("/"+id, {
         params: {
-            delete: true,
-            doom: false
+            delete: !restore,
+            doom: permanent || false 
         },
     });
     return res;
@@ -126,6 +126,9 @@ class Storage {
         params: {unshare_email:userMail},
     });
     return res.data;  
+  }
+  async lsShared(folder){
+    return {files:[],folders:[]}
   }
 
   async rmdir(path) {

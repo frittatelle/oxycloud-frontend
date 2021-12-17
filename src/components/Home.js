@@ -52,6 +52,7 @@ function App() {
         handleSidebar={handleSidebar} 
         sidebarOpen={sidebarOpen} 
         folder={currentFolder} 
+        rootFolder={rootFolder}
       />
       <SideBar 
         sidebarOpen={sidebarOpen} 
@@ -63,6 +64,7 @@ function App() {
             maxWidth="lg" 
             folder={currentFolder} 
             setFolder={setCurrentFolder} 
+            rootFolder={rootFolder}
         />
       </main>
     </div>

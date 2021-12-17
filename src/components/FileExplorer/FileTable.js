@@ -12,14 +12,15 @@ import { OxySession } from "../../utils/api"
 
 import { useQuery } from 'react-query';
 
-const FileTable = ({ folder, on_share, on_download, on_change_folder, on_rm }) => {
+const FileTable = ({ 
+    folder, on_share, on_download, on_change_folder, on_rm, 
+    enable_rm, enable_download, enable_sharing }) => {
   const FSTree = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder))
   return (
     <TableContainer>
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell></TableCell>
             <TableCell>Name</TableCell>
             <TableCell align="right">Size</TableCell>
             <TableCell align="right">Owner</TableCell>
@@ -35,6 +36,9 @@ const FileTable = ({ folder, on_share, on_download, on_change_folder, on_rm }) =
               path={f.path}
               on_share={on_share}
               on_change_folder={on_change_folder}
+              enable_rm={enable_rm}
+              enable_download={enable_download}
+              enable_sharing={enable_sharing}
             />)}
           {FSTree.data.files.map((f) =>
             <FileRow
@@ -42,6 +46,9 @@ const FileTable = ({ folder, on_share, on_download, on_change_folder, on_rm }) =
               on_share={on_share}
               on_download={on_download}
               on_rm={on_rm}
+              enable_rm={enable_rm}
+              enable_download={enable_download}
+              enable_sharing={enable_sharing}
             />)}
         </TableBody>
       </Table>
