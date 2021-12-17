@@ -89,7 +89,10 @@ const FileExplorer = ({ classes, folder, setFolder }) => {
       .catch(console.error);
   
 
-  const rm = (id) => OxySession.storage.rm(id);
+  const rm = (id) => { 
+      OxySession.storage.rm(id);
+      FSTree.refetch();
+  };
 
   const shareDialog = (params) => {
     console.log("Sharing:", params);
