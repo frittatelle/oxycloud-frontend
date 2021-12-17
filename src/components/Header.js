@@ -11,7 +11,7 @@ import Divider from '@material-ui/core/Divider';
 
 import Modal from "@material-ui/core/Modal";
 import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
+import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -116,9 +116,14 @@ const MkDirModal = ({open, handleClose, currentFolder}) => {
                       <TextField value={dirName} label="name" variant="outlined" 
                         onChange={(e)=>{setDirName(e.target.value)}}/>
                     </form>
-                    <CardActionArea>
-                        <Button disabled={dirName===""} size="small" onClick={()=>mkdir()}>Confirm</Button>
-                    </CardActionArea>
+                    <CardActions>
+                        <Button 
+                            disabled={dirName===""} 
+                            size="small" 
+                            onClick={mkdir}>
+                            Confirm
+                        </Button>
+                    </CardActions>
               </CardContent>
               </Card>
         </Modal>
@@ -175,8 +180,8 @@ const Header = ({ handleSidebar, sidebarOpen, folder }) => {
                         />
                     </div>
                     <Avatar className={classes.avatar}>
-                        <IconButton color="inherit" >
-                            <CreateNewFolderIcon onClick={handleMkdirModalOpen}/>
+                        <IconButton color="inherit" onClick={handleMkdirModalOpen}>
+                            <CreateNewFolderIcon />
                             <MkDirModal currentFolder={folder} open={mkdirModalOpen} handleClose={handleMkdirModalClose}/> 
                         </IconButton>
                     </Avatar>
@@ -205,8 +210,8 @@ const Header = ({ handleSidebar, sidebarOpen, folder }) => {
                     </Avatar>
 
                     <Avatar className={classes.avatar}>
-                        <IconButton color="inherit" >
-                            <ExitToAppIcon onClick={() => { OxySession.signOut() }} />
+                        <IconButton color="inherit" onClick={() => OxySession.signOut()}>
+                            <ExitToAppIcon  />
                         </IconButton>
                     </Avatar>
 
