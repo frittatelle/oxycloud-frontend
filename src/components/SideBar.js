@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 
 //React
 import clsx from 'clsx';
-import { useQuery } from 'react-query';
 
 //Components
 import Drawer from '@material-ui/core/Drawer';
@@ -12,19 +11,13 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
-import Divider from '@material-ui/core/Divider';
 import Toolbar from '@material-ui/core/Toolbar';
 
 //Icons
-import FolderIcon from '@material-ui/icons/Folder';
-import AccessTimeIcon from '@material-ui/icons/AccessTime';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import ShareIcon from '@material-ui/icons/Share';
 import StorageIcon from '@material-ui/icons/Storage';
 
-//api
-import { OxySession } from "../utils/api"
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({

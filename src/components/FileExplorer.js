@@ -52,6 +52,7 @@ const ShareModal = ({open, handleClose, shareParams}) => {
         setUserMail("");
         handleClose();
     }
+    // eslint-disable-next-line
     const delShare = ()=>{
     }
     return (
@@ -124,7 +125,9 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
               return OxySession.storage.ls(folder,true)
         case 'SHARED':
               return OxySession.storage.lsShared(folder)
-
+        default:
+              console.error("Invalid root folder");
+              return {}
       }
   });
   const [shareModalOpen, setShareModalOpen] = useState(false);
@@ -141,7 +144,7 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
       .catch(console.error);
   useEffect(() => {
     FSTree.refetch()
-  },[folder, rootFolder])
+  },[folder, rootFolder, FSTree])
 
   const rm = (id) => { 
       if(rootFolder==="FOLDER"){
