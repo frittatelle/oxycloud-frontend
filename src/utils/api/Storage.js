@@ -16,28 +16,12 @@ class Storage {
     return this._conf;
   }
 
-  async ls(folder = "", deleted=false) {
+  async ls(folder_id = "", deleted=false) {
     let client = this.docsClient()
     let res = await client.get("",{
-        params:{ folder: folder, deleted: deleted},
+        params:{ folder: folder_id, deleted: deleted},
     });
     res = res.data;
-    for(let i=0;i<res.files.length;i++){
-        let file = res.files[i];
-        if(file.path.lastIndexOf("/")>0){
-            file.name = file.path.substring(file.path.lastIndexOf("/") + 1, file.path.length);
-        }else{
-            file.name = file.path;
-        }
-    }
-    for(let i=0;i<res.folders.length;i++){
-        let folder = res.folders[i];
-        if(folder.path.lastIndexOf("/")>0){
-            folder.name = folder.path.substring(folder.path.lastIndexOf("/") + 1, folder.path.length);
-        }else{
-            folder.name = folder.path;
-        }
-    }
     return res
   }
 
@@ -61,13 +45,12 @@ class Storage {
 
   async put(file, folder) {
     let displayname = file.name;
-    if(folder !== ""){
-        displayname = folder + "/" + file.name;
-    } 
-
     let client = this.docsClient()
     let res = await client.put("","",{
-        params: {filename:displayname},
+        params: {
+            filename:displayname,
+            folder: folder 
+        },
         headers: {
           'Content-Type': file.type,
         }
@@ -101,11 +84,12 @@ class Storage {
     return res;
   }
 
-  async mkdir(path) {
+  async mkdir(folder, name) {
     let client = this.docsClient()
     let res = await client.put("","",{
         params: {
-            filename:path.replace(/^\/+|\/+$/g, ''),//aka trim("/")
+            folder: folder,
+            filename: name,
             is_folder:true
         },
     });

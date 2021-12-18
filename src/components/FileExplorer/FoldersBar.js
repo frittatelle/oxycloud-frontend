@@ -1,10 +1,22 @@
 import Link from '@material-ui/core/Link'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs'
-
+const makeListOfParent = (folder) =>{
+    if(typeof folder === "undefined") return []
+    const helper = (arr, folder) =>{
+        arr.push(folder)
+        if(folder.parent==="" 
+            || typeof folder.parent === "undefined" 
+            || folder.parent.id==="")
+            return arr 
+        return helper(arr, folder.parent)
+    }
+    let arr = helper([],folder)
+    arr.reverse()
+    return arr
+}
 const FoldersBar = ({ currentFolder, setCurrentFolder, rootFolder }) => {
-  const f = (currentFolder+"/").split('/');
+  const f = makeListOfParent(currentFolder);
   var folders = [];
-   
   folders.push(
     <Link color='inherit' key="" full_path=""
       onClick={(arg) => {
@@ -15,15 +27,14 @@ const FoldersBar = ({ currentFolder, setCurrentFolder, rootFolder }) => {
         {rootFolder==="SHARED" && 'Shared with me'}
         </Link>
   );
-  for (var i = 0; i < f.length - 1; i++) {
-    var tmp = f.slice(0, i + 1).join("/") ;
+  f.forEach((fol)=> {
     folders.push(
-      <Link color='inherit' key={tmp} full_path={tmp}
-        onClick={(arg) => setCurrentFolder(arg.target.attributes['full_path'].value)}>
-        {f[i]}
+      <Link color='inherit' id={fol.id} name={fol.name}
+        onClick={(arg) => setCurrentFolder(fol)}>
+        {fol.name}
       </Link>
     )
-  }
+  });
 
   return (
     <Breadcrumbs aria-label="breadcrumb">

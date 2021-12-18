@@ -36,7 +36,7 @@ function App() {
   //Temporary state management to open/close the drawer
   // CHANGE IT TO A SMARTER SOLUTION!
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [currentFolder, setCurrentFolder] = useState("");
+  const [currentFolder, setCurrentFolder] = useState({id:"",name:""});
   //My folder || Trash || Shared with me
   const [rootFolder, setRootFolder] = useState("FOLDER");
   

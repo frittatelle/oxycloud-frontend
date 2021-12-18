@@ -120,11 +120,11 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
   const FSTree = useQuery(["fsTree", folder], () => {
       switch(rootFolder){
         case 'FOLDER':
-              return OxySession.storage.ls(folder,false)
+              return OxySession.storage.ls(folder.id,false)
         case 'TRASH':
-              return OxySession.storage.ls(folder,true)
+              return OxySession.storage.ls(folder.id,true)
         case 'SHARED':
-              return OxySession.storage.lsShared(folder)
+              return OxySession.storage.lsShared(folder.id)
         default:
               console.error("Invalid root folder");
               return {}

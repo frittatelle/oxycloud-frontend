@@ -15,7 +15,7 @@ import { useQuery } from 'react-query';
 const FileTable = ({ 
     folder, on_share, on_download, on_change_folder, on_rm, on_rename, 
     enable_rm, enable_download, enable_sharing, enable_rename }) => {
-  const FSTree = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder))
+  const FSTree = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder.id))
   return (
     <TableContainer>
       <Table aria-label="simple table">
@@ -29,17 +29,18 @@ const FileTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {FSTree.data.folders.map((f) =>
-            <FolderRow
-              id={f.id}
-              name={f.name}
-              path={f.path}
-              on_share={on_share}
-              on_change_folder={on_change_folder}
-              enable_rm={enable_rm}
-              enable_download={enable_download}
-              enable_sharing={enable_sharing}
-            />)}
+          {FSTree.data.folders.map((f) =>{
+            f.parent = folder;
+            return (
+              <FolderRow
+                  folder={f}
+                  on_share={on_share}
+                  on_change_folder={on_change_folder}
+                  enable_rm={enable_rm}
+                  enable_download={enable_download}
+                  enable_sharing={enable_sharing}
+                />)
+          })}
           {FSTree.data.files.map((f) =>
             <FileRow
               file={f}

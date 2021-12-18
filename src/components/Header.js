@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
 const MkDirModal = ({open, handleClose, currentFolder}) => {
     const [dirName, setDirName] = useState("");
     const mkdir = ()=>{
-        OxySession.storage.mkdir(currentFolder + "/" + dirName);
+        OxySession.storage.mkdir(currentFolder.id, dirName);
         handleClose();
         setDirName("");
     }
@@ -148,7 +148,7 @@ const Header = ({ handleSidebar, sidebarOpen, folder, rootFolder }) => {
         const file = e.target.files[0];
         selectFile(file);
 
-        OxySession.storage.put(file, folder)
+        OxySession.storage.put(file, folder.id)
     }
 
 
