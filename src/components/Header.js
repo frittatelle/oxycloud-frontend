@@ -129,7 +129,7 @@ const MkDirModal = ({open, handleClose, currentFolder}) => {
         </Modal>
    )
 }
-const Header = ({ handleSidebar, sidebarOpen, folder }) => {
+const Header = ({ handleSidebar, sidebarOpen, folder, rootFolder }) => {
 
     const [, selectFile] = useState("");
     const [mkdirModalOpen, setMkdirModalOpen] = useState(false);
@@ -158,12 +158,16 @@ const Header = ({ handleSidebar, sidebarOpen, folder }) => {
             <AppBar position="fixed" color="inherit" className={classes.appBar}>
                 <Toolbar>
                     <Typography variant="h6" className={classes.logo}>
-                        <Typography color="primary" variant="inherit" component="span">Oxy</Typography>Cloud
+                        <Typography 
+                            color="primary" 
+                            variant="inherit" component="span">Oxy</Typography>Cloud
                     </Typography>
                     <Divider orientation="vertical" flexItem />
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" onClick={handleSidebar} >
-                            {sidebarOpen ? <KeyboardArrowLeftIcon /> : <KeyboardArrowRightIcon />}
+                            {sidebarOpen ? 
+                                  <KeyboardArrowLeftIcon /> 
+                                : <KeyboardArrowRightIcon />}
                         </IconButton>
                     </Avatar>
                     <div className={classes.search}>
@@ -179,23 +183,30 @@ const Header = ({ handleSidebar, sidebarOpen, folder }) => {
                             inputProps={{ 'aria-label': 'search' }}
                         />
                     </div>
+                   { (rootFolder==="FOLDER") &&
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" onClick={handleMkdirModalOpen}>
                             <CreateNewFolderIcon />
-                            <MkDirModal currentFolder={folder} open={mkdirModalOpen} handleClose={handleMkdirModalClose}/> 
+                            <MkDirModal 
+                                currentFolder={folder} 
+                                open={mkdirModalOpen} 
+                                handleClose={handleMkdirModalClose}/> 
                         </IconButton>
                     </Avatar>
-
-
+                   }
+                   { (rootFolder==="FOLDER") &&
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
-                            <input id="imagefile" type="file" hidden onChange={(e) => onFileChange(e, folder)} />
+                            <input id="imagefile" 
+                                type="file" 
+                                hidden 
+                                onChange={(e) => onFileChange(e, folder)} />
                             <label htmlFor="imagefile">
                                 <AddIcon />
                             </label>
                         </IconButton>
                     </Avatar>
-
+                    }
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
                             <NotificationsIcon />
