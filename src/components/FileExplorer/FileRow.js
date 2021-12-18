@@ -14,6 +14,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import PublishIcon from '@material-ui/icons/Publish';
 
 const getIcon = (ext) => {
   for (const [, type] of data.entries())
@@ -74,7 +75,7 @@ const FileRow = ({ file:
       <TableCell title="last modified datetime" align="right">
         {formatDate(last_edit)}
       </TableCell>
-      <TableCell align="right" width="15%">
+      <TableCell align="right" width="20%">
       {enable_download &&
         <Tooltip title="Download">
             <IconButton onClick={() => on_download({ id, name })}>
@@ -93,6 +94,13 @@ const FileRow = ({ file:
         <Tooltip title="Share">
             <IconButton onClick={() => on_share({ id, name })}>
               <ShareIcon fontSize='small' />
+            </IconButton>
+        </Tooltip>
+      }
+      {enable_rm && enable_download &&
+        <Tooltip title="Re-Upload">
+            <IconButton onClick={() => console.log("reupload")}>{/*on_reupload(id)}>*/}
+              <PublishIcon fontSize='small' />
             </IconButton>
         </Tooltip>
       }
