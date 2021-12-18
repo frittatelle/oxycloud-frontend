@@ -135,6 +135,14 @@ class Storage {
     throw new Error("Not implemented");
   }
 
+  async rename(id,newName){
+    let client = this.docsClient();
+    let res = await client.post("/"+id,"",{
+        params:{filename:newName}
+    });
+    return res
+  }
+
   docsClient(){
       return axios.create({
           baseURL: DOCS_ENDPOINT, 

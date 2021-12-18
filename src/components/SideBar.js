@@ -54,7 +54,6 @@ const SideBar = ({ sidebarOpen, rootFolder, setRootFolder }) => {
 
 	//Styles
 	const classes = useStyles();
-    console.log(rootFolder)
 	//useQuery (get data)
 	return (
 		<>

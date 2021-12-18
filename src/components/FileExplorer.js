@@ -37,8 +37,8 @@ const useStyles = () => ({
   }
 });
 
-function saveByteArray(fileName, contentType, byte) {
-  var blob = new Blob([byte], { type: contentType });
+function saveByteArray(fileName, contentType, bytes) {
+  var blob = new Blob([bytes], { type: contentType });
   var link = document.createElement('a');
   link.href = window.URL.createObjectURL(blob);
   link.download = fileName;
@@ -50,6 +50,7 @@ const ShareModal = ({open, handleClose, shareParams}) => {
     const share = ()=>{
         OxySession.storage.share(shareParams.id, userMail);
         setUserMail("");
+        handleClose();
     }
     const delShare = ()=>{
     }
@@ -61,20 +62,57 @@ const ShareModal = ({open, handleClose, shareParams}) => {
               <Card align="left" style={{minWidth: 275}}>
                   <CardContent>
                     <Typography color="textSecondary" gutterBottom>
-                        Share '{shareParams.name}' with ... 
+                        Share '{shareParams.name}' with... 
                     </Typography>
                     <form noValidate autoComplete="off">
                       <TextField value={userMail} label="email" variant="outlined" 
                         onChange={(e)=>{setUserMail(e.target.value)}}/>
                     </form>
                     <CardActionArea>
-                        <Button disabled={userMail===""} size="small" onClick={()=>share()}>Confirm</Button>
+                        <Button 
+                            disabled={userMail===""} 
+                            size="small" 
+                            onClick={share}>Confirm</Button>
                     </CardActionArea>
               </CardContent>
               </Card>
         </Modal>
    )
 }
+
+const RenameModal = ({open, handleClose, renameParams}) => {
+    const [newName, setNewName] = useState("");
+    const rename = ()=>{
+        OxySession.storage.rename(renameParams.id, newName);
+        setNewName("");
+        handleClose();
+    }
+    return (
+        <Modal
+            style={{display:'flex',alignItems:'center',justifyContent:'center'}}
+            open={open}
+            onClose={handleClose}>
+              <Card align="left" style={{minWidth: 275}}>
+                  <CardContent>
+                    <Typography color="textSecondary" gutterBottom>
+                        Rename '{renameParams.name}' as... 
+                    </Typography>
+                    <form noValidate autoComplete="off">
+                      <TextField value={newName} label="new name" variant="outlined" 
+                        onChange={(e)=>{setNewName(e.target.value)}}/>
+                    </form>
+                    <CardActionArea>
+                        <Button 
+                            disabled={newName===""} 
+                            size="small" 
+                            onClick={rename}>Confirm</Button>
+                    </CardActionArea>
+              </CardContent>
+              </Card>
+        </Modal>
+   )
+}
+
 
 
 const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
@@ -91,8 +129,12 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
   });
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareParams, setShareParams] = useState({name:"", id:""});
+  
+  const [renameModalOpen, setRenameModalOpen] = useState(false);
+  const [renameParams, setRenameParams] = useState({name:"", id:""});
 
   const handleShareModalClose = () => setShareModalOpen(false);
+  const handleRenameModalClose = () => setRenameModalOpen(false);
 
   const startDownload = ({id,name}) => OxySession.storage.get(id)
       .then((res) => saveByteArray(name, res.content_type, res.body))
@@ -109,6 +151,13 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
       }
       FSTree.refetch();
   };
+
+  const renameDialog = (params) => {
+    console.log("Rename:", params);
+    setRenameParams(params);
+    setRenameModalOpen(true);
+    FSTree.refetch();
+  }
 
   const shareDialog = (params) => {
     console.log("Sharing:", params);
@@ -137,9 +186,11 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
             on_download={startDownload}
             on_share={shareDialog}
             on_rm={rm}
+            on_rename={renameDialog}
             enable_rm={rootFolder==='FOLDER'||rootFolder==='TRASH'}
             enable_download={rootFolder==='FOLDER'||rootFolder==='SHARED'}
             enable_sharing={rootFolder==='FOLDER'}
+            enable_rename={rootFolder==='FOLDER'}
           />
           
         }
@@ -148,6 +199,10 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
             shareParams={shareParams} 
             open={shareModalOpen} 
             handleClose={handleShareModalClose} />
+        <RenameModal 
+            renameParams={renameParams} 
+            open={renameModalOpen} 
+            handleClose={handleRenameModalClose} />
     </Container>
   );
 }

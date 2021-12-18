@@ -2,6 +2,7 @@ import React from 'react';
 
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import Tooltip from '@material-ui/core/Tooltip';
 import data from '../data.json';
 
 
@@ -12,6 +13,7 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import ShareIcon from '@material-ui/icons/Share';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 const getIcon = (ext) => {
   for (const [, type] of data.entries())
@@ -54,9 +56,8 @@ function formatDate(date) {
 }
 const FileRow = ({ file:
   { id, path, name, size, owner, last_edit },
-  on_download, on_share, on_rm,
-  enable_rm, enable_download, enable_sharing}) => {
-    console.log(enable_rm,enable_sharing);
+  on_download, on_share, on_rm, on_rename,
+  enable_rm, enable_download, enable_sharing, enable_rename}) => {
   return (
     <TableRow key={id} >
       <TableCell title="file name" component="th">
@@ -75,19 +76,32 @@ const FileRow = ({ file:
       </TableCell>
       <TableCell align="right" width="15%">
       {enable_download &&
-        <IconButton onClick={() => on_download({ id, name })}>
-          <GetAppIcon fontSize='small' />
-        </IconButton>
+        <Tooltip title="Download">
+            <IconButton onClick={() => on_download({ id, name })}>
+              <GetAppIcon fontSize='small' />
+            </IconButton>
+        </Tooltip>
+      }
+      {enable_rename &&
+        <Tooltip title="Rename">
+            <IconButton onClick={() => on_rename({id, name})}>
+              <EditIcon fontSize='small' />
+            </IconButton>
+        </Tooltip>
       }
       {enable_sharing && 
-        <IconButton onClick={() => on_share({ id, name })}>
-          <ShareIcon fontSize='small' />
-        </IconButton>
+        <Tooltip title="Share">
+            <IconButton onClick={() => on_share({ id, name })}>
+              <ShareIcon fontSize='small' />
+            </IconButton>
+        </Tooltip>
       }
       {enable_rm &&
-        <IconButton onClick={() => on_rm(id)}>
-          <DeleteIcon fontSize='small' />
-        </IconButton>
+        <Tooltip title="Delete">
+            <IconButton onClick={() => on_rm(id)}>
+              <DeleteIcon fontSize='small' />
+            </IconButton>
+        </Tooltip>
       }
       </TableCell>
     </TableRow>
