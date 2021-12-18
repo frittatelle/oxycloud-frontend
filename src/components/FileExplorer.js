@@ -142,9 +142,8 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
   const startDownload = ({id,name}) => OxySession.storage.get(id)
       .then((res) => saveByteArray(name, res.content_type, res.body))
       .catch(console.error);
-  useEffect(() => {
-    FSTree.refetch()
-  },[folder, rootFolder, FSTree])
+  // eslint-disable-next-line
+  useEffect(() => { FSTree.refetch() },[folder, rootFolder])
 
   const rm = (id) => { 
       if(rootFolder==="FOLDER"){
