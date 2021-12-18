@@ -31,7 +31,7 @@ it("check text", async () => {
           last_edit: new Date()
         }}
       />, container)
-    expect(container.querySelector("[title='file name']").textContent).toBe("file.txt")
+    expect(container.querySelector("[title='file name']").textContent.trim()).toBe("file.txt")
     expect(container.querySelector("[title='file owner']").textContent).toBe("Giovanni Mucciaccia")
     expect(container.querySelector("[title='file size']").textContent).toBe("1 kB")
   });
