@@ -106,7 +106,7 @@ const FileRow = ({ file:
       }
       {enable_rm &&
         <Tooltip title="Delete">
-            <IconButton onClick={() => on_rm(id)}>
+            <IconButton onClick={() => on_rm(id,name)}>
               <DeleteIcon fontSize='small' />
             </IconButton>
         </Tooltip>

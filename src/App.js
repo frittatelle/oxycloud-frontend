@@ -17,6 +17,8 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import theme from './styles/theme';
 import { makeStyles } from '@material-ui/core/styles';
 import { ReactQueryDevtools } from 'react-query-devtools';
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.min.css'
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -73,6 +75,7 @@ export default function App() {
       {process.env.REACT_APP_PRODUCTION ? <span /> : <ReactQueryDevtools initialIsOpen={false} />}
       <CssBaseline />
       {isAuthorized ? <Home /> : <SplashScreen />}
+      <ToastContainer position="bottom-right"/>
     </ThemeProvider>
   )
 }

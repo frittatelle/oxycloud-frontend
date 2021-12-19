@@ -26,9 +26,11 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import IconButton from '@material-ui/core/IconButton'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+
 import { OxySession } from '../utils/api';
 import { useState } from 'react'
 
+import { toast } from 'react-toastify';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -98,7 +100,20 @@ const useStyles = makeStyles((theme) => ({
 const MkDirModal = ({open, handleClose, currentFolder}) => {
     const [dirName, setDirName] = useState("");
     const mkdir = ()=>{
-        OxySession.storage.mkdir(currentFolder.id, dirName);
+
+      toast.promise(
+            OxySession.storage.mkdir(currentFolder.id, dirName)
+        ,{
+          pending: `Creating ${dirName}`,
+          success:`${dirName} created`, 
+          error:{
+                render({data}){
+                    if(typeof data.message === "string")
+                        return data.message
+                    return JSON.stringify(data)
+                }
+          }
+        });
         handleClose();
         setDirName("");
     }
@@ -148,7 +163,19 @@ const Header = ({ handleSidebar, sidebarOpen, folder, rootFolder }) => {
         const file = e.target.files[0];
         selectFile(file);
 
-        OxySession.storage.put(file, folder.id)
+      toast.promise(
+         OxySession.storage.put(file, folder.id)
+        ,{
+          pending: `Uploading ${file.name}`,
+          success:`${file.name} uploaded`, 
+          error:{
+                render({data}){
+                    if(typeof data.message === "string")
+                        return data.message
+                    return JSON.stringify(data)
+                }
+          }
+        });
     }
 
 

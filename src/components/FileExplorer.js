@@ -25,7 +25,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { useState, useEffect } from 'react'
-
+import { toast } from 'react-toastify';
 
 const useStyles = () => ({
   cont: {
@@ -47,10 +47,23 @@ function saveByteArray(fileName, contentType, bytes) {
 };
 const ShareModal = ({open, handleClose, shareParams}) => {
     const [userMail, setUserMail] = useState("");
+   
     const share = ()=>{
-        OxySession.storage.share(shareParams.id, userMail);
-        setUserMail("");
+        toast.promise(
+            OxySession.storage.share(shareParams.id, userMail)
+        ,{
+          pending: `Sharing ${shareParams.name} with ${userMail}`,
+          success:`${shareParams.name} shared with ${userMail}`, 
+          error:{
+                render({data}){
+                    if(typeof data.message !== "undefinied")
+                        return JSON.stringify(data.message)
+                    return JSON.stringify(data)
+                }
+          }
+        });
         handleClose();
+        setUserMail("");
     }
     // eslint-disable-next-line
     const delShare = ()=>{
@@ -81,10 +94,27 @@ const ShareModal = ({open, handleClose, shareParams}) => {
    )
 }
 
-const RenameModal = ({open, handleClose, renameParams}) => {
+const RenameModal = ({open, handleClose, renameParams, onComplete}) => {
     const [newName, setNewName] = useState("");
     const rename = ()=>{
-        OxySession.storage.rename(renameParams.id, newName);
+      toast.promise(
+        OxySession.storage.rename(renameParams.id, newName)
+        ,{
+          pending: `Renaming ${renameParams.name} to ${newName}`,
+          success: { 
+              render() {
+                  onComplete();
+                  return `${renameParams.name} renamed to ${newName}`
+              }
+          },
+          error:{
+                render({data}){
+                    if(typeof data.message === "string")
+                        return data.message
+                    return JSON.stringify(data)
+                }
+          }
+        });
         setNewName("");
         handleClose();
     }
@@ -139,19 +169,68 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
   const handleShareModalClose = () => setShareModalOpen(false);
   const handleRenameModalClose = () => setRenameModalOpen(false);
 
-  const startDownload = ({id,name}) => OxySession.storage.get(id)
-      .then((res) => saveByteArray(name, res.content_type, res.body))
-      .catch(console.error);
+  const startDownload = ({id,name}) => toast.promise(
+            OxySession.storage.get(id)
+            ,{
+              pending: `Downloading ${name}`,
+              success: {
+                  render(res) {
+                    saveByteArray(name, res.content_type, res.body)
+                    return `${name} downloaded`
+                  }
+              },
+              error:{
+                    render({data}){
+                        if(typeof data.message === "string")
+                            return data.message
+                        return JSON.stringify(data)
+                    }
+              }
+        });
+
   // eslint-disable-next-line
   useEffect(() => { FSTree.refetch() },[folder, rootFolder])
 
-  const rm = (id) => { 
+  const rm = (id,name) => { 
       if(rootFolder==="FOLDER"){
-        OxySession.storage.rm(id);
+        toast.promise(
+            OxySession.storage.rm(id)
+            ,{
+              pending: `Moving ${name} to trash`,
+              success: {
+                  render() {
+                    FSTree.refetch();
+                    return `${name} moved to Trash`
+                  }
+              },
+              error:{
+                    render({data}){
+                        if(typeof data.message === "string")
+                            return data.message
+                        return JSON.stringify(data)
+                    }
+              }
+        });
       }else{
-        OxySession.storage.rm(id, false, true);
+      toast.promise(
+        OxySession.storage.rm(id, false, true)
+        ,{
+          pending: `Permanently deleting ${name}}`,
+          success: {
+              render() {
+                FSTree.refetch();
+                return `${name} permanently deleted`
+              }
+          }, 
+          error:{
+                render({data}){
+                    if(typeof data.message === "string")
+                        return data.message
+                    return JSON.stringify(data)
+                }
+          }
+        });
       }
-      FSTree.refetch();
   };
 
   const renameDialog = (params) => {
@@ -204,7 +283,8 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
         <RenameModal 
             renameParams={renameParams} 
             open={renameModalOpen} 
-            handleClose={handleRenameModalClose} />
+            handleClose={handleRenameModalClose} 
+            onComplete={()=>FSTree.refetch()} />
     </Container>
   );
 }
