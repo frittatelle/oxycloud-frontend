@@ -6,8 +6,12 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid'
+import Fab from '@material-ui/core/Fab'
+import { useTheme } from '@material-ui/core/styles'
 //icons
 import CircularProgress from '@material-ui/core/CircularProgress'
+import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
+import AddIcon from '@material-ui/icons/Add';
 
 import { useQuery } from 'react-query';
 
@@ -20,10 +24,12 @@ import FoldersBar from './FileExplorer/FoldersBar'
 //modal
 import Modal from "@material-ui/core/Modal";
 import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
+import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+
+
 import { useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
 
@@ -45,6 +51,117 @@ function saveByteArray(fileName, contentType, bytes) {
   link.click();
   link.remove();
 };
+
+const FloatingButtons = ({currentFolder, onComplete, handleMkdirModalOpen}) => {
+    const theme = useTheme();
+    const handleNewFile = (evt) => {
+        const [file] = evt.target.files;
+        toast.promise(
+             OxySession.storage.put(file, currentFolder.id)
+            ,{
+              pending: `Uploading ${file.name}`,
+              success:{ 
+                  render(){
+                      onComplete();
+                      return `${file.name} uploaded`
+                  }
+              }, 
+              error:{
+                    render({data}){
+                        if(typeof data.message === "string")
+                            return data.message
+                        return JSON.stringify(data)
+                    }
+              }
+        });
+    }
+    return (
+        <div>
+             <label htmlFor="addfile">
+                <input id="addfile" 
+                    name="addfile" 
+                    type="file" 
+                    onChange={handleNewFile}
+                    hidden />
+                <Fab size="medium" 
+                    color="primary" 
+                    component="span"
+                    style={{
+                        position: 'absolute',
+                        bottom: theme.spacing(2),
+                        right: theme.spacing(10),
+                }}>
+                    <AddIcon />
+                </Fab>
+            </label>
+            <Fab size="medium" 
+                color="primary"
+                component="span"
+                onClick={handleMkdirModalOpen}
+                style={{
+                    position: 'absolute',
+                    bottom: theme.spacing(2),
+                    right: theme.spacing(2),
+            }}>
+              <CreateNewFolderIcon />
+              
+            </Fab>
+        </div>
+    )
+};
+const MkDirModal = ({open, onComplete, handleClose, currentFolder}) => {
+    const [dirName, setDirName] = useState("");
+    const mkdir = ()=>{
+
+      toast.promise(
+            OxySession.storage.mkdir(currentFolder.id, dirName)
+        ,{
+          pending: `Creating ${dirName}`,
+          success: {
+              render(){ 
+                  onComplete()
+                  return `${dirName} created`
+              }
+          },
+          error:{
+                render({data}){
+                    if(typeof data.message === "string")
+                        return data.message
+                    return JSON.stringify(data)
+                }
+          }
+        });
+        handleClose();
+        setDirName("");
+    }
+    return (
+        <Modal
+            style={{display:'flex',alignItems:'center',justifyContent:'center'}}
+            open={open}
+            onClose={handleClose}>
+              <Card align="left" style={{minWidth: 275}}>
+                  <CardContent>
+                    <Typography color="textSecondary" gutterBottom>
+                      New folder..
+                    </Typography>
+                    <form noValidate autoComplete="off">
+                      <TextField value={dirName} label="name" variant="outlined" 
+                        onChange={(e)=>{setDirName(e.target.value)}}/>
+                    </form>
+                    <CardActions>
+                        <Button 
+                            disabled={dirName===""} 
+                            size="small" 
+                            onClick={mkdir}>
+                            Confirm
+                        </Button>
+                    </CardActions>
+              </CardContent>
+              </Card>
+        </Modal>
+   )
+}
+
 const ShareModal = ({open, handleClose, shareParams}) => {
     const [userMail, setUserMail] = useState("");
    
@@ -56,7 +173,7 @@ const ShareModal = ({open, handleClose, shareParams}) => {
           success:`${shareParams.name} shared with ${userMail}`, 
           error:{
                 render({data}){
-                    if(typeof data.message !== "undefinied")
+                    if(typeof data.message === "string")
                         return JSON.stringify(data.message)
                     return JSON.stringify(data)
                 }
@@ -82,12 +199,12 @@ const ShareModal = ({open, handleClose, shareParams}) => {
                       <TextField value={userMail} label="email" variant="outlined" 
                         onChange={(e)=>{setUserMail(e.target.value)}}/>
                     </form>
-                    <CardActionArea>
+                    <CardActions>
                         <Button 
                             disabled={userMail===""} 
                             size="small" 
                             onClick={share}>Confirm</Button>
-                    </CardActionArea>
+                    </CardActions>
               </CardContent>
               </Card>
         </Modal>
@@ -132,12 +249,12 @@ const RenameModal = ({open, handleClose, renameParams, onComplete}) => {
                       <TextField value={newName} label="new name" variant="outlined" 
                         onChange={(e)=>{setNewName(e.target.value)}}/>
                     </form>
-                    <CardActionArea>
+                    <CardActions>
                         <Button 
                             disabled={newName===""} 
                             size="small" 
                             onClick={rename}>Confirm</Button>
-                    </CardActionArea>
+                    </CardActions>
               </CardContent>
               </Card>
         </Modal>
@@ -168,6 +285,8 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
 
   const handleShareModalClose = () => setShareModalOpen(false);
   const handleRenameModalClose = () => setRenameModalOpen(false);
+  
+  const [mkdirModalOpen, setMkdirModalOpen] = useState(false);
 
   const startDownload = ({id,name}) => toast.promise(
             OxySession.storage.get(id)
@@ -276,6 +395,7 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
           
         }
       </Grid>
+      {rootFolder==="FOLDER" && <>
         <ShareModal 
             shareParams={shareParams} 
             open={shareModalOpen} 
@@ -285,6 +405,17 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
             open={renameModalOpen} 
             handleClose={handleRenameModalClose} 
             onComplete={()=>FSTree.refetch()} />
+        <MkDirModal 
+            currentFolder={folder} 
+            open={mkdirModalOpen} 
+            handleClose={()=>setMkdirModalOpen(false)} 
+            onComplete={()=>FSTree.refetch()} />
+
+        <FloatingButtons 
+            currentFolder={folder}
+            handleMkdirModalOpen={()=>setMkdirModalOpen(true)}
+            onComplete={()=>FSTree.refetch()} />
+      </>}
     </Container>
   );
 }

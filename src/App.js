@@ -75,7 +75,7 @@ export default function App() {
       {process.env.REACT_APP_PRODUCTION ? <span /> : <ReactQueryDevtools initialIsOpen={false} />}
       <CssBaseline />
       {isAuthorized ? <Home /> : <SplashScreen />}
-      <ToastContainer position="bottom-right"/>
+      <ToastContainer position="top-right"/>
     </ThemeProvider>
   )
 }

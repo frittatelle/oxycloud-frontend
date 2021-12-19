@@ -9,28 +9,16 @@ import Avatar from '@material-ui/core/Avatar';
 import InputBase from '@material-ui/core/InputBase';
 import Divider from '@material-ui/core/Divider';
 
-import Modal from "@material-ui/core/Modal";
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-
 //Icons
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import SearchIcon from '@material-ui/icons/Search';
-import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
-import AddIcon from '@material-ui/icons/Add';
 import SettingsIcon from '@material-ui/icons/Settings';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import IconButton from '@material-ui/core/IconButton'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 import { OxySession } from '../utils/api';
-import { useState } from 'react'
-
-import { toast } from 'react-toastify';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -97,87 +85,8 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 }));
-const MkDirModal = ({open, handleClose, currentFolder}) => {
-    const [dirName, setDirName] = useState("");
-    const mkdir = ()=>{
 
-      toast.promise(
-            OxySession.storage.mkdir(currentFolder.id, dirName)
-        ,{
-          pending: `Creating ${dirName}`,
-          success:`${dirName} created`, 
-          error:{
-                render({data}){
-                    if(typeof data.message === "string")
-                        return data.message
-                    return JSON.stringify(data)
-                }
-          }
-        });
-        handleClose();
-        setDirName("");
-    }
-    return (
-        <Modal
-            style={{display:'flex',alignItems:'center',justifyContent:'center'}}
-            open={open}
-            onClose={handleClose}>
-              <Card align="left" style={{minWidth: 275}}>
-                  <CardContent>
-                    <Typography color="textSecondary" gutterBottom>
-                      New folder..
-                    </Typography>
-                    <form noValidate autoComplete="off">
-                      <TextField value={dirName} label="name" variant="outlined" 
-                        onChange={(e)=>{setDirName(e.target.value)}}/>
-                    </form>
-                    <CardActions>
-                        <Button 
-                            disabled={dirName===""} 
-                            size="small" 
-                            onClick={mkdir}>
-                            Confirm
-                        </Button>
-                    </CardActions>
-              </CardContent>
-              </Card>
-        </Modal>
-   )
-}
 const Header = ({ handleSidebar, sidebarOpen, folder, rootFolder }) => {
-
-    const [, selectFile] = useState("");
-    const [mkdirModalOpen, setMkdirModalOpen] = useState(false);
-
-    const handleMkdirModalOpen = () => {
-        setMkdirModalOpen(true);
-    };
-
-    const handleMkdirModalClose = () => {
-        setMkdirModalOpen(false);
-    };
-
-
-    function onFileChange(e) {
-
-        const file = e.target.files[0];
-        selectFile(file);
-
-      toast.promise(
-         OxySession.storage.put(file, folder.id)
-        ,{
-          pending: `Uploading ${file.name}`,
-          success:`${file.name} uploaded`, 
-          error:{
-                render({data}){
-                    if(typeof data.message === "string")
-                        return data.message
-                    return JSON.stringify(data)
-                }
-          }
-        });
-    }
-
 
     const classes = useStyles();
     return (
@@ -210,30 +119,6 @@ const Header = ({ handleSidebar, sidebarOpen, folder, rootFolder }) => {
                             inputProps={{ 'aria-label': 'search' }}
                         />
                     </div>
-                   { (rootFolder==="FOLDER") &&
-                    <Avatar className={classes.avatar}>
-                        <IconButton color="inherit" onClick={handleMkdirModalOpen}>
-                            <CreateNewFolderIcon />
-                            <MkDirModal 
-                                currentFolder={folder} 
-                                open={mkdirModalOpen} 
-                                handleClose={handleMkdirModalClose}/> 
-                        </IconButton>
-                    </Avatar>
-                   }
-                   { (rootFolder==="FOLDER") &&
-                    <Avatar className={classes.avatar}>
-                        <IconButton color="inherit" >
-                            <input id="imagefile" 
-                                type="file" 
-                                hidden 
-                                onChange={(e) => onFileChange(e, folder)} />
-                            <label htmlFor="imagefile">
-                                <AddIcon />
-                            </label>
-                        </IconButton>
-                    </Avatar>
-                    }
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
                             <NotificationsIcon />
