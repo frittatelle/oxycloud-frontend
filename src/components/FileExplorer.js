@@ -135,8 +135,8 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
             ,{
               pending: `Downloading ${name}`,
               success: {
-                  render(res) {
-                    saveByteArray(name, res.content_type, res.body)
+                  render({data}) {
+                    saveByteArray(name, data.content_type, data.body)
                     return `${name} downloaded`
                   }
               },
