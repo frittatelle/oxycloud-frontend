@@ -122,7 +122,8 @@ class Storage {
   async rename(id,newName){
     let client = this.docsClient();
     let res = await client.post("/"+id,"",{
-        params:{filename:newName}
+        params:{filename:newName},
+        headers:{"Content-Type":"application/json"}
     });
     return res
   }
