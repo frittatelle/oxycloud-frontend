@@ -24,7 +24,7 @@ import FoldersBar from './FileExplorer/FoldersBar'
 //modal
 import Modal from "./FileExplorer/Modals"
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { toast } from 'react-toastify';
 
 const useStyles = () => ({
@@ -106,7 +106,7 @@ const FloatingButtons = ({currentFolder, onComplete, handleMkdirModalOpen}) => {
 
 
 const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
-  const FSTree = useQuery(["fsTree", folder], () => {
+  const FSTree = useQuery(["fsTree", folder, rootFolder], () => {
       switch(rootFolder){
         case 'FOLDER':
               return OxySession.storage.ls(folder.id,false)
@@ -149,8 +149,6 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
               }
         });
 
-  // eslint-disable-next-line
-  useEffect(() => { FSTree.refetch() },[folder, rootFolder])
 
   const rm = (id,name) => { 
       if(rootFolder==="FOLDER"){
@@ -223,6 +221,7 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
           (<Typography color="error" align="center">ERROR:{FSTree.error}</Typography>)}
         {(!FSTree.isLoading && !FSTree.error) &&
           <FileTable
+            fsTree={FSTree}
             folder={folder}
             on_change_folder={setFolder}
             on_download={startDownload}

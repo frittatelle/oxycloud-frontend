@@ -8,14 +8,9 @@ import TableRow from '@material-ui/core/TableRow';
 import FileRow from "./FileRow"
 import FolderRow from "./FolderRow"
 
-import { OxySession } from "../../utils/api"
-
-import { useQuery } from 'react-query';
-
 const FileTable = ({ 
-    folder, on_share, on_download, on_change_folder, on_rm, on_rename, 
+    fsTree, folder, on_share, on_download, on_change_folder, on_rm, on_rename, 
     enable_rm, enable_download, enable_sharing, enable_rename }) => {
-  const FSTree = useQuery(["fsTree", folder], () => OxySession.storage.ls(folder.id))
   return (
     <TableContainer>
       <Table aria-label="simple table">
@@ -29,7 +24,7 @@ const FileTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {FSTree.data.folders.map((f) =>{
+          {fsTree.data.folders.map((f) =>{
             f.parent = folder;
             return (
               <FolderRow
@@ -43,7 +38,7 @@ const FileTable = ({
                   enable_rename={enable_rename}
                 />)
           })}
-          {FSTree.data.files.map((f) =>
+          {fsTree.data.files.map((f) =>
             <FileRow
               file={f}
               on_share={on_share}
