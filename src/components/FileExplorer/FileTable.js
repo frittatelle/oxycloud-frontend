@@ -36,9 +36,11 @@ const FileTable = ({
                   folder={f}
                   on_share={on_share}
                   on_change_folder={on_change_folder}
+                  on_rm={on_rm}
+                  on_rename={on_rename}
                   enable_rm={enable_rm}
-                  enable_download={enable_download}
-                  enable_sharing={enable_sharing}
+                  enable_sharing={false /*folder sharing can be very complex*/}
+                  enable_rename={enable_rename}
                 />)
           })}
           {FSTree.data.files.map((f) =>
