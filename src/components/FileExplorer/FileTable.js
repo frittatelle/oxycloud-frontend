@@ -9,8 +9,9 @@ import FileRow from "./FileRow"
 import FolderRow from "./FolderRow"
 
 const FileTable = ({ 
-    fsTree, folder, on_share, on_download, on_change_folder, on_rm, on_rename, 
-    enable_rm, enable_download, enable_sharing, enable_rename }) => {
+    fsTree, folder, 
+    on_share, on_download, on_change_folder, on_rm, on_rename, on_restore, 
+    enable_rm, enable_download, enable_sharing, enable_rename, enable_restore }) => {
   return (
     <TableContainer>
       <Table aria-label="simple table">
@@ -33,9 +34,11 @@ const FileTable = ({
                   on_change_folder={on_change_folder}
                   on_rm={on_rm}
                   on_rename={on_rename}
+                  on_restore={on_restore}
                   enable_rm={enable_rm}
                   enable_sharing={false /*folder sharing can be very complex*/}
                   enable_rename={enable_rename}
+                  enable_restore={enable_restore}
                 />)
           })}
           {fsTree.data.files.map((f) =>
@@ -45,10 +48,12 @@ const FileTable = ({
               on_download={on_download}
               on_rm={on_rm}
               on_rename={on_rename}
+              on_restore={on_restore}
               enable_rm={enable_rm}
               enable_download={enable_download}
               enable_sharing={enable_sharing}
               enable_rename={enable_rename}
+              enable_restore={enable_restore}
             />)}
         </TableBody>
       </Table>

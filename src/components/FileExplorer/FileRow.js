@@ -15,6 +15,7 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import PublishIcon from '@material-ui/icons/Publish';
+import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash';
 
 const getIcon = (ext) => {
   for (const [, type] of data.entries())
@@ -57,8 +58,8 @@ function formatDate(date) {
 }
 const FileRow = ({ file:
   { id, path, name, size, owner, last_edit },
-  on_download, on_share, on_rm, on_rename,
-  enable_rm, enable_download, enable_sharing, enable_rename}) => {
+  on_download, on_share, on_rm, on_rename, on_restore,
+  enable_rm, enable_download, enable_sharing, enable_rename, enable_restore }) => {
   return (
     <TableRow key={id} >
       <TableCell title="file name" component="th">
@@ -101,6 +102,13 @@ const FileRow = ({ file:
         <Tooltip title="Re-Upload">
             <IconButton onClick={() => console.log("reupload")}>{/*on_reupload(id)}>*/}
               <PublishIcon fontSize='small' />
+            </IconButton>
+        </Tooltip>
+      }
+      {enable_restore &&
+        <Tooltip title="Restore">
+            <IconButton onClick={() => on_restore({id,name})}>
+              <RestoreFromTrashIcon fontSize='small' />
             </IconButton>
         </Tooltip>
       }

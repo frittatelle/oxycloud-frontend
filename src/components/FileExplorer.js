@@ -149,7 +149,24 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
               }
         });
 
-
+  const restore = ({id,name}) =>  toast.promise(
+            OxySession.storage.restore(id)
+            ,{
+              pending: `Restoring ${name}`,
+              success: {
+                  render() {
+                    FSTree.refetch();
+                    return `${name} restored`
+                  }
+              },
+              error:{
+                    render({data}){
+                        if(typeof data.message === "string")
+                            return data.message
+                        return JSON.stringify(data)
+                    }
+              }
+        });
   const rm = (id,name) => { 
       if(rootFolder==="FOLDER"){
         toast.promise(
@@ -196,7 +213,6 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
     console.log("Rename:", params);
     setRenameParams(params);
     setRenameModalOpen(true);
-    FSTree.refetch();
   }
 
   const shareDialog = (params) => {
@@ -227,11 +243,13 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
             on_download={startDownload}
             on_share={shareDialog}
             on_rm={rm}
+            on_restore={restore}
             on_rename={renameDialog}
             enable_rm={rootFolder==='FOLDER'||rootFolder==='TRASH'}
             enable_download={rootFolder==='FOLDER'||rootFolder==='SHARED'}
             enable_sharing={rootFolder==='FOLDER'}
             enable_rename={rootFolder==='FOLDER'}
+            enable_restore={rootFolder==='TRASH'}
           />
           
         }

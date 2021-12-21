@@ -72,7 +72,10 @@ class Storage {
     });
     return resb.data
   }
-
+  
+  async restore(id){
+    return this.rm(id,true);
+  }
   async rm(id, restore=false, permanent=false) { 
     let client = this.docsClient()
     let res = await client.delete("/"+id, {

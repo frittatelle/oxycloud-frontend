@@ -9,10 +9,11 @@ import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import ShareIcon from '@material-ui/icons/Share';
 import DeleteIcon from '@material-ui/icons/Delete';
+import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash';
 
 const FolderRow = ({ folder, on_share: share, on_change_folder: change_folder,
-    on_download, on_share, on_rm, on_rename,
-    enable_rm, enable_download, enable_sharing, enable_rename}) => {
+    on_download, on_share, on_rm, on_rename, on_restore,
+    enable_rm, enable_download, enable_sharing, enable_rename, enable_restore}) => {
 
   return (
     <TableRow key={folder.id}>
@@ -36,6 +37,13 @@ const FolderRow = ({ folder, on_share: share, on_change_folder: change_folder,
         <Tooltip title="Share">
             <IconButton onClick={() => on_share(folder)}>
               <ShareIcon fontSize='small' />
+            </IconButton>
+        </Tooltip>
+      }
+      {enable_restore &&
+        <Tooltip title="Restore">
+            <IconButton onClick={() => on_restore(folder)}>
+              <RestoreFromTrashIcon fontSize='small' />
             </IconButton>
         </Tooltip>
       }
