@@ -25,9 +25,12 @@ class Storage {
     return res
   }
 
-  async get(file_id, progress_cb) {
+  async get({id, owner}, progress_cb) {
     let client = this.docsClient()
-    let presigned_url = await client.get("/"+file_id, {responseType: 'text'});
+    let presigned_url = await client.get("/"+id, {
+        responseType: 'text',
+        params:{owner_id:owner}
+    });
     presigned_url = presigned_url.data;
     
     let res = await axios.get(presigned_url, {
@@ -99,29 +102,6 @@ class Storage {
     return res.data;
   }
     
-  async share(id,userMail){
-    let client = this.shareClient()
-    let res = await client.post("/"+id,"",{
-        params: {share_email:userMail},
-    });   
-    return res.data;
-  }
-
-  async rmShare(id,userMail){
-    let client = this.shareClient()
-    let res = await client.delete("/"+id, {
-        params: {unshare_email:userMail},
-    });
-    return res.data;  
-  }
-  async lsShared(folder){
-    return {files:[],folders:[]}
-  }
-
-  async rmdir(path) {
-    throw new Error("Not implemented");
-  }
-
   async rename(id,newName){
     let client = this.docsClient();
     let res = await client.post("/"+id,"",{
@@ -139,6 +119,31 @@ class Storage {
           }        
       });
   }
+  //TODO move in another file?
+  async share(id,userMail){
+    let client = this.shareClient()
+    let res = await client.post("/"+id,"",{
+        params: {share_email:userMail},
+    });   
+    return res.data;
+  }
+
+  async rmShare(id,userMail){
+    let client = this.shareClient()
+    let res = await client.delete("/"+id, {
+        params: {unshare_email:userMail},
+    });
+    return res.data;  
+  }
+  async lsShared(folder){
+    let client = this.shareClient()
+    let res = await client.get("",{
+    });
+
+    return res.data;
+  }
+
+
   shareClient(){
       return axios.create({
           baseURL: SHARE_ENDPOINT, 

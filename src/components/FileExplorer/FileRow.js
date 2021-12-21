@@ -79,7 +79,7 @@ const FileRow = ({ file:
       <TableCell align="right" width="20%">
       {enable_download &&
         <Tooltip title="Download">
-            <IconButton onClick={() => on_download({ id, name })}>
+            <IconButton onClick={() => on_download({ id, owner, name })}>
               <GetAppIcon fontSize='small' />
             </IconButton>
         </Tooltip>

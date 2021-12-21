@@ -130,8 +130,8 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
   
   const [mkdirModalOpen, setMkdirModalOpen] = useState(false);
 
-  const startDownload = ({id,name}) => toast.promise(
-            OxySession.storage.get(id)
+  const startDownload = ({id, owner, name}) => toast.promise(
+            OxySession.storage.get({id,owner})
             ,{
               pending: `Downloading ${name}`,
               success: {
