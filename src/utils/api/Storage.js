@@ -68,7 +68,7 @@ class Storage {
     formData.append('file', file);
     formData.append('submit','Upload to Amazon S3');
     
-    let resb = axios({
+    let resb = await axios({
         method: 'post',
         url: url,
         data: formData
