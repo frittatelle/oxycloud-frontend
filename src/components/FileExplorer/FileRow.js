@@ -71,7 +71,7 @@ const FileRow = ({ file:
         {getReadableFileSizeString(size)}
       </TableCell>
       <TableCell title="file owner" align="right">
-        {owner}
+        {owner.email}
       </TableCell>
       <TableCell title="last modified datetime" align="right">
         {formatDate(last_edit)}
@@ -79,7 +79,7 @@ const FileRow = ({ file:
       <TableCell align="right" width="20%">
       {enable_download &&
         <Tooltip title="Download">
-            <IconButton onClick={() => on_download({ id, owner, name })}>
+            <IconButton onClick={() => on_download({ id, owner: owner.id, name })}>
               <GetAppIcon fontSize='small' />
             </IconButton>
         </Tooltip>

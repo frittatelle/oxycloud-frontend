@@ -1,5 +1,6 @@
 import { CognitoAuth } from 'amazon-cognito-auth-js';
 import Storage from './Storage'
+import Users from './Users'
 import AWS from "aws-sdk";
 
 const USER_POOL_ID = process.env.REACT_APP_USER_POOL_ID;
@@ -114,11 +115,19 @@ class Session {
     //something better but it's fine for now
     if (!this._storage)
       this._storage = new Storage({
-        basePath: this.userInfo.id + "/",
-        session: this.cognitoSession
+        session: this
       });
     return this._storage
   }
+
+  get users() {
+    if (!this._users)
+      this._users = new Users({
+        session: this
+      });
+    return this._users;
+  }
+
 }
 
 export default new Session();

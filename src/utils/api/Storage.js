@@ -3,17 +3,8 @@ import axios from 'axios';
 const DOCS_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL + "/docs";
 const SHARE_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL + "/share";
 class Storage {
-  constructor(conf) {
-    this.conf = conf ?? {};
-  }
-
-  set conf(value) {
-    this._conf = value;
-    this.session = value ? value.session ?? {} : {} 
-  }
-
-  get conf() {
-    return this._conf;
+  constructor({session}) {
+    this.session = session;
   }
 
   async ls(folder_id = "", deleted=false) {
@@ -22,6 +13,10 @@ class Storage {
         params:{ folder: folder_id, deleted: deleted},
     });
     res = res.data;
+    for(let i=0;i<res.files.length;i++){
+        let el = res.files[i];
+        el.owner = await this.session.users.get(el.owner);
+    }
     return res
   }
 
@@ -115,7 +110,7 @@ class Storage {
       return axios.create({
           baseURL: DOCS_ENDPOINT, 
           headers: {
-              'Authorization': this.session.idToken.jwtToken,
+              'Authorization': this.session.cognitoSession.idToken.jwtToken,
           }        
       });
   }
@@ -148,7 +143,7 @@ class Storage {
       return axios.create({
           baseURL: SHARE_ENDPOINT, 
           headers: {
-              'Authorization': this.session.idToken.jwtToken,
+              'Authorization': this.session.cognitoSession.idToken.jwtToken,
           }
         });
   }
