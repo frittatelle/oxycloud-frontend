@@ -49,7 +49,8 @@ const MkDirModal = ({open, onComplete, handleClose, currentFolder}) => {
                     <Typography color="textSecondary" gutterBottom>
                       New folder..
                     </Typography>
-                    <form noValidate autoComplete="off">
+                    <form noValidate autoComplete="off" 
+                        onSubmit={(e)=>{e.preventDefault();setDirName(e.target[0].value)}} >
                       <TextField value={dirName} label="name" variant="outlined" 
                         onChange={(e)=>{setDirName(e.target.value)}}/>
                     </form>
@@ -100,7 +101,8 @@ const ShareModal = ({open, handleClose, shareParams}) => {
                     <Typography color="textSecondary" gutterBottom>
                         Share '{shareParams.name}' with... 
                     </Typography>
-                    <form noValidate autoComplete="off">
+                    <form noValidate autoComplete="off"
+                        onSubmit={e=>{e.preventDefault();setUserMail(e.target[0].value)}}>
                       <TextField value={userMail} label="email" variant="outlined" 
                         onChange={(e)=>{setUserMail(e.target.value)}}/>
                     </form>
@@ -150,7 +152,8 @@ const RenameModal = ({open, handleClose, renameParams, onComplete}) => {
                     <Typography color="textSecondary" gutterBottom>
                         Rename '{renameParams.name}' as... 
                     </Typography>
-                    <form noValidate autoComplete="off">
+                    <form noValidate autoComplete="off"
+                        onSubmit={e=>{e.preventDefault();setNewName(e.target[0].value)}}>
                       <TextField value={newName} label="new name" variant="outlined" 
                         onChange={(e)=>{setNewName(e.target.value)}}/>
                     </form>
