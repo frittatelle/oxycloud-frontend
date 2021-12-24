@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Header = ({ handleSidebar, sidebarOpen, folder, rootFolder }) => {
+const Header = ({ handleSidebar, sidebarOpen, folder, rootFolder, signOut }) => {
 
     const classes = useStyles();
     return (
@@ -133,7 +133,7 @@ const Header = ({ handleSidebar, sidebarOpen, folder, rootFolder }) => {
                     </Avatar>
 
                     <Avatar className={classes.avatar}>
-                        <IconButton color="inherit" onClick={() => OxySession.signOut()}>
+                        <IconButton color="inherit" onClick={() => signOut()}>
                             <ExitToAppIcon  />
                         </IconButton>
                     </Avatar>

@@ -43,6 +43,11 @@ const Authorizer = (props)=> {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const classes = useStyles();
 
+    const handleSignout = () => {
+        setIsAuthorized(false);
+        setContent("SIGNIN");
+        OxySession.signOut();
+    }
     const handleSignin = ({email,password}) => {
         setContent("LOADING")
         setError(null)
@@ -52,13 +57,17 @@ const Authorizer = (props)=> {
                 setError(err.name);
                 setContent("SIGNIN");
             });
-        //TODO:show error in the form
     }
     const handleSignup = ({name, lastname, number, email,password}) => {
         console.log("signup", email, password);
     }
     if(isAuthorized)
-        return <div>{props.children}</div>
+        return (<div>
+            {
+                React.Children.map(props.children, 
+                    c=>React.cloneElement(c,{doSignOut: handleSignout})
+                )
+            }</div>)
     return (
             <Grid
               container

@@ -28,14 +28,13 @@ class Session {
   refresh(){
       if(this.cognitoUser !== null){
         this.cognitoUser.getSession((err,session)=>{
-            console.log(err,session);
+            if(err) console.warn(err);
             this.cognitoSession = session;
         });
       }
   }
 
   signIn({email, password}){
-    console.log("isAuth",this.isAuthorized);
     this.authenticationDetails = new AuthenticationDetails({
         Username: email,
         Password: password
@@ -70,12 +69,12 @@ class Session {
   }
 
   signOut() {
-    console.log("Signout called");
-    return this.cognitoUser.signOut();
+    let out = this.cognitoUser.signOut();
+    this.cognitoSession = null;
+    return out;
   }
 
   get isAuthorized() {
-    console.log(this.cognitoSession);
     return this.cognitoSession !== null && this.cognitoSession.isValid();
   }
 

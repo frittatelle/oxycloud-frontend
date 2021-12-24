@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function App() {
+function App(props) {
   //Temporary state management to open/close the drawer
   // CHANGE IT TO A SMARTER SOLUTION!
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -42,10 +42,8 @@ function App() {
   
   const handleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
-    console.log(sidebarOpen);
   }
   const classes = useStyles();
-
   return (
     <div className={classes.local_root}>
       <Header 
@@ -53,6 +51,7 @@ function App() {
         sidebarOpen={sidebarOpen} 
         folder={currentFolder} 
         rootFolder={rootFolder}
+        signOut={props.doSignOut}
       />
       <SideBar 
         sidebarOpen={sidebarOpen} 
