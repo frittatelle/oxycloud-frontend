@@ -210,13 +210,11 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
   };
 
   const renameDialog = (params) => {
-    console.log("Rename:", params);
     setRenameParams(params);
     setRenameModalOpen(true);
   }
 
   const shareDialog = (params) => {
-    console.log("Sharing:", params);
     setShareParams(params);
     setShareModalOpen(true);
   }

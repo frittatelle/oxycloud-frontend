@@ -51,9 +51,12 @@ const Authorizer = (props)=> {
     };
 
     const handleSignout = () => {
-        setIsAuthorized(false);
-        setContent("SIGNIN");
-        OxySession.signOut();
+        resetMessages();
+        OxySession.signOut().then(()=>{
+            setSuccess("Signed out correctly");
+            setIsAuthorized(false);
+            setContent("SIGNIN");
+        }).catch(console.error);
     }
     const handleSignin = ({email,password}) => {
         setContent("LOADING")
@@ -66,7 +69,6 @@ const Authorizer = (props)=> {
             });
     }
     const handleSignup = (params) => {
-        console.log(params)
         setContent("LOADING")
         resetMessages();
         OxySession.signUp(params)
