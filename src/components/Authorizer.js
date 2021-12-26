@@ -19,12 +19,17 @@ import { useForm } from "react-hook-form";
 
 import {OxySession} from "../utils/api";
 
+const VERSION = process.env.REACT_APP_VERSION || "dev";
 const useStyles = makeStyles((theme) => ({
   card: {
     maxWidth: 345,
     paddingLeft: theme.spacing(3),
     paddingRight: theme.spacing(3),
     paddingTop: theme.spacing(2),
+  },
+  version:{
+      fontSize: theme.spacing(1.5),
+      fontStyle: 'italic',
   },
   logo: {
     fontWeight: 800,
@@ -109,6 +114,7 @@ const Authorizer = (props)=> {
 
               <Card className={classes.card} align="center">
                 <CardContent>
+                  <Typography color="disabled" className={classes.version}>{VERSION}</Typography>
                   <Typography align='center' variant="h3" className={classes.logo}>
                     <Typography color="primary" variant="inherit" component="span">Oxy</Typography>Cloud
                   </Typography>
