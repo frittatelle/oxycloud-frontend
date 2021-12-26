@@ -1,97 +1,178 @@
 import Storage from './Storage'
 import Users from './Users'
-import AWS from "aws-sdk";
-import {
-    CognitoUserPool, 
-    CognitoUser, 
-    AuthenticationDetails
-} from 'amazon-cognito-identity-js';
+import axios from 'axios';
 
-const USER_POOL_ID = process.env.REACT_APP_USER_POOL_ID;
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
-const IDENTITY_POOL_ID = process.env.REACT_APP_IDENTITY_POOL_ID;
 const REGION = process.env.REACT_APP_REGION;
+const COGNITO_IDP_ENDPOINT = `https://cognito-idp.${REGION}.amazonaws.com/`
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL;
 
-AWS.config.region = REGION;
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
 
 class Session {
-  cognitoSession = null;
+  isReady = false;
+  isAuthorized = false
+  idToken = null  
   constructor() {
-    this.userPool = new CognitoUserPool({
-        UserPoolId: USER_POOL_ID,
-        ClientId: CLIENT_ID
-    });
-    this.cognitoUser = this.userPool.getCurrentUser();
-    this.refresh();
-  }
-
-  refresh(){
-      if(this.cognitoUser !== null){
-        this.cognitoUser.getSession((err,session)=>{
-            if(err) console.warn(err);
-            this.cognitoSession = session;
-        });
+    if(this.refreshToken!==null && 
+        this.isTokenExpired())
+        this.refresh()
+            .then(()=>{
+                this.isAuthorized=true;
+                this.isReady = true;
+            })
+            .catch((err)=>{
+                this.refreshToken = null;
+                this.idToken = null;
+                this.accessToken = null;
+                console.warn("refreshing initial session",err);
+                this.isReady = true;
+            })
+      else{
+        this.isAuthorized = !this.isTokenExpired();
+        if(this.isAuthorized)
+          this.setRefreshTimeout();
+        this.isReady = true;
       }
+    }
+  isTokenExpired(){
+    if(this.idToken == null) return true;
+    let exp = new Date(this.tokenPayload.exp*1000);
+    let now = new Date();
+    return Math.abs(exp - now) <= 0;
   }
-
-  signIn({email, password}){
-    this.authenticationDetails = new AuthenticationDetails({
-        Username: email,
-        Password: password
-    });
-    this.cognitoUser = new CognitoUser({
-        Username: email,
-        Pool: this.userPool
-    });
-
-    return new Promise((resolve,reject)=>{
-        this.cognitoUser.authenticateUser(this.authenticationDetails,{
-            onSuccess: (res)=>{
-                this.cognitoSession = res;
-                let k = `cognito-idp.${REGION}.amazonaws.com/${USER_POOL_ID}`;
-        	    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-			        IdentityPoolId: IDENTITY_POOL_ID, 
-			        Logins: { 
-                        [k]: res.getIdToken().getJwtToken(),
-			        },
-                });
-                AWS.config.credentials.refresh(error => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        resolve();
-                    }
-                });
-                },
-            onFailure: reject
+  async refresh(){
+    let client = this.cognitoClient('InitiateAuth')
+    let res = await client.post("",
+        {
+            "AuthFlow": "REFRESH_TOKEN_AUTH",
+            "AuthParameters": {
+                "REFRESH_TOKEN" : this.refreshToken,
+            },
         });
-    });
+    res = res.data.AuthenticationResult;
+    this.idToken = res.IdToken;
+    this.accessToken = res.AccessToken; 
+    this.setRefreshTimeout();
+ }
+ setRefreshTimeout(){
+    let exp = new Date(this.tokenPayload.exp*1000);
+    let now = new Date();
+
+    const diffTime = Math.abs(exp - now);
+    const diffSeconds = Math.ceil(diffTime / 1000);
+    const delay = 1000*(diffSeconds-10);
+
+    setTimeout(()=>this.refresh(), delay);
+
   }
 
-  signOut() {
-    let out = this.cognitoUser.signOut();
-    this.cognitoSession = null;
-    return out;
+  async signIn({email, password}){
+    let client = this.cognitoClient('InitiateAuth')
+    try{
+        let res = await client.post("",
+            {
+                AuthFlow: "USER_PASSWORD_AUTH",
+                AuthParameters: {
+                    USERNAME: email,
+                    PASSWORD: password
+                },
+            });
+        res = res.data['AuthenticationResult'];
+        this.idToken = res['IdToken'];
+        this.accessToken = res['AccessToken'];
+        this.refreshToken = res['RefreshToken'];
+    }catch(err){
+        if(err.response)
+            throw err.response.data.message;
+        if(err.message)
+            throw err.message;
+        throw JSON.stringify(err);
+    }
+  }
+  async signUp({name, email, password}){
+    let client = this.cognitoClient('SignUp')
+    try{
+        let res = await client.post("",
+            {
+                Password: password,
+                Username: email,
+                UserAttributes: [ 
+                    {
+                        Name: "name", Value: name
+                    }
+                ],
+            });
+        return res.data;
+    }catch(err){
+        if(err.response)
+            throw err.response.data.message;
+        if(err.message)
+            throw err.message;
+        throw JSON.stringify(err);
+    }
   }
 
-  get isAuthorized() {
-    return this.cognitoSession !== null && this.cognitoSession.isValid();
-  }
 
-  get userInfo() {
-    return {
-      username: this.tokenPayload['cognito:username'],
-      email: this.tokenPayload['email'],
-      id: AWS.config.credentials.params.IdentityId
+  async signOut() {
+    let client = this.cognitoClient('RevokeToken');
+    try{
+        await client.post("",
+            {
+                Token: this.refreshToken,
+            });
+        this.isAuthorized = false;
+        this.accessToken = null;
+        this.idToken = null;
+        this.refreshToken = null;
+    }catch(err){
+        if(err.response)
+            throw err.response.data.message;
+        if(err.message)
+            throw err.message;
+        throw JSON.stringify(err);
     }
   }
 
   get tokenPayload() {
-    return this.cognitoSession.getIdToken().decodePayload()
+    return parseJwt(this.idToken);
   }
 
-  async refreshAwsCredentials() {
-    
+  get refreshToken() {
+    if(!this._rtkn)
+        this._rtkn = localStorage.getItem("refreshToken"); 
+    return this._rtkn
+  }
+  get idToken(){
+    if(!this._itkn)
+        this._itkn = localStorage.getItem("idToken")
+    return this._itkn;
+  }
+  get accessToken(){
+    if(!this._atkn)
+        this._atkn = localStorage.getItem("accessToken")
+    return this._atkn;
+  }
+  set refreshToken(val){
+    this._rtkn = val;
+    if(val === null) localStorage.removeItem("refreshToken");
+    else localStorage.setItem("refreshToken",val);
+  }
+  set idToken(val){
+    this._itkn = val;
+    if(val === null) localStorage.removeItem("idToken");
+    else localStorage.setItem("idToken",val);
+  }
+  set accessToken(val){
+    this._atkn = val;
+    if(val === null) localStorage.removeItem("accessToken");
+    else localStorage.setItem("accessToken",val);
   }
 
   get storage() {
@@ -110,7 +191,76 @@ class Session {
       });
     return this._users;
   }
+  
+  cognitoClient(method){
+      const client =  axios.create({
+          baseURL: COGNITO_IDP_ENDPOINT, 
+          headers: {
+             'X-Amz-Target': `AWSCognitoIdentityProviderService.${method}`,
+             'Content-Type': 'application/x-amz-json-1.1'          
+        }        
+      });
+      //inject clientid in requests body
+      client.interceptors.request.use((conf)=>{
+        let data = typeof conf.data === "string" ? JSON.parse(conf.data):conf.data;
+        data.ClientId = CLIENT_ID;
+        conf.data = JSON.stringify(data);
+        return conf
+      });
+      return client;
+  }
+  client(path){
+      const client = axios.create({
+        baseURL: API_ENDPOINT + path, 
+      });
+      //inject authorization header in requests
+      client.interceptors.request.use((conf)=>{
+        conf.headers.Authorization = "Bearer " + this.idToken
+        return conf
+      });
+      //parse response error 
+      client.interceptors.response.use(
+      function (res) { return res; },
+      (err) => {
+        //console.log("res error:",JSON.stringify(err));
+        if(err.response && err.response.data.message)
+          return Promise.reject(err.response.data.message)
+        if(err.message)
+          return Promise.reject(err.message);
+        return Promise.reject(err);
+      });      
+      return client;
+  }
 
 }
 
+const localStorageProxy = (klass, names) =>{
+   const handler = {
+    get: (obj, prop, receiver) => {
+        for(let i=0;i<names.length;i++){
+            const name = names[i];
+            if (prop === name) {
+             if(!obj["__"+name])
+             obj["__"+name] = localStorage.getItem(name)
+             return obj["__"+name];  
+            }
+        }
+        return Reflect.get(obj,prop,receiver);
+    },
+    set: (obj, prop, val) =>{
+        for(let i=0;i<names.length;i++){
+            const name = names[i];
+            if (prop === name) {
+                obj['__'+name] = val;
+                if(val === null) localStorage.removeItem(name);
+                else localStorage.setItem(name,val);
+
+            }
+        }
+        return Reflect.set(obj,prop,val);
+    },
+  };
+  return new Proxy(klass, handler);
+};
+//Session = localStorageProxy(Session, ['idToken','refreshToken','accessToken']);
 export default new Session();
