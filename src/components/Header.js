@@ -18,8 +18,6 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import IconButton from '@material-ui/core/IconButton'
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
-import { OxySession } from '../utils/api';
-
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,

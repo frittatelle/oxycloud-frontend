@@ -2,7 +2,6 @@ import React from 'react';
 
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
-import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -44,7 +43,7 @@ const Authorizer = (props)=> {
         OxySession.isReady? "SIGNIN" : "LOADING"
     );
     const [isAuthorized, setIsAuthorized] = React.useState(OxySession.isAuthorized);
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { errors } } = useForm();
     const classes = useStyles();
     
     const resetMessages = ()=>{
