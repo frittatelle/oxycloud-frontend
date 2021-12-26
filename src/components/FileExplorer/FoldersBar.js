@@ -29,7 +29,7 @@ const FoldersBar = ({ currentFolder, setCurrentFolder, rootFolder }) => {
   );
   f.forEach((fol)=> {
     folders.push(
-      <Link color='inherit' id={fol.id} name={fol.name}
+      <Link color='inherit' key={fol.id} id={fol.id} name={fol.name}
         onClick={(arg) => setCurrentFolder(fol)}>
         {fol.name}
       </Link>
