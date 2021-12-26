@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-const DOCS_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL + "/docs";
-const SHARE_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL + "/share";
 class Storage {
   constructor({session}) {
     this.session = session;
@@ -107,12 +105,9 @@ class Storage {
   }
 
   docsClient(){
-      return axios.create({
-          baseURL: DOCS_ENDPOINT, 
-          headers: {
-              'Authorization': this.session.cognitoSession.idToken.jwtToken,
-          }        
-      });
+      if(!this._docsClient)
+          this._docsClient = this.session.client("/docs")
+      return this._docsClient
   }
   //TODO move in another file?
   async share(id,userMail){
@@ -140,12 +135,10 @@ class Storage {
 
 
   shareClient(){
-      return axios.create({
-          baseURL: SHARE_ENDPOINT, 
-          headers: {
-              'Authorization': this.session.cognitoSession.idToken.jwtToken,
-          }
-        });
+      if(!this._shareClient)
+          this._shareClient = this.session.client("/share")
+      return this._shareClient
+
   }
 }
 

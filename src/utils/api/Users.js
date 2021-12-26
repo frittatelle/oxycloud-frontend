@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-const USERS_ENDPOINT = process.env.REACT_APP_API_ENDPOINT_URL + "/users";
 class Users {
     mem = {}
     constructor({session}){
@@ -24,12 +23,9 @@ class Users {
     }
 
     userClient(){
-      return axios.create({
-          baseURL: USERS_ENDPOINT, 
-          headers: {
-              'Authorization': this.session.cognitoSession.idToken.jwtToken,
-          }
-        });
+      if(!this._client)
+        this._client = this.session.client("/users");
+      return this._client;
     }
 
 }
