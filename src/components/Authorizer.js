@@ -37,7 +37,7 @@ const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))
 const Authorizer = (props)=> {
     const [error, setError] = React.useState(null);
     const [content, setContent] = React.useState(
-        !OxySession.isAuthorized? "SIGNIN" : "LOADING"
+        OxySession.isReady? "SIGNIN" : "LOADING"
     );
     const [isAuthorized, setIsAuthorized] = React.useState(OxySession.isAuthorized);
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
@@ -54,13 +54,33 @@ const Authorizer = (props)=> {
         OxySession.signIn({email, password})
             .then(()=>setIsAuthorized(true))
             .catch((err)=>{
-                setError(err.name);
+                setError(err);
                 setContent("SIGNIN");
             });
     }
     const handleSignup = ({name, lastname, number, email,password}) => {
-        console.log("signup", email, password);
+        setContent("LOADING")
+        setError(null)
+        OxySession.signUp({name, email, password})
+            .then((res)=>{
+                //todo give feedback to user
+                setContent("SIGNIN");
+            })
+            .catch((err)=>{
+                setError(err);
+                setContent("SIGNUP");
+            });    
     }
+    React.useEffect(()=>{
+        window.setInterval(()=>{
+            if (OxySession.isAuthorized !== isAuthorized)
+                setIsAuthorized(OxySession.isAuthorized)
+            if (!OxySession.isReady && !(content === "LOADING"))
+                setContent("LOADING")
+        },
+        500)
+    },[]);
+
     if(isAuthorized)
         return (<div>
             {
@@ -97,11 +117,15 @@ const Authorizer = (props)=> {
                       <Input id="password" type="password" 
                         error={errors.password && true} 
                         {...register("password",{required:true, min:8})}/>
-                      <Input type="submit">SignIn</Input>
+                      <Input type="submit"/>
                     </form>
                  }
                  {content==="SIGNUP" &&
                     <form onSubmit={handleSubmit(handleSignup)} align='left'>
+                      <InputLabel htmlFor="name">Your name</InputLabel>
+                      <Input id="name" type="text" 
+                        error={errors.name} 
+                        {...register("name",{required:true})}/>
                       <InputLabel htmlFor="email">Email address</InputLabel>
                       <Input id="email" type="email" 
                         error={errors.email} 
@@ -110,7 +134,7 @@ const Authorizer = (props)=> {
                       <Input id="password" type="password" 
                         error={errors.password} 
                         {...register("password",{required:true, min:8})}/>
-                      <Input type="submit">SignIn</Input>
+                      <Input type="submit"/>
                     </form>
                  }
                 </CardContent>
@@ -118,10 +142,10 @@ const Authorizer = (props)=> {
                  {content!=="LOADING" &&
                      <>
                      <Button size="small" 
-                        enabled={content!=="SIGNIN"} 
+                        disabled={content==="SIGNIN"} 
                         onClick={()=>setContent("SIGNIN")}>Sign In</Button>
                      <Button size="small" 
-                        enabled={content!=="SIGNUP"} 
+                        disabled={content==="SIGNUP"} 
                         onClick={()=>setContent("SIGNUP")}>Sign Up</Button>
                      </>
                  }
