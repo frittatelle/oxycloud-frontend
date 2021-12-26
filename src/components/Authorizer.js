@@ -9,6 +9,9 @@ import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { makeStyles } from '@material-ui/core/styles';
 
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
@@ -36,12 +39,17 @@ const useStyles = makeStyles((theme) => ({
 const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const Authorizer = (props)=> {
     const [error, setError] = React.useState(null);
+    const [success, setSuccess] = React.useState(null);
     const [content, setContent] = React.useState(
         OxySession.isReady? "SIGNIN" : "LOADING"
     );
     const [isAuthorized, setIsAuthorized] = React.useState(OxySession.isAuthorized);
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const classes = useStyles();
+    
+    const resetMessages = ()=>{
+        setError(null); setSuccess(null);
+    };
 
     const handleSignout = () => {
         setIsAuthorized(false);
@@ -50,7 +58,7 @@ const Authorizer = (props)=> {
     }
     const handleSignin = ({email,password}) => {
         setContent("LOADING")
-        setError(null)
+        resetMessages();
         OxySession.signIn({email, password})
             .then(()=>setIsAuthorized(true))
             .catch((err)=>{
@@ -58,12 +66,13 @@ const Authorizer = (props)=> {
                 setContent("SIGNIN");
             });
     }
-    const handleSignup = ({name, lastname, number, email,password}) => {
+    const handleSignup = (params) => {
+        console.log(params)
         setContent("LOADING")
-        setError(null)
-        OxySession.signUp({name, email, password})
+        resetMessages();
+        OxySession.signUp(params)
             .then((res)=>{
-                //todo give feedback to user
+                setSuccess("All fine. Now sign-in please");
                 setContent("SIGNIN");
             })
             .catch((err)=>{
@@ -78,7 +87,7 @@ const Authorizer = (props)=> {
             if (!OxySession.isReady && !(content === "LOADING"))
                 setContent("LOADING")
         },
-        500)
+        250)
     },[]);
 
     if(isAuthorized)
@@ -105,6 +114,10 @@ const Authorizer = (props)=> {
                  {error !== null && 
                     <Alert severity="error">{error}</Alert>
                  }
+                 {success !== null && 
+                    <Alert severity="success">{success}</Alert>
+                 }
+
                  {content==="LOADING" &&
                     <CircularProgress align='center' />}
                  {content==="SIGNIN" &&
@@ -121,8 +134,17 @@ const Authorizer = (props)=> {
                     </form>
                  }
                  {content==="SIGNUP" &&
-                    <form onSubmit={handleSubmit(handleSignup)} align='left'>
+                     <form onSubmit={handleSubmit(handleSignup)} align='left'>
+                     <InputLabel htmlFor="plan">Plan</InputLabel>
+                     <Select id="plan" name="plan" label="Plan"
+                         error={errors.plan} 
+                         {...register("plan",{required:true})}>
+                          <MenuItem value="50">50 GB</MenuItem>
+                          <MenuItem value="100">100 GB</MenuItem>
+                          <MenuItem value="500">500 GB</MenuItem>
+                      </Select>
                       <InputLabel htmlFor="name">Your name</InputLabel>
+                      <Input id="plan" name="plan" type="hidden" >50</Input>
                       <Input id="name" type="text" 
                         error={errors.name} 
                         {...register("name",{required:true})}/>

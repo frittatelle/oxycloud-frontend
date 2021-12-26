@@ -96,7 +96,7 @@ class Session {
         throw JSON.stringify(err);
     }
   }
-  async signUp({name, email, password}){
+  async signUp({name, plan, email, password}){
     let client = this.cognitoClient('SignUp')
     try{
         let res = await client.post("",
@@ -106,6 +106,10 @@ class Session {
                 UserAttributes: [ 
                     {
                         Name: "name", Value: name
+                    },
+                    {
+                        Name: "custom:subscription_plan", 
+                        Value: plan
                     }
                 ],
             });
