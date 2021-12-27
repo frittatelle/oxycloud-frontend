@@ -36,8 +36,6 @@ class Session {
             })
       else{
         this.isAuthorized = !this.isTokenExpired();
-        if(this.isAuthorized)
-          this.setRefreshTimeout();
         this.isReady = true;
       }
     }
@@ -59,7 +57,6 @@ class Session {
     res = res.data.AuthenticationResult;
     this.idToken = res.IdToken;
     this.accessToken = res.AccessToken; 
-    this.setRefreshTimeout();
  }
  setRefreshTimeout(){
     let exp = new Date(this.tokenPayload.exp*1000);
@@ -217,18 +214,27 @@ class Session {
       const client = axios.create({
         baseURL: API_ENDPOINT + path, 
       });
+
       //inject authorization header in requests
       client.interceptors.request.use((conf)=>{
         conf.headers.Authorization = "Bearer " + this.idToken
         return conf
       });
+      let retries = 0;
       //parse response error 
       client.interceptors.response.use(
-      function (res) { return res; },
+      function (res) { retries = 0; return res; },
       (err) => {
+        console.log(err, err.request.conf)	
         //console.log("res error:",JSON.stringify(err));
         if(err.response && err.response.data.message)
-          return Promise.reject(err.response.data.message)
+            if(err.response.headers['x-amzn-errortype'] &&
+                err.response.headers['x-amzn-errortype']==="UnauthorizedException" &&
+                retries++<3)
+              return this.refresh().then(()=>client.request(err.request.conf));
+            else
+              return Promise.reject(err.response.data.message);
+
         if(err.message)
           return Promise.reject(err.message);
         return Promise.reject(err);
