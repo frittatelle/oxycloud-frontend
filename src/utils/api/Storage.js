@@ -129,8 +129,12 @@ class Storage {
     let client = this.shareClient()
     let res = await client.get("",{
     });
-
-    return res.data;
+    res = res.data;
+    for(let i=0;i<res.files.length;i++){
+        let el = res.files[i];
+        el.owner = await this.session.users.get(el.owner);
+    }
+    return res;
   }
 
 
