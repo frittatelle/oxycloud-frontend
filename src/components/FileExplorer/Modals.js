@@ -121,14 +121,26 @@ const ShareModal = ({open, handleClose, shareParams}) => {
 const RenameModal = ({open, handleClose, renameParams, onComplete}) => {
     const [newName, setNewName] = useState("");
     const rename = ()=>{
+      const ext = renameParams.name.split('.')[1]
+      let extendedNewName = ''
+      if (newName.includes('.')){
+        const extNewName = newName.split('.')[1]
+        if ( extNewName === ext){
+            extendedNewName = newName
+        } else {
+            extendedNewName = newName.split('.')[0] + '.' + ext
+        }
+      } else {
+        extendedNewName = newName + '.' + ext
+      }
       toast.promise(
-        OxySession.storage.rename(renameParams.id, newName)
+        OxySession.storage.rename(renameParams.id, extendedNewName)
         ,{
-          pending: `Renaming ${renameParams.name} to ${newName}`,
+          pending: `Renaming ${renameParams.name} to ${extendedNewName}`,
           success: { 
               render() {
                   onComplete();
-                  return `${renameParams.name} renamed to ${newName}`
+                  return `${renameParams.name} renamed to ${extendedNewName}`
               }
           },
           error:{
