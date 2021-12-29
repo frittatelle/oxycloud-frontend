@@ -120,7 +120,7 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
       }
   });
   const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [shareParams, setShareParams] = useState({name:"", id:""});
+  const [shareParams, setShareParams] = useState({name:"", id:"", shared_with:[]});
   
   const [renameModalOpen, setRenameModalOpen] = useState(false);
   const [renameParams, setRenameParams] = useState({name:"", id:""});
@@ -255,6 +255,7 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
       {rootFolder==="FOLDER" && <>
         <Modal.Share
             shareParams={shareParams} 
+            setShareParams={setShareParams}
             open={shareModalOpen} 
             handleClose={handleShareModalClose} />
         <Modal.Rename

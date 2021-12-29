@@ -7,6 +7,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import Chip from '@material-ui/core/Chip'
 
 import { OxySession } from "../../utils/api"
 
@@ -68,7 +69,7 @@ const MkDirModal = ({open, onComplete, handleClose, currentFolder}) => {
    )
 }
 
-const ShareModal = ({open, handleClose, shareParams}) => {
+const ShareModal = ({open, handleClose, shareParams, setShareParams}) => {
     const [userMail, setUserMail] = useState("");
    
     const share = ()=>{
@@ -89,7 +90,21 @@ const ShareModal = ({open, handleClose, shareParams}) => {
         setUserMail("");
     }
     // eslint-disable-next-line
-    const delShare = ()=>{
+    const delShare = (shareUserMail)=>{
+        toast.promise(
+            OxySession.storage.rmShare(shareParams.id, shareUserMail)
+        ,{
+          pending: `Removing ${shareUserMail} from ${shareParams.name} share list`,
+          success:`${shareUserMail} removed from ${shareParams.name} share list `, 
+          error:{
+                render({data}){
+                    if(typeof data.message === "string")
+                        return JSON.stringify(data.message)
+                    return JSON.stringify(data)
+                }
+          }
+        });
+
     }
     return (
         <Modal
@@ -106,6 +121,9 @@ const ShareModal = ({open, handleClose, shareParams}) => {
                       <TextField value={userMail} label="email" variant="outlined" 
                         onChange={(e)=>{setUserMail(e.target.value)}}/>
                     </form>
+                    {shareParams.shared_with.map(
+                      (shareUserMail) => <Chip label={shareUserMail} onDelete={() => delShare(shareUserMail)} />
+                    )}
                     <CardActions>
                         <Button 
                             disabled={userMail===""} 

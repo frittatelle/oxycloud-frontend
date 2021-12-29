@@ -57,7 +57,7 @@ function formatDate(date) {
     minuteFormatted + morning;
 }
 const FileRow = ({ file:
-  { id, path, name, size, owner, last_edit },
+  { id, path, name, size, owner, last_edit, shared_with},
   on_download, on_share, on_rm, on_rename, on_restore,
   enable_rm, enable_download, enable_sharing, enable_rename, enable_restore }) => {
   return (
@@ -93,7 +93,7 @@ const FileRow = ({ file:
       }
       {enable_sharing && 
         <Tooltip title="Share">
-            <IconButton onClick={() => on_share({ id, name })}>
+            <IconButton onClick={() => on_share({ id, name, shared_with })}>
               <ShareIcon fontSize='small' />
             </IconButton>
         </Tooltip>
