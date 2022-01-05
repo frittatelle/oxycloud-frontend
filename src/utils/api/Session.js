@@ -18,126 +18,126 @@ const parseJwt = (token) => {
 class Session {
   isReady = false;
   isAuthorized = false
-  idToken = null  
+  idToken = null
   constructor() {
-    if(this.refreshToken!==null && 
-        this.isTokenExpired())
-        this.refresh()
-            .then(()=>{
-                this.isAuthorized=true;
-                this.isReady = true;
-            })
-            .catch((err)=>{
-                this.refreshToken = null;
-                this.idToken = null;
-                this.accessToken = null;
-                console.warn("refreshing initial session",err);
-                this.isReady = true;
-            })
-      else{
-        this.isAuthorized = !this.isTokenExpired();
-        this.isReady = true;
-      }
+    if (this.refreshToken !== null &&
+      this.isTokenExpired())
+      this.refresh()
+        .then(() => {
+          this.isAuthorized = true;
+          this.isReady = true;
+        })
+        .catch((err) => {
+          this.refreshToken = null;
+          this.idToken = null;
+          this.accessToken = null;
+          console.warn("refreshing initial session", err);
+          this.isReady = true;
+        })
+    else {
+      this.isAuthorized = !this.isTokenExpired();
+      this.isReady = true;
     }
-  isTokenExpired(){
-    if(this.idToken == null) return true;
-    let exp = new Date(this.tokenPayload.exp*1000);
+  }
+  isTokenExpired() {
+    if (this.idToken == null) return true;
+    let exp = new Date(this.tokenPayload.exp * 1000);
     let now = new Date();
     return Math.abs(exp - now) <= 0;
   }
-  async refresh(){
+  async refresh() {
     let client = this.cognitoClient('InitiateAuth')
     let res = await client.post("",
-        {
-            "AuthFlow": "REFRESH_TOKEN_AUTH",
-            "AuthParameters": {
-                "REFRESH_TOKEN" : this.refreshToken,
-            },
-        });
+      {
+        "AuthFlow": "REFRESH_TOKEN_AUTH",
+        "AuthParameters": {
+          "REFRESH_TOKEN": this.refreshToken,
+        },
+      });
     res = res.data.AuthenticationResult;
     this.idToken = res.IdToken;
-    this.accessToken = res.AccessToken; 
- }
- setRefreshTimeout(){
-    let exp = new Date(this.tokenPayload.exp*1000);
+    this.accessToken = res.AccessToken;
+  }
+  setRefreshTimeout() {
+    let exp = new Date(this.tokenPayload.exp * 1000);
     let now = new Date();
 
     const diffTime = Math.abs(exp - now);
     const diffSeconds = Math.ceil(diffTime / 1000);
-    const delay = 1000*(diffSeconds-10);
+    const delay = 1000 * (diffSeconds - 10);
 
-    setTimeout(()=>this.refresh(), delay);
+    setTimeout(() => this.refresh(), delay);
 
   }
 
-  async signIn({email, password}){
+  async signIn({ email, password }) {
     let client = this.cognitoClient('InitiateAuth')
-    try{
-        let res = await client.post("",
-            {
-                AuthFlow: "USER_PASSWORD_AUTH",
-                AuthParameters: {
-                    USERNAME: email,
-                    PASSWORD: password
-                },
-            });
-        res = res.data['AuthenticationResult'];
-        this.idToken = res['IdToken'];
-        this.accessToken = res['AccessToken'];
-        this.refreshToken = res['RefreshToken'];
-    }catch(err){
-        if(err.response)
-            throw err.response.data.message;
-        if(err.message)
-            throw err.message;
-        throw JSON.stringify(err);
+    try {
+      let res = await client.post("",
+        {
+          AuthFlow: "USER_PASSWORD_AUTH",
+          AuthParameters: {
+            USERNAME: email,
+            PASSWORD: password
+          },
+        });
+      res = res.data['AuthenticationResult'];
+      this.idToken = res['IdToken'];
+      this.accessToken = res['AccessToken'];
+      this.refreshToken = res['RefreshToken'];
+    } catch (err) {
+      if (err.response)
+        throw err.response.data.message;
+      if (err.message)
+        throw err.message;
+      throw JSON.stringify(err);
     }
   }
-  async signUp({name, plan, email, password}){
+  async signUp({ name, plan, email, password }) {
     let client = this.cognitoClient('SignUp')
-    try{
-        let res = await client.post("",
+    try {
+      let res = await client.post("",
+        {
+          Password: password,
+          Username: email,
+          UserAttributes: [
             {
-                Password: password,
-                Username: email,
-                UserAttributes: [ 
-                    {
-                        Name: "name", Value: name
-                    },
-                    {
-                        Name: "custom:subscription_plan", 
-                        Value: plan
-                    }
-                ],
-            });
-        return res.data;
-    }catch(err){
-        if(err.response)
-            throw err.response.data.message;
-        if(err.message)
-            throw err.message;
-        throw JSON.stringify(err);
+              Name: "name", Value: name
+            },
+            {
+              Name: "custom:subscription_plan",
+              Value: plan
+            }
+          ],
+        });
+      return res.data;
+    } catch (err) {
+      if (err.response)
+        throw err.response.data.message;
+      if (err.message)
+        throw err.message;
+      throw JSON.stringify(err);
     }
   }
 
 
   async signOut() {
     let client = this.cognitoClient('RevokeToken');
-    try{
-        await client.post("",
-            {
-                Token: this.refreshToken,
-            });
-        this.isAuthorized = false;
-        this.accessToken = null;
-        this.idToken = null;
-        this.refreshToken = null;
-    }catch(err){
-        if(err.response)
-            throw err.response.data.message;
-        if(err.message)
-            throw err.message;
-        throw JSON.stringify(err);
+    try {
+      await client.post("",
+        {
+          Token: this.refreshToken,
+        });
+      this.isAuthorized = false;
+      this.accessToken = null;
+      this.idToken = null;
+      this.refreshToken = null;
+    } catch (err) {
+      if (err.response)
+        throw err.response.data.message;
+      if (err.message)
+        throw err.message;
+      throw JSON.stringify(err);
     }
   }
 
@@ -146,34 +146,34 @@ class Session {
   }
 
   get refreshToken() {
-    if(!this._rtkn)
-        this._rtkn = localStorage.getItem("refreshToken"); 
+    if (!this._rtkn)
+      this._rtkn = localStorage.getItem("refreshToken");
     return this._rtkn
   }
-  get idToken(){
-    if(!this._itkn)
-        this._itkn = localStorage.getItem("idToken")
+  get idToken() {
+    if (!this._itkn)
+      this._itkn = localStorage.getItem("idToken")
     return this._itkn;
   }
-  get accessToken(){
-    if(!this._atkn)
-        this._atkn = localStorage.getItem("accessToken")
+  get accessToken() {
+    if (!this._atkn)
+      this._atkn = localStorage.getItem("accessToken")
     return this._atkn;
   }
-  set refreshToken(val){
+  set refreshToken(val) {
     this._rtkn = val;
-    if(val === null) localStorage.removeItem("refreshToken");
-    else localStorage.setItem("refreshToken",val);
+    if (val === null) localStorage.removeItem("refreshToken");
+    else localStorage.setItem("refreshToken", val);
   }
-  set idToken(val){
+  set idToken(val) {
     this._itkn = val;
-    if(val === null) localStorage.removeItem("idToken");
-    else localStorage.setItem("idToken",val);
+    if (val === null) localStorage.removeItem("idToken");
+    else localStorage.setItem("idToken", val);
   }
-  set accessToken(val){
+  set accessToken(val) {
     this._atkn = val;
-    if(val === null) localStorage.removeItem("accessToken");
-    else localStorage.setItem("accessToken",val);
+    if (val === null) localStorage.removeItem("accessToken");
+    else localStorage.setItem("accessToken", val);
   }
 
   get storage() {
@@ -192,82 +192,82 @@ class Session {
       });
     return this._users;
   }
-  
-  cognitoClient(method){
-      const client =  axios.create({
-          baseURL: COGNITO_IDP_ENDPOINT, 
-          headers: {
-             'X-Amz-Target': `AWSCognitoIdentityProviderService.${method}`,
-             'Content-Type': 'application/x-amz-json-1.1'          
-        }        
-      });
-      //inject clientid in requests body
-      client.interceptors.request.use((conf)=>{
-        let data = typeof conf.data === "string" ? JSON.parse(conf.data):conf.data;
-        data.ClientId = CLIENT_ID;
-        conf.data = JSON.stringify(data);
-        return conf
-      });
-      return client;
-  }
-  client(path){
-      const client = axios.create({
-        baseURL: API_ENDPOINT + path, 
-      });
 
-      //inject authorization header in requests
-      client.interceptors.request.use((conf)=>{
-        conf.headers.Authorization = "Bearer " + this.idToken
-        return conf
-      });
-      let retries = 0;
-      //parse response error 
-      client.interceptors.response.use(
+  cognitoClient(method) {
+    const client = axios.create({
+      baseURL: COGNITO_IDP_ENDPOINT,
+      headers: {
+        'X-Amz-Target': `AWSCognitoIdentityProviderService.${method}`,
+        'Content-Type': 'application/x-amz-json-1.1'
+      }
+    });
+    //inject clientid in requests body
+    client.interceptors.request.use((conf) => {
+      let data = typeof conf.data === "string" ? JSON.parse(conf.data) : conf.data;
+      data.ClientId = CLIENT_ID;
+      conf.data = JSON.stringify(data);
+      return conf
+    });
+    return client;
+  }
+  client(path) {
+    const client = axios.create({
+      baseURL: API_ENDPOINT + path,
+    });
+
+    //inject authorization header in requests
+    client.interceptors.request.use((conf) => {
+      conf.headers.Authorization = "Bearer " + this.idToken
+      return conf
+    });
+    let retries = 0;
+    //parse response error 
+    client.interceptors.response.use(
       function (res) { retries = 0; return res; },
       (err) => {
-        console.log(err, err.request.conf)	
+        console.log(err, err.request.conf)
         //console.log("res error:",JSON.stringify(err));
-        if(err.response && err.response.data.message)
-            if(err.response.headers['x-amzn-errortype'] &&
-                err.response.headers['x-amzn-errortype']==="UnauthorizedException" &&
-                retries++<3)
-              return this.refresh().then(()=>client.request(err.request.conf));
-            else
-              return Promise.reject(err.response.data.message);
+        if (err.response && err.response.data.message)
+          if (err.response.headers['x-amzn-errortype'] &&
+            err.response.headers['x-amzn-errortype'] === "UnauthorizedException" &&
+            retries++ < 3)
+            return this.refresh().then(() => client.request(err.request.conf));
+          else
+            return Promise.reject(err.response.data.message);
 
-        if(err.message)
+        if (err.message)
           return Promise.reject(err.message);
         return Promise.reject(err);
-      });      
-      return client;
+      });
+    return client;
   }
 
 }
 
-const localStorageProxy = (klass, names) =>{
-   const handler = {
+const localStorageProxy = (klass, names) => {
+  const handler = {
     get: (obj, prop, receiver) => {
-        for(let i=0;i<names.length;i++){
-            const name = names[i];
-            if (prop === name) {
-             if(!obj["__"+name])
-             obj["__"+name] = localStorage.getItem(name)
-             return obj["__"+name];  
-            }
+      for (let i = 0; i < names.length; i++) {
+        const name = names[i];
+        if (prop === name) {
+          if (!obj["__" + name])
+            obj["__" + name] = localStorage.getItem(name)
+          return obj["__" + name];
         }
-        return Reflect.get(obj,prop,receiver);
+      }
+      return Reflect.get(obj, prop, receiver);
     },
-    set: (obj, prop, val) =>{
-        for(let i=0;i<names.length;i++){
-            const name = names[i];
-            if (prop === name) {
-                obj['__'+name] = val;
-                if(val === null) localStorage.removeItem(name);
-                else localStorage.setItem(name,val);
+    set: (obj, prop, val) => {
+      for (let i = 0; i < names.length; i++) {
+        const name = names[i];
+        if (prop === name) {
+          obj['__' + name] = val;
+          if (val === null) localStorage.removeItem(name);
+          else localStorage.setItem(name, val);
 
-            }
         }
-        return Reflect.set(obj,prop,val);
+      }
+      return Reflect.set(obj, prop, val);
     },
   };
   return new Proxy(klass, handler);

@@ -41,8 +41,8 @@ function getReadableFileSizeString(fileSizeInBytes) {
 
 function formatDate(date) {
   //https://stackoverflow.com/a/25275914
-  if(typeof date.getMonth !== 'function'){
-      date = new Date(Date.parse(date))
+  if (typeof date.getMonth !== 'function') {
+    date = new Date(Date.parse(date))
   }
   var year = date.getFullYear(),
     month = date.getMonth() + 1, // months are zero indexed
@@ -57,7 +57,7 @@ function formatDate(date) {
     minuteFormatted + morning;
 }
 const FileRow = ({ file:
-  { id, path, name, size, owner, last_edit, shared_with},
+  { id, path, name, size, owner, last_edit, shared_with, shared_with_mails },
   on_download, on_share, on_rm, on_rename, on_restore,
   enable_rm, enable_download, enable_sharing, enable_rename, enable_restore }) => {
   return (
@@ -77,48 +77,48 @@ const FileRow = ({ file:
         {formatDate(last_edit)}
       </TableCell>
       <TableCell align="right" width="20%">
-      {enable_download &&
-        <Tooltip title="Download">
+        {enable_download &&
+          <Tooltip title="Download">
             <IconButton onClick={() => on_download({ id, owner: owner.id, name })}>
               <GetAppIcon fontSize='small' />
             </IconButton>
-        </Tooltip>
-      }
-      {enable_rename &&
-        <Tooltip title="Rename">
-            <IconButton onClick={() => on_rename({id, name})}>
+          </Tooltip>
+        }
+        {enable_rename &&
+          <Tooltip title="Rename">
+            <IconButton onClick={() => on_rename({ id, name })}>
               <EditIcon fontSize='small' />
             </IconButton>
-        </Tooltip>
-      }
-      {enable_sharing && 
-        <Tooltip title="Share">
-            <IconButton onClick={() => on_share({ id, name, shared_with })}>
+          </Tooltip>
+        }
+        {enable_sharing &&
+          <Tooltip title="Share">
+            <IconButton onClick={() => on_share({ id, name, shared_with, shared_with_mails })}>
               <ShareIcon fontSize='small' />
             </IconButton>
-        </Tooltip>
-      }
-      {enable_rm && enable_download &&
-        <Tooltip title="Re-Upload">
+          </Tooltip>
+        }
+        {enable_rm && enable_download &&
+          <Tooltip title="Re-Upload">
             <IconButton onClick={() => console.log("reupload")}>{/*on_reupload(id)}>*/}
               <PublishIcon fontSize='small' />
             </IconButton>
-        </Tooltip>
-      }
-      {enable_restore &&
-        <Tooltip title="Restore">
-            <IconButton onClick={() => on_restore({id,name})}>
+          </Tooltip>
+        }
+        {enable_restore &&
+          <Tooltip title="Restore">
+            <IconButton onClick={() => on_restore({ id, name })}>
               <RestoreFromTrashIcon fontSize='small' />
             </IconButton>
-        </Tooltip>
-      }
-      {enable_rm &&
-        <Tooltip title="Delete">
-            <IconButton onClick={() => on_rm(id,name)}>
+          </Tooltip>
+        }
+        {enable_rm &&
+          <Tooltip title="Delete">
+            <IconButton onClick={() => on_rm(id, name)}>
               <DeleteIcon fontSize='small' />
             </IconButton>
-        </Tooltip>
-      }
+          </Tooltip>
+        }
       </TableCell>
     </TableRow>
   )

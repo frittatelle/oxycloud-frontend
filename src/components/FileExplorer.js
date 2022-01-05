@@ -46,167 +46,167 @@ function saveByteArray(fileName, contentType, bytes) {
   link.remove();
 };
 
-const FloatingButtons = ({currentFolder, onComplete, handleMkdirModalOpen}) => {
-    const theme = useTheme();
-    const handleNewFile = (evt) => {
-        const [file] = evt.target.files;
-        toast.promise(
-             OxySession.storage.put(file, currentFolder.id)
-            ,{
-              pending: `Uploading ${file.name}`,
-              success:{ 
-                  render(){
-                      onComplete();
-                      return `${file.name} uploaded`
-                  }
-              }, 
-              error:{
-                    render({data}){
-                        if(typeof data.message === "string")
-                            return data.message
-                        return JSON.stringify(data)
-                    }
-              }
-        });
-    }
-    return (
-        <div>
-             <label htmlFor="addfile">
-                <input id="addfile" 
-                    name="addfile" 
-                    type="file" 
-                    onChange={handleNewFile}
-                    hidden />
-                <Fab size="medium" 
-                    color="primary" 
-                    component="span"
-                    style={{
-                        position: 'absolute',
-                        bottom: theme.spacing(2),
-                        right: theme.spacing(10),
-                }}>
-                    <AddIcon />
-                </Fab>
-            </label>
-            <Fab size="medium" 
-                color="primary"
-                component="span"
-                onClick={handleMkdirModalOpen}
-                style={{
-                    position: 'absolute',
-                    bottom: theme.spacing(2),
-                    right: theme.spacing(2),
-            }}>
-              <CreateNewFolderIcon />
-              
-            </Fab>
-        </div>
-    )
+const FloatingButtons = ({ currentFolder, onComplete, handleMkdirModalOpen }) => {
+  const theme = useTheme();
+  const handleNewFile = (evt) => {
+    const [file] = evt.target.files;
+    toast.promise(
+      OxySession.storage.put(file, currentFolder.id)
+      , {
+        pending: `Uploading ${file.name}`,
+        success: {
+          render() {
+            onComplete();
+            return `${file.name} uploaded`
+          }
+        },
+        error: {
+          render({ data }) {
+            if (typeof data.message === "string")
+              return data.message
+            return JSON.stringify(data)
+          }
+        }
+      });
+  }
+  return (
+    <div>
+      <label htmlFor="addfile">
+        <input id="addfile"
+          name="addfile"
+          type="file"
+          onChange={handleNewFile}
+          hidden />
+        <Fab size="medium"
+          color="primary"
+          component="span"
+          style={{
+            position: 'absolute',
+            bottom: theme.spacing(2),
+            right: theme.spacing(10),
+          }}>
+          <AddIcon />
+        </Fab>
+      </label>
+      <Fab size="medium"
+        color="primary"
+        component="span"
+        onClick={handleMkdirModalOpen}
+        style={{
+          position: 'absolute',
+          bottom: theme.spacing(2),
+          right: theme.spacing(2),
+        }}>
+        <CreateNewFolderIcon />
+
+      </Fab>
+    </div>
+  )
 };
 
 
 const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
   const FSTree = useQuery(["fsTree", folder, rootFolder], () => {
-      switch(rootFolder){
-        case 'FOLDER':
-              return OxySession.storage.ls(folder.id,false)
-        case 'TRASH':
-              return OxySession.storage.ls(folder.id,true)
-        case 'SHARED':
-              return OxySession.storage.lsShared(folder.id)
-        default:
-              console.error("Invalid root folder");
-              return {}
-      }
+    switch (rootFolder) {
+      case 'FOLDER':
+        return OxySession.storage.ls(folder.id, false)
+      case 'TRASH':
+        return OxySession.storage.ls(folder.id, true)
+      case 'SHARED':
+        return OxySession.storage.lsShared(folder.id)
+      default:
+        console.error("Invalid root folder");
+        return {}
+    }
   });
   const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [shareParams, setShareParams] = useState({name:"", id:"", shared_with:[]});
-  
+  const [shareParams, setShareParams] = useState({ name: "", id: "", shared_with: [], shared_with_mails: [] });
+
   const [renameModalOpen, setRenameModalOpen] = useState(false);
-  const [renameParams, setRenameParams] = useState({name:"", id:""});
+  const [renameParams, setRenameParams] = useState({ name: "", id: "" });
 
   const handleShareModalClose = () => setShareModalOpen(false);
   const handleRenameModalClose = () => setRenameModalOpen(false);
-  
+
   const [mkdirModalOpen, setMkdirModalOpen] = useState(false);
 
-  const startDownload = ({id, owner, name}) => toast.promise(
-            OxySession.storage.get({id,owner})
-            ,{
-              pending: `Downloading ${name}`,
-              success: {
-                  render({data}) {
-                    saveByteArray(name, data.content_type, data.body)
-                    return `${name} downloaded`
-                  }
-              },
-              error:{
-                    render({data}){
-                        if(typeof data.message === "string")
-                            return data.message
-                        return JSON.stringify(data)
-                    }
-              }
-        });
+  const startDownload = ({ id, owner, name }) => toast.promise(
+    OxySession.storage.get({ id, owner })
+    , {
+      pending: `Downloading ${name}`,
+      success: {
+        render({ data }) {
+          saveByteArray(name, data.content_type, data.body)
+          return `${name} downloaded`
+        }
+      },
+      error: {
+        render({ data }) {
+          if (typeof data.message === "string")
+            return data.message
+          return JSON.stringify(data)
+        }
+      }
+    });
 
-  const restore = ({id,name}) =>  toast.promise(
-            OxySession.storage.restore(id)
-            ,{
-              pending: `Restoring ${name}`,
-              success: {
-                  render() {
-                    FSTree.refetch();
-                    return `${name} restored`
-                  }
-              },
-              error:{
-                    render({data}){
-                        if(typeof data.message === "string")
-                            return data.message
-                        return JSON.stringify(data)
-                    }
-              }
-        });
-  const rm = (id,name) => { 
-      if(rootFolder==="FOLDER"){
-        toast.promise(
-            OxySession.storage.rm(id)
-            ,{
-              pending: `Moving ${name} to trash`,
-              success: {
-                  render() {
-                    FSTree.refetch();
-                    return `${name} moved to Trash`
-                  }
-              },
-              error:{
-                    render({data}){
-                        if(typeof data.message === "string")
-                            return data.message
-                        return JSON.stringify(data)
-                    }
-              }
-        });
-      }else{
+  const restore = ({ id, name }) => toast.promise(
+    OxySession.storage.restore(id)
+    , {
+      pending: `Restoring ${name}`,
+      success: {
+        render() {
+          FSTree.refetch();
+          return `${name} restored`
+        }
+      },
+      error: {
+        render({ data }) {
+          if (typeof data.message === "string")
+            return data.message
+          return JSON.stringify(data)
+        }
+      }
+    });
+  const rm = (id, name) => {
+    if (rootFolder === "FOLDER") {
       toast.promise(
-        OxySession.storage.rm(id, false, true)
-        ,{
-          pending: `Permanently deleting ${name}}`,
+        OxySession.storage.rm(id)
+        , {
+          pending: `Moving ${name} to trash`,
           success: {
-              render() {
-                FSTree.refetch();
-                return `${name} permanently deleted`
-              }
-          }, 
-          error:{
-                render({data}){
-                    if(typeof data.message === "string")
-                        return data.message
-                    return JSON.stringify(data)
-                }
+            render() {
+              FSTree.refetch();
+              return `${name} moved to Trash`
+            }
+          },
+          error: {
+            render({ data }) {
+              if (typeof data.message === "string")
+                return data.message
+              return JSON.stringify(data)
+            }
           }
         });
-      }
+    } else {
+      toast.promise(
+        OxySession.storage.rm(id, false, true)
+        , {
+          pending: `Permanently deleting ${name}}`,
+          success: {
+            render() {
+              FSTree.refetch();
+              return `${name} permanently deleted`
+            }
+          },
+          error: {
+            render({ data }) {
+              if (typeof data.message === "string")
+                return data.message
+              return JSON.stringify(data)
+            }
+          }
+        });
+    }
   };
 
   const renameDialog = (params) => {
@@ -223,10 +223,10 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
     <Container className={classes.cont}>
       <AppBar position='sticky' color='inherit'>
         <Toolbar>
-          <FoldersBar 
-            currentFolder={folder} 
-            setCurrentFolder={setFolder} 
-            rootFolder={rootFolder}/>
+          <FoldersBar
+            currentFolder={folder}
+            setCurrentFolder={setFolder}
+            rootFolder={rootFolder} />
         </Toolbar>
       </AppBar>
       <Grid container justify="center">
@@ -243,36 +243,36 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
             on_rm={rm}
             on_restore={restore}
             on_rename={renameDialog}
-            enable_rm={rootFolder==='FOLDER'||rootFolder==='TRASH'}
-            enable_download={rootFolder==='FOLDER'||rootFolder==='SHARED'}
-            enable_sharing={rootFolder==='FOLDER'}
-            enable_rename={rootFolder==='FOLDER'}
-            enable_restore={rootFolder==='TRASH'}
+            enable_rm={rootFolder === 'FOLDER' || rootFolder === 'TRASH'}
+            enable_download={rootFolder === 'FOLDER' || rootFolder === 'SHARED'}
+            enable_sharing={rootFolder === 'FOLDER'}
+            enable_rename={rootFolder === 'FOLDER'}
+            enable_restore={rootFolder === 'TRASH'}
           />
-          
+
         }
       </Grid>
-      {rootFolder==="FOLDER" && <>
+      {rootFolder === "FOLDER" && <>
         <Modal.Share
-            shareParams={shareParams} 
-            setShareParams={setShareParams}
-            open={shareModalOpen} 
-            handleClose={handleShareModalClose} />
+          shareParams={shareParams}
+          setShareParams={setShareParams}
+          open={shareModalOpen}
+          handleClose={handleShareModalClose} />
         <Modal.Rename
-            renameParams={renameParams} 
-            open={renameModalOpen} 
-            handleClose={handleRenameModalClose} 
-            onComplete={()=>FSTree.refetch()} />
-        <Modal.MkDir 
-            currentFolder={folder} 
-            open={mkdirModalOpen} 
-            handleClose={()=>setMkdirModalOpen(false)} 
-            onComplete={()=>FSTree.refetch()} />
+          renameParams={renameParams}
+          open={renameModalOpen}
+          handleClose={handleRenameModalClose}
+          onComplete={() => FSTree.refetch()} />
+        <Modal.MkDir
+          currentFolder={folder}
+          open={mkdirModalOpen}
+          handleClose={() => setMkdirModalOpen(false)}
+          onComplete={() => FSTree.refetch()} />
 
-        <FloatingButtons 
-            currentFolder={folder}
-            handleMkdirModalOpen={()=>setMkdirModalOpen(true)}
-            onComplete={()=>FSTree.refetch()} />
+        <FloatingButtons
+          currentFolder={folder}
+          handleMkdirModalOpen={() => setMkdirModalOpen(true)}
+          onComplete={() => FSTree.refetch()} />
       </>}
     </Container>
   );
