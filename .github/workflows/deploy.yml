@@ -1,8 +1,8 @@
-name: Build and deploy 
+name: Build and deploy
 
 on:
   workflow_dispatch:
-  pull_request:
+  push:
     branches: [ master ]
 
 jobs:
@@ -10,7 +10,7 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-    - name: Build 
+    - name: Build
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
       with:
@@ -20,9 +20,9 @@ jobs:
         REACT_APP_REGION : ${{ secrets.REGION }}
         REACT_APP_CLIENT_ID : ${{ secrets.CLIENT_ID }}
     - run: REACT_APP_VERSION=$(echo $(date +%y%m%d%M%H%S)-$(git rev-parse --short HEAD)-$(git rev-parse --abbrev-ref HEAD))
-    - run: npm run build 
-    
-    - name: Copy into bucket 
+    - run: npm run build
+
+    - name: Copy into bucket
     - uses: ItsKarma/aws-cli@v1.70.0
       with:
         args: s3 sync build/ s3://$HOSTING_BUCKET/
@@ -30,4 +30,4 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: ${{ secrets.REGION }}
-        HOSTING_BUCKET: ${{ secrets.HOSTING_BUCKET }} 
+        HOSTING_BUCKET: ${{ secrets.HOSTING_BUCKET }}
