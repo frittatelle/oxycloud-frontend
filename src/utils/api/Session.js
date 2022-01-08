@@ -221,7 +221,7 @@ class Session {
       return conf
     });
     let retries = 0;
-    //parse response error 
+    //parse response error
     client.interceptors.response.use(
       function (res) { retries = 0; return res; },
       (err) => {
@@ -244,33 +244,4 @@ class Session {
 
 }
 
-const localStorageProxy = (klass, names) => {
-  const handler = {
-    get: (obj, prop, receiver) => {
-      for (let i = 0; i < names.length; i++) {
-        const name = names[i];
-        if (prop === name) {
-          if (!obj["__" + name])
-            obj["__" + name] = localStorage.getItem(name)
-          return obj["__" + name];
-        }
-      }
-      return Reflect.get(obj, prop, receiver);
-    },
-    set: (obj, prop, val) => {
-      for (let i = 0; i < names.length; i++) {
-        const name = names[i];
-        if (prop === name) {
-          obj['__' + name] = val;
-          if (val === null) localStorage.removeItem(name);
-          else localStorage.setItem(name, val);
-
-        }
-      }
-      return Reflect.set(obj, prop, val);
-    },
-  };
-  return new Proxy(klass, handler);
-};
-//Session = localStorageProxy(Session, ['idToken','refreshToken','accessToken']);
 export default new Session();
