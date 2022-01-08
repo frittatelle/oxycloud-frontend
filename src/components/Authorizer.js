@@ -50,7 +50,7 @@ const Authorizer = (props)=> {
     const [isAuthorized, setIsAuthorized] = React.useState(OxySession.isAuthorized);
     const { register, handleSubmit, formState: { errors } } = useForm();
     const classes = useStyles();
-    
+
     const resetMessages = ()=>{
         setError(null); setSuccess(null);
     };
@@ -84,22 +84,21 @@ const Authorizer = (props)=> {
             .catch((err)=>{
                 setError(err);
                 setContent("SIGNUP");
-            });    
+            });
     }
-    React.useEffect(()=>{
-        window.setInterval(()=>{
-            if (OxySession.isAuthorized !== isAuthorized)
-                setIsAuthorized(OxySession.isAuthorized)
-            if (!OxySession.isReady && !(content === "LOADING"))
-                setContent("LOADING")
-        },
-        250)
-    },[]);
+  const fn = () => window.setInterval(() => {
+    if (OxySession.isAuthorized !== isAuthorized)
+      setIsAuthorized(OxySession.isAuthorized)
+    if (!OxySession.isReady && !(content === "LOADING"))
+      setContent("LOADING")
+  }, 250)
+  // eslint-disable-next-line
+  React.useEffect(fn, []);
 
     if(isAuthorized)
         return (<div>
             {
-                React.Children.map(props.children, 
+            React.Children.map(props.children,
                     c=>React.cloneElement(c,{doSignOut: handleSignout})
                 )
             }</div>)
@@ -118,10 +117,10 @@ const Authorizer = (props)=> {
                   <Typography align='center' variant="h3" className={classes.logo}>
                     <Typography color="primary" variant="inherit" component="span">Oxy</Typography>Cloud
                   </Typography>
-                 {error !== null && 
+            {error !== null &&
                     <Alert severity="error">{error}</Alert>
                  }
-                 {success !== null && 
+            {success !== null &&
                     <Alert severity="success">{success}</Alert>
                  }
 
@@ -130,12 +129,12 @@ const Authorizer = (props)=> {
                  {content==="SIGNIN" &&
                     <form onSubmit={handleSubmit(handleSignin)} align='left'>
                       <InputLabel htmlFor="email">Email address</InputLabel>
-                      <Input id="email" type="email" 
-                        error={errors.email && true} 
+                <Input id="email" type="email"
+                  error={errors.email && true}
                         {...register("email",{required:true, pattern: EMAIL_REGEX})}/>
                       <InputLabel htmlFor="password">Password</InputLabel>
-                      <Input id="password" type="password" 
-                        error={errors.password && true} 
+                <Input id="password" type="password"
+                  error={errors.password && true}
                         {...register("password",{required:true, min:8})}/>
                       <Input type="submit"/>
                     </form>
@@ -144,7 +143,7 @@ const Authorizer = (props)=> {
                      <form onSubmit={handleSubmit(handleSignup)} align='left'>
                      <InputLabel htmlFor="plan">Plan</InputLabel>
                      <Select id="plan" name="plan" label="Plan"
-                         error={errors.plan} 
+                  error={errors.plan}
                          {...register("plan",{required:true})}>
                           <MenuItem value="50">50 GB</MenuItem>
                           <MenuItem value="100">100 GB</MenuItem>
@@ -152,16 +151,16 @@ const Authorizer = (props)=> {
                       </Select>
                       <InputLabel htmlFor="name">Your name</InputLabel>
                       <Input id="plan" name="plan" type="hidden" >50</Input>
-                      <Input id="name" type="text" 
-                        error={errors.name} 
+                <Input id="name" type="text"
+                  error={errors.name}
                         {...register("name",{required:true})}/>
                       <InputLabel htmlFor="email">Email address</InputLabel>
-                      <Input id="email" type="email" 
-                        error={errors.email} 
+                <Input id="email" type="email"
+                  error={errors.email}
                         {...register("email",{required:true, pattern: EMAIL_REGEX})}/>
                       <InputLabel htmlFor="password">Password</InputLabel>
-                      <Input id="password" type="password" 
-                        error={errors.password} 
+                <Input id="password" type="password"
+                  error={errors.password}
                         {...register("password",{required:true, min:8})}/>
                       <Input type="submit"/>
                     </form>
@@ -170,18 +169,18 @@ const Authorizer = (props)=> {
                 <CardActions>
                  {content!=="LOADING" &&
                      <>
-                     <Button size="small" 
-                        disabled={content==="SIGNIN"} 
+              <Button size="small"
+                disabled={content === "SIGNIN"}
                         onClick={()=>setContent("SIGNIN")}>Sign In</Button>
-                     <Button size="small" 
-                        disabled={content==="SIGNUP"} 
+              <Button size="small"
+                disabled={content === "SIGNUP"}
                         onClick={()=>setContent("SIGNUP")}>Sign Up</Button>
                      </>
                  }
                 </CardActions>
               </Card>
             </Grid>
-          );    
+    );
 }
 
 export default Authorizer;
