@@ -19,6 +19,9 @@ jobs:
         REACT_APP_REGION : ${{ secrets.REGION }}
         REACT_APP_CLIENT_ID : ${{ secrets.CLIENT_ID }}
     
+    - name: Install dependecies
+      run: npm install
+
     - name: Build
       run: REACT_APP_VERSION=$(echo $(date +%y%m%d%M%H%S)-$(git rev-parse --short HEAD)-$(git rev-parse --abbrev-ref HEAD)) npm run build
 
