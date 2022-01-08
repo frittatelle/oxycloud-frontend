@@ -1,6 +1,8 @@
 name: Build and deploy
 
 on:
+  repository_dispatch:
+    types: [deploy_it]
   workflow_dispatch:
   push:
     branches: [ master ]
