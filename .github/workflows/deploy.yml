@@ -14,14 +14,14 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: 12.x
-    
+
     - name: Install dependecies
       run: npm install
 
     - name: Build
       run: REACT_APP_VERSION=$(echo $(date +%y%m%d%M%H%S)-$(git rev-parse --short HEAD)-$(git rev-parse --abbrev-ref HEAD)) npm run build
       env:
-        REACT_APP_API_ENDPOINT_URL : ${{ secrets.API_ENDPOINT }}
+        REACT_APP_API_ENDPOINT_URL : ${{ secrets.API_ENDPOINT_URL }}
         REACT_APP_REGION : ${{ secrets.REGION }}
         REACT_APP_CLIENT_ID : ${{ secrets.CLIENT_ID }}
 
