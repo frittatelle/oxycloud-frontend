@@ -18,6 +18,24 @@ jobs:
         REACT_APP_API_ENDPOINT_URL : ${{ secrets.API_ENDPOINT }}
         REACT_APP_REGION : ${{ secrets.REGION }}
         REACT_APP_CLIENT_ID : ${{ secrets.CLIENT_ID }}
+        
+    - run: 'echo $VAR'
+      shell: bash
+      env:
+        VAR: ${{secrets.REGION}}
+    - run: 'echo $VAR'
+      shell: bash
+      env:
+        VAR: ${{secrets.HOSTING_BUCKET}}
+
+    - run: 'echo $VAR'
+      shell: bash
+      env:
+        VAR: ${{secrets.AWS_ACCESS_KEY_ID}}
+    - run: 'echo $VAR'
+      shell: bash
+      env:
+        VAR: ${{secrets.API_ENDPOINT}}
     
     - name: Install dependecies
       run: npm install
