@@ -1,0 +1,50 @@
+[
+    {
+        "ext": "png",
+        "icon": "faFileImage"
+    },
+    {
+        "ext": "jpg",
+        "icon": "faFileImage"
+    },
+    {
+        "ext": "pdf",
+        "icon": "faFilePdf"
+    },
+    {
+        "ext": "txt",
+        "icon": "faFileAlt"
+    },
+    {
+        "ext": "doc",
+        "icon": "faFileAlt"
+    },
+    {
+        "ext": "docx",
+        "icon": "faFileAlt"
+    },
+    {
+        "ext": "rtf",
+        "icon": "faFileAlt"
+    },
+    {
+        "ext": "odt",
+        "icon": "faFileAlt"
+    },
+    {
+        "ext": "xls",
+        "icon": "faFileExcel"
+    },
+    {
+        "ext": "xlsx",
+        "icon": "faFileExcel"
+    },
+    {
+        "ext": "ppt",
+        "icon": "faFilePowerpoint"
+    },
+    {
+        "ext": "pptx",
+        "icon": "faFilePowerpoint"
+    }
+]
