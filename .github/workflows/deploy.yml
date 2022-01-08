@@ -25,7 +25,10 @@ jobs:
     - name: Build
       run: REACT_APP_VERSION=$(echo $(date +%y%m%d%M%H%S)-$(git rev-parse --short HEAD)-$(git rev-parse --abbrev-ref HEAD)) npm run build
       
-    - uses: chrislennon/action-aws-cli@v1.1
+    - name: Install aws cli
+      run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" &&\
+           unzip awscliv2.zip &&\
+           sudo $(pwd)/aws/install
     - name: Copy into s3 bucket
       run: s3 sync build/ s3://$HOSTING_BUCKET/
       env:
