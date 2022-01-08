@@ -9,8 +9,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -21,3 +20,15 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
+
+    - name: Test failed => close pull request
+      if: ${{ failure() }}
+      uses: superbrothers/close-pull-request@v3
+      with:
+        comment: "Sorry"
+
+    - name: Test passed => merge pull request
+      if: ${{ !failure() }}
+      uses: "pascalgn/automerge-action@v0.14.3"
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
