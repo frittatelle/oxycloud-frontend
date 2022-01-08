@@ -24,11 +24,10 @@ jobs:
 
     - name: Build
       run: REACT_APP_VERSION=$(echo $(date +%y%m%d%M%H%S)-$(git rev-parse --short HEAD)-$(git rev-parse --abbrev-ref HEAD)) npm run build
-
-    - name: Copy into bucket
-      uses: ItsKarma/aws-cli@v1.70.0
-      with:
-        args: s3 sync build/ s3://$HOSTING_BUCKET/
+      
+    - uses: chrislennon/action-aws-cli@v1.1
+    - name: Copy into s3 bucket
+      run: s3 sync build/ s3://$HOSTING_BUCKET/
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
