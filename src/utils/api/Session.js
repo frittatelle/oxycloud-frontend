@@ -229,7 +229,7 @@ class Session {
           if (err.response.headers['x-amzn-errortype'] &&
             err.response.headers['x-amzn-errortype'] === "UnauthorizedException" &&
             retries++ < 3)
-            return this.refresh().then(() => client.request(err.request.config));
+            return this.refresh().then(() => client.request(err.confg));
           else
             return Promise.reject(err.response.data.message);
 
