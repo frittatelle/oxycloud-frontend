@@ -103,12 +103,13 @@ class Session {
           UserAttributes: [
             {
               Name: "name", Value: name
-            },
-            {
-              Name: "custom:subscription_plan",
-              Value: plan
             }
           ],
+          ClientMetadata:
+          {
+            Name: "custom:subscription_plan",
+            Value: plan
+          }
         });
       return res.data;
     } catch (err) {
