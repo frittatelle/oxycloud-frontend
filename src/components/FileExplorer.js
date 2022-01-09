@@ -272,7 +272,7 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
         <FloatingButtons
           currentFolder={folder}
           handleMkdirModalOpen={() => setMkdirModalOpen(true)}
-          onComplete={() => setTimeout(() => { console.log("refetch"); FSTree.refetch() }, 2000)} />
+          onComplete={() => setTimeout(() => FSTree.refetch(), 2000)} />
       </>}
     </Container>
   );
