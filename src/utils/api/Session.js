@@ -225,13 +225,11 @@ class Session {
     client.interceptors.response.use(
       function (res) { retries = 0; return res; },
       (err) => {
-        console.log(err, err.request.conf)
-        //console.log("res error:",JSON.stringify(err));
         if (err.response && err.response.data.message)
           if (err.response.headers['x-amzn-errortype'] &&
             err.response.headers['x-amzn-errortype'] === "UnauthorizedException" &&
             retries++ < 3)
-            return this.refresh().then(() => client.request(err.request.conf));
+            return this.refresh().then(() => client.request(err.request.config));
           else
             return Promise.reject(err.response.data.message);
 
