@@ -81,7 +81,6 @@ const ShareModal = ({ open, handleClose, shareParams, setShareParams }) => {
                 error: {
                     render({ data }) {
                         if (typeof data.message === "string") {
-                            console.log(data);
                             return JSON.stringify(data.message)
                         }
                         return JSON.stringify(data)
