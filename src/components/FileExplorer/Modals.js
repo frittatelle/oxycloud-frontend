@@ -80,10 +80,10 @@ const ShareModal = ({ open, handleClose, shareParams, setShareParams }) => {
                 success: `${shareParams.name} shared with ${userMail}`,
                 error: {
                     render({ data }) {
-                        if (typeof data.message === "string")
+                        if (typeof data.message === "string") {
+                            console.log(data);
                             return JSON.stringify(data.message)
-                        else if (typeof data === "string")
-                            return data
+                        }
                         return JSON.stringify(data)
                     }
                 }
