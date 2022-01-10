@@ -98,13 +98,6 @@ const FileRow = ({ file:
             </IconButton>
           </Tooltip>
         }
-        {enable_rm && enable_download &&
-          <Tooltip title="Re-Upload">
-            <IconButton onClick={() => console.log("reupload")}>{/*on_reupload(id)}>*/}
-              <PublishIcon fontSize='small' />
-            </IconButton>
-          </Tooltip>
-        }
         {enable_restore &&
           <Tooltip title="Restore">
             <IconButton onClick={() => on_restore({ id, name })}>
