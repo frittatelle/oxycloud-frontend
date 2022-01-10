@@ -120,6 +120,7 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
     }
   });
 
+  const [flagState, setFlagState] = useState(false);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareParams, setShareParams] = useState({ name: "", id: "", shared_with: [], shared_with_mails: [] });
 
@@ -157,6 +158,7 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
       success: {
         render() {
           FSTree.refetch();
+          setFlagState(!flagState);
           return `${name} restored`
         }
       },
@@ -177,6 +179,7 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
           success: {
             render() {
               FSTree.refetch();
+              setFlagState(!flagState);
               return `${name} moved to Trash`
             }
           },
@@ -196,6 +199,7 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
           success: {
             render() {
               FSTree.refetch();
+              setFlagState(!flagState);
               return `${name} permanently deleted`
             }
           },
