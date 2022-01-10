@@ -119,6 +119,7 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
         return {}
     }
   });
+
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareParams, setShareParams] = useState({ name: "", id: "", shared_with: [], shared_with_mails: [] });
 
@@ -257,6 +258,7 @@ const FileExplorer = ({ classes, folder, setFolder, rootFolder }) => {
           shareParams={shareParams}
           setShareParams={setShareParams}
           open={shareModalOpen}
+          onComplete={() => FSTree.refetch()}
           handleClose={handleShareModalClose} />
         <Modal.Rename
           renameParams={renameParams}
