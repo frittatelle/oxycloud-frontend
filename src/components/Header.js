@@ -92,15 +92,15 @@ const Header = ({ handleSidebar, sidebarOpen, folder, rootFolder, signOut }) => 
             <AppBar position="fixed" color="inherit" className={classes.appBar}>
                 <Toolbar>
                     <Typography variant="h6" className={classes.logo}>
-                        <Typography 
-                            color="primary" 
+                        <Typography
+                            color="primary"
                             variant="inherit" component="span">Oxy</Typography>Cloud
                     </Typography>
                     <Divider orientation="vertical" flexItem />
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" onClick={handleSidebar} >
-                            {sidebarOpen ? 
-                                  <KeyboardArrowLeftIcon /> 
+                            {sidebarOpen ?
+                                <KeyboardArrowLeftIcon />
                                 : <KeyboardArrowRightIcon />}
                         </IconButton>
                     </Avatar>
@@ -117,22 +117,22 @@ const Header = ({ handleSidebar, sidebarOpen, folder, rootFolder, signOut }) => 
                             inputProps={{ 'aria-label': 'search' }}
                         />
                     </div>
-                    <Avatar className={classes.avatar}>
+                    {/* <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
                             <NotificationsIcon />
                         </IconButton>
-                    </Avatar>
+                    </Avatar> */}
 
 
-                    <Avatar className={classes.avatar}>
+                    {/* <Avatar className={classes.avatar}>
                         <IconButton color="inherit" >
                             <SettingsIcon />
                         </IconButton>
-                    </Avatar>
+                    </Avatar> */}
 
                     <Avatar className={classes.avatar}>
                         <IconButton color="inherit" onClick={() => signOut()}>
-                            <ExitToAppIcon  />
+                            <ExitToAppIcon />
                         </IconButton>
                     </Avatar>
 
